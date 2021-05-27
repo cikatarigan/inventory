@@ -142,7 +142,7 @@ jQuery(document).ready(function($) {
               title :"barcode",
                "data": "barcode",
                render : function (data, type, row){
-                return  '<img src="data:image/png;base64,{{\DNS1D::getBarcodePNG('123123131', 'I25')}}" alt="barcode" style="width: 250;" />';
+                return  '<img src="/barcode/'+data+'" alt="barcode" style="width: 250;" />';
               },
               "orderable": false,
            },

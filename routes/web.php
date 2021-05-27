@@ -17,16 +17,24 @@ use App\Http\Middleware\CheckPermission;
 
 Route::get('/', 'HomeController@index')->name('home');    
 
+      Route::get('barcode/{barcode}' , function($barcode){
+            return response(base64_decode(\DNS1D::getBarcodePNG($barcode, 'I25')))->withHeaders(['Content-Type' =>'image/png']);
+      });
+            Route::get('find/locations', 'HomeController@locations');
+            Route::get('find/goods/{location}', 'HomeController@goods');
+
+            Route::get('find/users', 'HomeController@users');
+            Route::get('find/borrows/{user}', 'HomeController@borrows');
 
 
-        Route::get('/login', 'Auth\LoginController@showLoginForm')->name('auth.login');
+            Route::get('/login', 'Auth\LoginController@showLoginForm')->name('auth.login');
 		Route::post('/login', 'Auth\LoginController@login')->name('auth.login.submit');
-        Route::post('/logout', 'Auth\LoginController@logout')->name('auth.logout');
+            Route::post('/logout', 'Auth\LoginController@logout')->name('auth.logout');
         
         
 
         Route::middleware(['auth', CheckPermission::class])->group(function () {
-            Route::get('/dashboard', 'HomeController@dashboard')->name('home');    
+            Route::get('/dashboard', 'HomeController@index')->name('home');    
             // Profile
             Route::get('/profile/{id}', 'Admin\AdminController@profile')->name('admin.profile');
 	    	Route::post('/profile/setting', 'Admin\AdminController@setting')->name('admin.setting');
@@ -69,22 +77,25 @@ Route::get('/', 'HomeController@index')->name('home');
             //StockEntry
             Route::match(['get', 'post'], 'receipt',	'Admin\StockEntryController@index')->name('stockentry.index');
             Route::get('find/shelf/{location}', 'Admin\StockEntryController@shelf');
-		    Route::match(['get', 'post'],'receipt/add', 'Admin\StockEntryController@create')->name('stockentry.add');
+		Route::match(['get', 'post'],'receipt/add', 'Admin\StockEntryController@create')->name('stockentry.add');
 
             //CheckGoods
             Route::match(['get', 'post'], 'stock/goods',    'Admin\StockController@index')->name('stock.index');
             Route::match(['get', 'post'], 'stock/goods/details/{id}',   'Admin\StockController@detail')->name('stock.detail');
 
             //Allotment
-            Route::get('find/locations', 'Admin\AllotmentController@locations');
-            Route::get('find/goods/{location}', 'Admin\AllotmentController@goods');
             Route::match(['get', 'post'], 'allotment',    'Admin\AllotmentController@index')->name('allotment.index');
             Route::match(['get', 'post'],'allotment/check', 'Admin\AllotmentController@check')->name('allotment.check');
             Route::match(['get', 'post'],'allotment/add', 'Admin\AllotmentController@create')->name('allotment.add');
 
             //Borrow
             Route::match(['get', 'post'], 'borrow',    'Admin\BorrowController@index')->name('borrow.index');
+            Route::match(['get', 'post'],'borrow/check', 'Admin\BorrowController@check')->name('borrow.check');
             Route::match(['get', 'post'],'borrow/add', 'Admin\BorrowController@create')->name('borrow.add');
+
+            //Allotment
+            Route::match(['get', 'post'], 'return',    'Admin\ReturnController@index')->name('return.index');
+            
 
             //Sample
             Route::match(['get', 'post'], 'sample',	'Admin\SampleController@index')->name('sample.index');
@@ -92,5 +103,9 @@ Route::get('/', 'HomeController@index')->name('home');
             Route::match(['get', 'post'],'sample/update/{id}' ,'Admin\SampleController@update')->name('sample.update');
             Route::get('sample/view/{id}', 'Admin\SampleController@view')->name('sample.view');
             Route::post('sample/destroy', 'Admin\SampleController@destroy')->name('sample.destroy');
+
+            //Return
+            Route::match(['get', 'post'], 'return',   'Admin\ReturnController@index')->name('return.index');
+            Route::match(['get', 'post'],'return/add', 'Admin\ReturnController@create')->name('return.add');
             
         });	

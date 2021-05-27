@@ -29,11 +29,12 @@ class StockEntryController extends Controller
         return view('stockentry.index');
     }
 
-    public function create(Request $request)
+    public function create(Request $request, Location $location)
     {
         $good = Good::select(['*','name as text'])->get();
         $location  = Location::all();
-        $nameshelf  =DB::table('good_locations')->where('location_id', $location->id)->select('name_shelf')->distinct()->get();
+        $nameshelf = Goodlocation::select(['*', 'name_shelf as text'])->get();
+        // $nameshelf  = DB::table('good_locations')->where('location_id', $location->id)->select('name_shelf')->distinct()->get();
         
         if ($request->isMethod('POST')){
 

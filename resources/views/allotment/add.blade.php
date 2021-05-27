@@ -22,7 +22,7 @@
             <div class="card-header">
                <h3 class="card-title">Form Pemberian</h3>
             </div>
-            <form role="form" id="FormAllomentEntry">
+            <form  id="FormAllomentEntry">
                <div class="card-body">
                <div class="form-group">
                 <label for="exampleInputPassword1">Lokasi Barang</label>
@@ -134,10 +134,10 @@
 
 
 
-   $('#FormAllotmentEntry').submit(function (event) {
+   $('#FormAllomentEntry').submit(function (event) {
          event.preventDefault();
          var $this = $(this);
-         var form = $('#FormAllotmentEntry');
+         var form = $('#FormAllomentEntry');
          var data = form.serialize();
          $.ajax({
              url: '/allotment/check',
@@ -220,6 +220,11 @@
          })
      });
 
+
+     $('#locationview').change(function (event) {
+         $('#goodview').empty();
+     });
+   
  });
 </script>
 @endsection

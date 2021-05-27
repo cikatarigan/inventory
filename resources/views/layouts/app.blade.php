@@ -123,24 +123,31 @@
                         </a>
                      </li>
                      @endif
+                     @if(Auth::user()->hasPermissionTo('borrow.index','web'))
                      <li class="nav-item">
                         <a href="{{route('borrow.index')}}" class="nav-link">
                         <i class="nav-icon fas fa-hand-holding"></i>
                            <p>Peminjaman</p>
                         </a>
                      </li>
+                     @endif
+                     @if(Auth::user()->hasPermissionTo('return.index','web'))
                      <li class="nav-item">
-                        <a href="{{route('location.index')}}" class="nav-link">
+                        <a href="{{route('return.index')}}" class="nav-link">
                         <i class="nav-icon fas fa-undo-alt"></i>
                            <p>Pengembalian</p>
                         </a>
                      </li>
+                     @endif
+                    @if(Auth::user()->hasPermissionTo('allotment.index','web'))
                      <li class="nav-item">
                         <a href="{{route('allotment.index')}}" class="nav-link">
                         <i class="nav-icon fab fa-hive"></i>
                            <p>Pemberian</p>
                         </a>
                      </li>
+                     @endif
+                    @if(Auth::user()->hasPermissionTo('user.index','web'))
                      <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                           <i class="nav-icon fas fa-users"></i>
@@ -174,6 +181,7 @@
                           @endif
                         </ul>
                       </li>   
+                      @endif
                   </ul>
                </nav>
                <!-- /.sidebar-menu -->
@@ -187,7 +195,7 @@
          <!-- /.content-wrapper -->
          <!-- Main Footer -->
          <footer class="main-footer">
-            <strong>Copyright © 2020 <a href="#">pktgroup.com</a>.</strong>
+            <strong>Copyright © <?php echo date("Y"); ?> <a href="#">pktgroup.com</a>.</strong>
             All rights reserved.
             <div class="float-right d-none d-sm-inline-block">
                <b>Version</b> 1.0.0</div>

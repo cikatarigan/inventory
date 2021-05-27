@@ -63,7 +63,11 @@ class PermissionSeeder extends Seeder
         // Borrow
         Permission::firstOrCreate(['name' =>'borrow.index','guard_name'=>'web'],['display_name' => 'Daftar Peminjaman']),
         Permission::firstOrCreate(['name' =>'borrow.add','guard_name'=>'web'],['display_name' => 'Daftar Peminjaman - Menambahkan Peminjaman Baru']),
-        
+
+        //Return
+        Permission::firstOrCreate(['name' =>'return.index','guard_name'=>'web'],['display_name' => 'Daftar Pengembalian']),
+        Permission::firstOrCreate(['name' =>'return.add','guard_name'=>'web'],['display_name' => 'Daftar Pengembalian - Menambahkan Pengembalian Baru']),
+
         // Sample
         Permission::firstOrCreate(['name' =>'sample.index','guard_name'=>'web'],['display_name' => 'Daftar Sample']),
         Permission::firstOrCreate(['name' =>'sample.store','guard_name'=>'web'],['display_name' => 'Daftar Sample - Menambahkan Sample Baru']),

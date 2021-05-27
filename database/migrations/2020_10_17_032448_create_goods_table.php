@@ -22,7 +22,7 @@ class CreateGoodsTable extends Migration
             $table->string('barcode');
             $table->string('unit');
             $table->string('isexpired')->nullable();
-            $table->date('expired_date')->nullable();
+            $table->string('status')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

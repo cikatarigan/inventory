@@ -4,12 +4,12 @@
    <div class="container-fluid">
       <div class="row mb-2">
          <div class="col-sm-6">
-            <h1>Allotment Entry Table</h1>
+            <h1>Borrow Entry Table</h1>
          </div>
          <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
                <li class="breadcrumb-item"><a href="#">Home</a></li>
-               <li class="breadcrumb-item active">Allotment</li>
+               <li class="breadcrumb-item active">Borrow</li>
             </ol>
          </div>
       </div>
@@ -22,7 +22,7 @@
             <div class="card-header">
                <h3 class="card-title">Form Pemberian</h3>
             </div>
-            <form role="form" id="FormStockEntry">
+            <form role="form" id="FormBorrowCheck">
                <div class="card-body">
                <div class="form-group">
                 <label for="exampleInputPassword1">Lokasi Barang</label>
@@ -65,50 +65,98 @@
       </div>
    </div>
 </div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="exampleModal">
+   <div class="modal-dialog" role="document">
+      <div class="modal-content">
+         <form action="#" method="post" id ="FormBorrow">
+            <div class="modal-header">
+               <h5 class="modal-title">Konfirmasi password</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+               <div class="box box-info">
+                  <div class="box-header">
+                     <div class="box-body">
+                          <input type="hidden" id="locationcheck" name="location" value="">
+                          <input type="hidden" id="goodcheck" name="good" value="">
+                          <input type="hidden" id="amountcheck" name="amount" value="">
+                          <input type="hidden" id="usercheck" name="user" value="">
+                          <input type="hidden" id="descriptioncheck" name="description" value="">
+                           <div class="form-group">
+                              <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan Password Penerima">
+                           </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Simpan</button>
+               </div>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
 @endsection
 @section('script')
 <script>
  jQuery(document).ready(function() {
+      @if (session('success'))
+          toastr.success("{{ session('success') }}");
+      @endif
 
-       $('#location').select2({
-           placeholder: "Pilih location",
-           ajax: {
-               url: '/find/locations',
-               dataType: 'json'
-           }
-       });
+      @if (session('error'))
+          toastr.error("{{ session('error') }}");
+      @endif
 
+     $('#location').select2({
+         placeholder: "Pilih location",
+         ajax: {
+             url: '/find/locations',
+             dataType: 'json'
+         }
+     });
 
-       $('#good').select2({
-           placeholder: "Pilih Barang",
-           ajax: {
-               url: function (params) {
-                console.log($('#location').val());
-                   return '/find/goods/' + $('#location').val();
-               },
-               dataType: 'json'
-           }
-       });
-
-
+     $('#good').select2({
+         placeholder: "Pilih Barang",
+         ajax: {
+             url: function (params) {
+            
+                 return '/find/goods/' + $('#location').val();
+             },
+             dataType: 'json'
+         }
+     });
 
      $('#user').select2();
 
   
-    $('#FormStockEntry').submit(function (event) {
+    $('#FormBorrowCheck').submit(function (event) {
          event.preventDefault();
          var $this = $(this);
-         var form = $('#FormStockEntry');
+         var form = $('#FormBorrowCheck');
          var data = form.serialize();
          $.ajax({
-             url: '/allotment/add',
+             url: '/borrow/check',
              type: 'POST',
              data: data,
              cache: false,
              success: function (data) {
                  console.log(data)
                  if (data.success) {
-                     toastr.success('Data Berhasil ditambahkan');
+                        $('#exampleModal').modal('show');
+                         var location = $("#location").val();
+                         var good = $("#good").val();
+                         var amount = $("#amount").val();
+                         var user = $("#user").val();
+                         var description = $("#description").val();
+                          $('#FormBorrow #locationcheck').val(location);
+                          $('#FormBorrow #goodcheck').val(good);
+                          $('#FormBorrow #amountcheck').val(amount);
+                          $('#FormBorrow #usercheck').val(user);
+                          $('#FormBorrow #descriptioncheck').val(description);
                  } else {
                      toastr.error(data.message);
                  }
@@ -131,6 +179,46 @@
          })
      });
 
+
+    $('#FormBorrow').submit(function (event) {
+         event.preventDefault();
+         var $this = $(this);
+         var form = $('#FormBorrow');
+         var data = form.serialize();
+         $.ajax({
+             url: '/borrow/add',
+             type: 'POST',
+             data: data,
+             cache: false,
+             success: function (data) {
+                 console.log(data)
+                 if (data.success) {
+                     toastr.success(data.message);
+                 } else {
+                     toastr.error(data.message);
+                 }
+             },
+             error: function(response) {
+               if(response.status === 422){
+                let errors = response.responseJSON.errors;
+                $.each(errors, function(key, error){
+                  var item = form.find('input[name='+ key +']');
+                  item = (item.length > 0) ? item : form.find('select[name='+ key +']');
+                  item = (item.length > 0) ? item : form.find('textarea[name='+ key +']');
+                  item = (item.length > 0) ? item : form.find("input[name='"+ key +"[]']");
+   
+                 var parent = (item.parent().hasClass('form-group')) ? item.parent() : item.parent().parent();
+                  parent.addClass('has-error');
+                  parent.append('<span class="help-block" style="color:red;">'+ error +'</span>');
+                })
+              }
+            }
+         })
+     });
+
+     $('#location').change(function (event) {
+         $('#good').empty();
+     });
  });
 </script>
 @endsection

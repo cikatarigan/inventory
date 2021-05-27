@@ -26,7 +26,7 @@
             <div class="preview-pic tab-content">
                @foreach($good->good_images as $key => $item)
                <div class="tab-pane @if($key== 0){{'active'}}@endif" id="pic-{{$item->id}}">
-                  <img src="{{Storage::url($item->image->path)}}" />
+                  <img src="{{Storage::url($item->image->path)}}"  style="height: 450px" />
                </div>
                @endforeach
             </div>
@@ -34,15 +34,45 @@
                @foreach($good->good_images as $key => $item)
                <li class="@if($key== 0){{'active'}} @endif">
                   <a data-target="#pic-{{$item->id}}" data-toggle="tab">
-                  <img src="{{Storage::url($item->image->path)}}" />
+                  <img src="{{Storage::url($item->image->path)}}" style="height: 120px;" />
                   </a>
                </li>
                @endforeach 
             </ul>
          </div>
          <div class="details col-md-6">
-            <p class="product-description">Nama Barang{{$good->description}}</p>
+            <h3 class="product-description">{{$good->description}}</h3>
             <p class="product-description">{{$good->description}}</p>
+                <table class="table table-striped">
+                     <tr>
+                        <td> <b>Brand</b></td>
+                        <td>:</td>
+                        <td> {{$good->brand}}</td>
+                     </tr>
+                     <tr>
+                        <td><b>Category</b> </td>
+                        <td>:</td>
+                        <td> {{$good->category}}</td>
+                     </tr>
+                     <tr>
+                        <td><b>Unit</b> </td>
+                        <td>:</td>
+                        <td> {{$good->unit}}</td>
+                     </tr>
+                     <tr>
+                        <td><b>Expired</b> </td>
+                        <td>:</td>
+                        <td> {{$good->isexpired}}</td>
+                     </tr>  
+
+                        <tr>
+                        <td><b>Barcode</b> </td>
+                        <td>:</td>
+                        <td>  <img src="/barcode/{{$good->barcode}}" width="250px;"></td>
+                     </tr>                  
+                  </table>
+
+                
          </div>
       </div>
    </div>
@@ -107,16 +137,7 @@
     var date_start = "";
     var date_end = "";
    
-    $('input[name="daterange"]').daterangepicker({
-      opens: 'left'            
-    }, function(startDate, endDate, label) {
-   
-      date_start = startDate.format('YYYY-MM-DD');
-      date_end = endDate.format('YYYY-MM-DD');
-      table.draw();
-          // console.log("A new date selection was made: " + startDate.format('YYYY-MM-DD') + ' to ' + endDate.format('YYYY-MM-DD'));
-        });
-   
+
     console.log(date_start);
    
     var table = $('#stock-table').DataTable({
@@ -187,10 +208,10 @@
                        return 'Produksi';
                      }else if(data == 'App\\Models\\StockEntry'){
                        return  'Stock Entri';
-                     }else if(data == 'App\\Models\\Mutation'){
-                       return 'Mutasi Barang';
+                     }else if(data == 'App\\Models\\Allotment'){
+                       return 'Pemberian';
                      }else {
-                       return 'Pengiriman';
+                       return 'Peminjaman';
                      }
                    },
                    "orderable": false,

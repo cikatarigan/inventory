@@ -9,6 +9,9 @@ class Good extends Model
 {
 	use SoftDeletes;
 
+    const EXPIRED   = "Expired";
+    const GOOD = "Good";
+
     public function good_images()
 	{
 		return $this->hasMany('App\Models\GoodImage', 'good_id', 'id');

@@ -83,9 +83,6 @@
        tags: true,
     });
 
-    $("#location").select2({
-      
-    })
 
     $("#nameshelf").select2({
        placeholder: "Pilih rak",
@@ -122,6 +119,7 @@
                  console.log(data)
                  if (data.success) {
                      toastr.success('Data Berhasil ditambahkan');
+                     window.location.replace('/')
                  } else {
                      toastr.error(data.message);
                  }

@@ -119,6 +119,11 @@
                   "orderable": true,
               },
               {
+              title :"Kepada",
+                  "data": "user.name",
+                  "orderable": true,
+              },
+              {
               title :"Lokasi",
                   "data": "location.name",
                   "orderable": true,

@@ -14,6 +14,7 @@ use App\User;
 use Auth;
 use Illuminate\Support\Facades\DB;
 use validator;
+use Illuminate\Support\Facades\Hash;
 
 
 class AllotmentController extends Controller
@@ -29,44 +30,26 @@ class AllotmentController extends Controller
         return view('allotment.index');
     }
 
-    public function locations(Request $request)
-    {
-        $locations = Location::where('name', 'LIKE', "%$request->term%")
-            ->select(['id', 'name as text'])->get();
-
-        return response()->json([
-            'results'  => $locations
-        ]);
-    }
-
-    public function goods(Request $request, Location $location)
-    {
-        
-        $goods = DB::table('goods')->join('good_locations', 'goods.id', '=', 'good_locations.good_id')
-        ->where('good_locations.location_id', $location->id)
-        ->select([ '*','goods.name as text'])->get();
-
-        return response()->json([
-            'results'  => $goods
-        ]);
-    }
-
 
     public function check(Request $request)
     {
 
         if($request->isMethod('POST')){
-
-            $amount = Good::find($request->good);
+            
+            $amount = Good::find($request->goodview);
 
             $validator = $request->validate([
-            'location' => 'required',
-            'good' => 'required',
+            'locationview' => 'required',
+            'goodview' => 'required',
            ]);
 
             $this->validate($request, [
-             'amount' => ['required', 'numeric', 'max:' . ($amount->getBalanceByWarehouse($request->location))],
-            ]);    
+             'amountview' => ['required', 'numeric', 'max:' . ($amount->getBalanceByWarehouse($request->locationview))],
+            ]); 
+
+             return response()->json([
+                'success'=>true,
+            ]);   
         }
 
     }
@@ -79,7 +62,9 @@ class AllotmentController extends Controller
         if ($request->isMethod('POST')){
 
 
-            $user_password = User::select('id')->where('password',$password)->first();
+            $user = User::find($request->user);
+            $amount = Good::find($request->good);
+            if(Hash::check($request->password, $user->password)){
 
             try{
             DB::statement('SET autocommit=0');
@@ -113,10 +98,18 @@ class AllotmentController extends Controller
                 throw $e;
             }
 
-           return response()->json([
-                'success'=>true,
-                'message'   => 'Pemberian Telah Berhasil'
+               return response()->json([
+                    'success'=>true,
+                    'message'   => 'Pemberian Telah Berhasil'
             ]);
+            }else{
+                 return response()->json([
+                    'success'=>false,
+                    'message'   => 'Password User Salah'
+                ]);  
+            }
+
+
         }
 
     	return view('allotment.add', ['users' => $users]);
