@@ -12,6 +12,7 @@ use App\User;
 use App\Models\Sample;
 use DB;
 
+use App\Models\Borrow;
 class HomeController extends Controller
 {
     /**
@@ -65,9 +66,10 @@ class HomeController extends Controller
 
     public function users(Request $request)
     {
-
-      $user = DB::table('borrows')->join('users', 'borrows.user_id', '=', 'users.id')->select([ '*','users.name as text'])->get();
-
+      $user = User::whereHas('borrow', function($q){
+           $q->groupBy('user_id');
+      })->select(['id', 'name as text'])->get();
+    
         return response()->json([
             'results'  => $user
         ]);
@@ -82,6 +84,15 @@ class HomeController extends Controller
 
         return response()->json([
             'results'  => $borrow
+        ]);
+    }
+
+    public function shelf(Request $request, Location $location)
+    {
+        $shelf = DB::table('good_locations')->join('locations','good_locations.location_id', '=', 'locations.id')->where('locations.id', $location->id)->select('name_shelf as id','name_shelf as text')->get();
+
+        return response()->json([
+            'results'  => $shelf
         ]);
     }
 

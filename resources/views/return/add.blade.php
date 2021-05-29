@@ -32,7 +32,7 @@
                   </div>
                   <div class="form-group">
                      <label for="exampleInputPassword1">Barang</label>
-                     <select class="js-example-basic-single form-control select-custom" id="good_id" name="good_id" width="100%">
+                     <select class="js-example-basic-single form-control select-custom" id="good" name="good" width="100%">
                       <option value="" disabled selected>Pilih Barang</option>
                      </select>
                   </div>
@@ -42,7 +42,7 @@
                   </div>
                   <div class="form-group">
                      <label for="exampleInputPassword1">Location</label>
-                     <select class="js-example-basic-single form-control select-custom" id="location_id" name="location_id" width="100%">
+                     <select class="js-example-basic-single form-control select-custom" id="location" name="location" width="100%">
                         <option value="" disabled selected>Pilih Lokasi</option>
                         @foreach($location as $item)
                         <option value="{{$item->id}}">{{$item->name}}</option>
@@ -90,7 +90,7 @@
          }
      });
 
-     $('#good_id').select2({
+     $('#good').select2({
          placeholder: "Pilih Barang",
          ajax: {
              url: function (params) {
@@ -107,7 +107,7 @@
     });
 
     
-    $('#good_id').on('select2:select', function (e) {
+    $('#good').on('select2:select', function (e) {
         var data = e.params.data;
         console.log(data);
         if(data.isexpired == 'on'){
@@ -128,7 +128,7 @@
          var form = $('#FormStockEntry');
          var data = form.serialize();
          $.ajax({
-             url: '/receipt/add',
+             url: '/return/check',
              type: 'POST',
              data: data,
              cache: false,
@@ -157,6 +157,10 @@
               }
             }
          })
+     });
+
+     $('#user').change(function (event) {
+         $('#good').empty();
      });
 
  });

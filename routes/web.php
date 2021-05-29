@@ -26,6 +26,8 @@ Route::get('/', 'HomeController@index')->name('home');
             Route::get('find/users', 'HomeController@users');
             Route::get('find/borrows/{user}', 'HomeController@borrows');
 
+            Route::get('find/shelf/{location}', 'HomeController@shelf');
+
 
             Route::get('/login', 'Auth\LoginController@showLoginForm')->name('auth.login');
 		Route::post('/login', 'Auth\LoginController@login')->name('auth.login.submit');
@@ -76,7 +78,6 @@ Route::get('/', 'HomeController@index')->name('home');
             
             //StockEntry
             Route::match(['get', 'post'], 'receipt',	'Admin\StockEntryController@index')->name('stockentry.index');
-            Route::get('find/shelf/{location}', 'Admin\StockEntryController@shelf');
 		Route::match(['get', 'post'],'receipt/add', 'Admin\StockEntryController@create')->name('stockentry.add');
 
             //CheckGoods
@@ -106,6 +107,7 @@ Route::get('/', 'HomeController@index')->name('home');
 
             //Return
             Route::match(['get', 'post'], 'return',   'Admin\ReturnController@index')->name('return.index');
+            Route::match(['get', 'post'],'return/check', 'Admin\ReturnController@check')->name('return.check');
             Route::match(['get', 'post'],'return/add', 'Admin\ReturnController@create')->name('return.add');
             
         });	

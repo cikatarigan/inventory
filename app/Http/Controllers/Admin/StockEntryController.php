@@ -40,7 +40,7 @@ class StockEntryController extends Controller
 
          $validator = $request->validate([
             'good_id' => 'required',
-            'amount' => 'required',
+            'amount' => 'required|numeric|min:1',
             'location_id' => 'required',
         ]);
 
@@ -54,12 +54,6 @@ class StockEntryController extends Controller
             $stockentry->location_id = $request->location_id;
             $stockentry->date_expired = Carbon::parse($request->date_expired);
             $stockentry->save();
-
-            if($stockentry->date_expired != null){
-                $good = Good::find($request->good_id);
-                $good->expired_date = Carbon::parse($request->date_expired);
-                $good->save();
-            }
 
             $goodlocation = Goodlocation::firstOrCreate(['good_id' => $request->good_id, 'location_id' => $request->location_id, 'name_shelf' => $request->nameshelf]);
 

@@ -39,4 +39,5 @@ class Good extends Model
 
      	return ($last_transaction) ? $last_transaction->end_balance : 0 ;
      }
+
 }

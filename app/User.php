@@ -11,6 +11,8 @@ use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
+use App\Models\Borrow;
+
 class User extends Authenticatable
 {
     use Notifiable, HasRoles;
@@ -47,4 +49,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    public function borrow()
+    {
+        return $this->hasMany(Borrow::class);
+    }
+
 }

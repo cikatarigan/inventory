@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\User;
 use DataTables;
 use Illuminate\Support\Facades\Hash;
+use App\Models\StockTransaction;
 use DB;
 
 class BorrowController extends Controller
@@ -28,15 +29,15 @@ class BorrowController extends Controller
     {
 
           if($request->isMethod('POST')){
-            $amount = Good::find($request->good_id);    
-          
+            $amount = Good::find($request->good);    
+ 
             $validator = $request->validate([
             'location' => 'required',
             'good' => 'required',
            ]);
 
             $this->validate($request, [
-             'amount' => ['required', 'numeric', 'max:' . ($amount->getBalanceByWarehouse($request->location))],
+             'amount' => ['required', 'numeric', 'min:1','max:' . ($amount->getBalanceByWarehouse($request->location))],
             ]); 
 
              return response()->json([

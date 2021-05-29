@@ -194,6 +194,9 @@
                  console.log(data)
                  if (data.success) {
                      toastr.success(data.message);
+                     window.setTimeout(function() {
+                        window.location.href = '/borrow';
+                    }, 3000);
                  } else {
                      toastr.error(data.message);
                  }

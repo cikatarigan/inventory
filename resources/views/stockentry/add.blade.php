@@ -37,10 +37,7 @@
                   <div class="form-group">
                      <label for="exampleInputPassword1">Location</label>
                      <select class="js-example-basic-single form-control select-custom" id="location_id" name="location_id" width="100%">
-                        <option value="" disabled selected>Pilih Lokasi</option>
-                        @foreach($location as $item)
-                        <option value="{{$item->id}}">{{$item->name}}</option>
-                        @endforeach
+
                      </select>
                   </div>
                   <div class="form-group">
@@ -55,7 +52,7 @@
                     <div class="form-group" id="formexpired" style="display: none">
                        <label for="exampleInputPassword1">Date_expired</label>
                        <div class="input-group date" data-provide="datepicker">
-                          <input class="datepicker form-control" id="date_expired" name="date_expired" data-date-format="mm/dd/yyyy">
+                          <input class="datepicker form-control" id="date_expired" name="date_expired" data-date-format="mm/dd/yyyy" autocomplete="off">
                           <div class="input-group-addon">
                              <span class="glyphicon glyphicon-th"></span>
                           </div>
@@ -83,12 +80,24 @@
        tags: true,
     });
 
+     $('#location_id').select2({
+         placeholder: "Pilih location",
+         ajax: {
+             url: '/find/locations',
+             dataType: 'json'
+         }
+     });
 
-    $("#nameshelf").select2({
-       placeholder: "Pilih rak",
-       tags: true,
-    });
-
+    $('#nameshelf').select2({
+         placeholder: "Pilih Rak",
+         tags: true,
+         ajax: {
+             url: function (params) {
+                 return '/find/shelf/' + $('#location_id').val();
+             },
+             dataType: 'json'
+         }
+     });
     
     $('#good_id').on('select2:select', function (e) {
         var data = e.params.data;
@@ -101,7 +110,7 @@
     });
     
     $('#date_expired').datepicker({
-       maxDate: '0'
+        minDate: 0,
     });
 
   
@@ -140,6 +149,10 @@
               }
             }
          })
+     });
+
+     $('#location_id').change(function (event) {
+         $('#nameshelf').empty();
      });
 
  });
