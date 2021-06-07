@@ -16,6 +16,11 @@ class StockTransaction extends Model
 
     public function good(){
           return $this->belongsTo(Good::class);
-     }
+    }
+
+    public function stock_entry(){
+    	return $this->belongsTo('App\Models\StockEntry', 'location_id', 'location_id');
+    }
+
 }
 

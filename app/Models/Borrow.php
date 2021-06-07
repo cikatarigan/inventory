@@ -41,11 +41,5 @@ class Borrow extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function GetBalanceBorrow($good_id)
-    {
-        $this->where('good_id', $good_id)->select('amount')->first();
-        return $borrow;
-    }
-
 
 }

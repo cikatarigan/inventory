@@ -12,6 +12,9 @@ use App\Models\GoodLocation;
 use App\Models\Location;
 use App\Models\Borrow;
 use DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
 
 class ReturnController extends Controller
 {
@@ -28,32 +31,37 @@ class ReturnController extends Controller
 
     public function check (Request $request)
     {
+
       if($request->isMethod('POST')){
 
+            $this->validate($request, [
+                'location' => 'required',
+                'good' => 'required',
+                'amount' => ['required', 'numeric'],
 
-        $amount = Borrow::where('good_id', $request->good)->get();
+           ]); 
 
-        $validator = $request->validate([
-            'location' => 'required',
-            'good' => 'required',
-        ]);
+            $good = Good::find($request->good);
+   
+            $this->validate($request, [
+                'amount' => ['numeric','max: ' . ($good->borrow()->where('user_id', $request->user)->sum('amount')) ],
+            ]);
 
-        $this->validate($request, [
-           'amount' => ['required', 'numeric','max:' . ($amount->GetBalanceBorrow($request->good))],
-       ]); 
 
-            //  return response()->json([
-            //     'success'=>true,
-            // ]);   
+                 return response()->json([
+                    'success'=>true,
+                ]);   
+        }
     }
-}
 
     public function create(Request $request)
     {
+
         $location  = Location::all();
         $nameshelf = Goodlocation::select(['*', 'name_shelf as text'])->get();
 
         if($request->isMethod('post')){
+             $user = User::find($request->userview);
             if(Hash::check($request->password, $user->password)){
 
                 try{
@@ -61,15 +69,19 @@ class ReturnController extends Controller
                     DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, good_locations WRITE, stock_transactions WRITE, goods WRITE, borrows write, give_backs write');
 
                     $return = new GiveBack;
-                    $return->good_id = $request->good_id;
-                    $return->user_id = $request->user_id;
-                    $return->amount = $request->amount;
-                    $return->location_id = $request->location_id;
-                    $return->name_shelf = $request->name_shelf;
-                    $return->description = $request->description;
+                    $return->good_id = $request->goodview;
+                    $return->user_id = $request->userview;
+                    $return->amount = $request->amountview;
+                    $return->location_id = $request->locationview;
+                    $return->name_shelf = $request->nameview;
+                    $return->description = $request->descriptionview;
                     $return->save();
 
-                    $borrow = Borrow::where('user_id', $request->user_id)->where('good_id', $request->good_id);
+
+                    $stockentry = new StockEntry;
+                    
+
+                    $borrow = Borrow::where('user_id', $request->user_id)->where('good_id', $request->good_id)->sum('amount');
                     $borrow->status = Borrow::Done;
                     $borrow->update();
 

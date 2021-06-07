@@ -20,9 +20,9 @@
       <div class="col-md-6">
          <div class="card card-primary">
             <div class="card-header">
-               <h3 class="card-title">Form Stock Entry</h3>
+               <h3 class="card-title">Form Pengembalian</h3>
             </div>
-            <form role="form" id="FormStockEntry">
+            <form role="form" id="FormReturnCheck">
                <div class="card-body">
                 <div class="form-group">
                      <label for="exampleInputPassword1">Kepada</label>
@@ -58,15 +58,11 @@
                         @endforeach
                      </select>
                   </div>
-                    <div class="form-group" id="formexpired" style="display: none">
-                       <label for="exampleInputPassword1">Date_expired</label>
-                       <div class="input-group date" data-provide="datepicker">
-                          <input class="datepicker form-control" id="date_expired" name="date_expired" data-date-format="mm/dd/yyyy">
-                          <div class="input-group-addon">
-                             <span class="glyphicon glyphicon-th"></span>
-                          </div>
-                       </div>
-                    </div>
+                  <div class="form-group">
+                     <label for="exampleInputPassword1">Keterangan</label>
+                     <textarea  class="form-control" id="description" name="description" rows="3"></textarea>
+                  </div>
+
                </div>
                <!-- /.card-body -->
                <div class="card-footer">
@@ -74,6 +70,40 @@
                </div>
             </form>
          </div>
+      </div>
+   </div>
+</div>
+
+  <div class="modal fade" tabindex="-1" role="dialog" id="exampleModal">
+   <div class="modal-dialog" role="document">
+      <div class="modal-content">
+         <form action="#" method="post" id ="FormReturn">
+            <div class="modal-header">
+               <h5 class="modal-title">Konfirmasi password</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+               <div class="box box-info">
+                  <div class="box-header">
+                     <div class="box-body">
+                          <input type="hidden" id="locationview" name="locationview" value="">
+                          <input type="hidden" id="goodview" name="goodview" value="">
+                          <input type="hidden" id="amountview" name="amountview" value="">
+                          <input type="hidden" id="userview" name="userview" value="">
+                          <input type="hidden" id="descriptionview" name="descriptionview" value="">
+                           <div class="form-group">
+                              <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan Password Penerima">
+                           </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Simpan</button>
+               </div>
+            </div>
+         </form>
       </div>
    </div>
 </div>
@@ -122,10 +152,10 @@
     });
 
   
-    $('#FormStockEntry').submit(function (event) {
+    $('#FormReturnCheck').submit(function (event) {
          event.preventDefault();
          var $this = $(this);
-         var form = $('#FormStockEntry');
+         var form = $('#FormReturnCheck');
          var data = form.serialize();
          $.ajax({
              url: '/return/check',
@@ -134,9 +164,58 @@
              cache: false,
              success: function (data) {
                  console.log(data)
+                 if (data.success) {  
+                    $('#exampleModal').modal('show');
+                     var location = $("#location").val();
+                     var good = $("#good").val();
+                     var amount = $("#amount").val();
+                     var user = $("#user").val();
+                     var description = $("description").val();
+                      $('#FormReturn #locationview').val(location);
+                      $('#FormReturn #goodview').val(good);
+                      $('#FormReturn #amountview').val(amount);
+                      $('#FormReturn #userview').val(user);
+                      $('#FormReturn #descriptionview').val(description);
+                   
+                 } else {
+                     toastr.error(data.message);
+                 }
+             },
+             error: function(response) {
+               if(response.status === 422){
+                let errors = response.responseJSON.errors;
+                $.each(errors, function(key, error){
+                  var item = form.find('input[name='+ key +']');
+                  item = (item.length > 0) ? item : form.find('select[name='+ key +']');
+                  item = (item.length > 0) ? item : form.find('textarea[name='+ key +']');
+                  item = (item.length > 0) ? item : form.find("input[name='"+ key +"[]']");
+   
+                 var parent = (item.parent().hasClass('form-group')) ? item.parent() : item.parent().parent();
+                  parent.addClass('has-error');
+                  parent.append('<span class="help-block" style="color:red;">'+ error +'</span>');
+                })
+              }
+            }
+         })
+     });
+
+        $('#FormReturn').submit(function (event) {
+         event.preventDefault();
+         var $this = $(this);
+         var form = $('#FormReturn');
+         var data = form.serialize();
+         $.ajax({
+             url: '/return/add',
+             type: 'POST',
+             data: data,
+             cache: false,
+             success: function (data) {
+                 console.log(data)
                  if (data.success) {
-                     toastr.success('Data Berhasil ditambahkan');
-                     window.location.replace('/')
+                     toastr.success(data.message);
+                      window.setTimeout(function() {
+                        window.location.href = '/return';
+                    }, 2000);
                  } else {
                      toastr.error(data.message);
                  }

@@ -34,11 +34,12 @@ class HomeController extends Controller
     {
          $expired = StockEntry::with(['good', 'location','good_location'])->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->get();
 
+         $borrow = Borrow::with('good.good_images')->where('status', 'Still Borrow')->get();
          $goods = Good::count();
          $users = User::count();
          $sample = Sample::count();
 
-        return view('home.index',['expired' => $expired, 'goods'=> $goods, 'users' => $users ,'sample' => $sample]);
+        return view('home.index',['expired' => $expired, 'goods'=> $goods, 'users' => $users ,'sample' => $sample , 'borrow' => $borrow]);
     }
 
     public function locations(Request $request)
@@ -89,7 +90,9 @@ class HomeController extends Controller
 
     public function shelf(Request $request, Location $location)
     {
-        $shelf = DB::table('good_locations')->join('locations','good_locations.location_id', '=', 'locations.id')->where('locations.id', $location->id)->select('name_shelf as id','name_shelf as text')->get();
+        // $shelf = DB::table('good_locations')->join('locations','good_locations.location_id', '=', 'locations.id')->where('locations.id', $location->id)->select('name_shelf as id','name_shelf as text')->get();
+
+        $shelf =  Goodlocation::select(['*', 'name_shelf as text'])->get();
 
         return response()->json([
             'results'  => $shelf

@@ -223,7 +223,7 @@
                  },
                  {
                    title :"Expired Date",
-                   "data": "good.expired_date",
+                   "data": "stock_entry.date_expired",
                    render : function (data, type, row){
                     return moment(data).format('Do MMMM YYYY')
                   },
