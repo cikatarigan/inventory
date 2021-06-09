@@ -139,6 +139,8 @@
          event.preventDefault();
          var $this = $(this);
          var form = $('#FormAllomentEntry');
+         $('#FormAllomentEntry div.form-group').removeClass('has-error');
+         $('#FormAllomentEntry .help-block').empty();
          var data = form.serialize();
          $.ajax({
              url: '/allotment/check',
@@ -189,6 +191,7 @@
          event.preventDefault();
          var $this = $(this);
          var form = $('#FormAllotment');
+
          var data = form.serialize();
          $.ajax({
              url: '/allotment/add',

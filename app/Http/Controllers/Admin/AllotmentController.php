@@ -5,10 +5,13 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Allotment;
+use App\Models\AllotmentItem;
 use App\Models\Location;
 use App\Models\Good;
 use App\Models\GoodLocation;
 use App\Models\StockTransaction;
+use App\Models\StockEntry;
+use Carbon\Carbon;
 use DataTables;
 use App\User;
 use Auth;
@@ -64,11 +67,17 @@ class AllotmentController extends Controller
 
             $user = User::find($request->user);
             $amount = Good::find($request->good);
+
+            $entry = StockEntry::whereDate('date_expired', '>=', Carbon::now())->where('good_id' , $request->good)->where('location_id', $request->location)->orderBy('created_at', 'asc')->get();
+
+         
+            
+
             if(Hash::check($request->password, $user->password)){
 
             try{
             DB::statement('SET autocommit=0');
-            DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, good_locations WRITE, stock_transactions WRITE, goods WRITE, allotments WRITE');
+            DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, good_locations WRITE, stock_transactions WRITE, goods WRITE, allotments WRITE, allotment_items WRITE' );
 
             $allotment = New Allotment;
             $allotment->location_id = $request->location;
@@ -77,6 +86,15 @@ class AllotmentController extends Controller
             $allotment->user_id = $request->user;
             $allotment->description = $request->description;
             $allotment->save();
+
+            foreach ($entry as  $key => $item) {
+                $itemallotment = New AllotmentItem;
+                $itemallotment->entry_id =  $item->id;
+                $itemallotment->allotment_id = $allotment->id;
+                $itemallotment->amount = $entry->amount[$key];
+                $itemallotment->save();
+            }
+             
 
             $goods = $allotment->good;
 

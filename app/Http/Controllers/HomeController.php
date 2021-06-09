@@ -10,6 +10,8 @@ use App\Models\Location;
 use App\Models\Goodlocation;
 use App\User;
 use App\Models\Sample;
+use App\Models\Allotment;
+use Auth;
 use DB;
 
 use App\Models\Borrow;
@@ -35,11 +37,13 @@ class HomeController extends Controller
          $expired = StockEntry::with(['good', 'location','good_location'])->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->get();
 
          $borrow = Borrow::with('good.good_images')->where('status', 'Still Borrow')->get();
+         $allotment = Allotment::where('user_id', Auth::id())->get();
+         $borrow_user = Borrow::with('good.good_images')->where('status', 'Still Borrow')->where('user_id', Auth::id())->get();
          $goods = Good::count();
          $users = User::count();
          $sample = Sample::count();
 
-        return view('home.index',['expired' => $expired, 'goods'=> $goods, 'users' => $users ,'sample' => $sample , 'borrow' => $borrow]);
+        return view('home.index',['expired' => $expired, 'goods'=> $goods, 'users' => $users ,'sample' => $sample , 'borrow' => $borrow, 'allotment' => $allotment, 'borrow_user' => $borrow_user]);
     }
 
     public function locations(Request $request)
@@ -58,7 +62,7 @@ class HomeController extends Controller
         $goods = DB::table('goods')->join('good_locations', 'goods.id', '=', 'good_locations.good_id')
         ->where('good_locations.location_id', $location->id)
         ->select([ 'good_id as id','goods.name as text'])->get();
-
+        
         return response()->json([
             'results'  => $goods
         ]);
