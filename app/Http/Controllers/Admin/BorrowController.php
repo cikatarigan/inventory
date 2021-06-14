@@ -37,7 +37,7 @@ class BorrowController extends Controller
            ]);
 
             $this->validate($request, [
-             'amount' => ['required', 'numeric', 'min:1','max:' . ($amount->getBalanceByWarehouse($request->location))],
+             'amount' => ['required', 'numeric','max:' . ($amount->getBalanceByWarehouse($request->location))],
             ]); 
 
              return response()->json([

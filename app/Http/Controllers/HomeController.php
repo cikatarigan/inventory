@@ -34,7 +34,9 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-         $expired = StockEntry::with(['good', 'location','good_location'])->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->get();
+         $expired = StockEntry::with(['good', 'location'])->whereHas('good',  function($query){
+            $query->whereNotNull('isexpired');
+         })->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->get();
 
          $borrow = Borrow::with('good.good_images')->where('status', 'Still Borrow')->get();
          $allotment = Allotment::where('user_id', Auth::id())->get();
@@ -56,6 +58,19 @@ class HomeController extends Controller
         ]);
     }
 
+
+    public function goods_borrow(Request $request, Location $location)
+    {
+         $good_borrow = DB::table('goods')->join('good_locations', 'goods.id', '=', 'good_locations.good_id')
+        ->where('good_locations.location_id', $location->id)->whereNull('goods.isexpired')
+        ->select([ 'good_id as id','goods.name as text'])->get();
+        
+        return response()->json([
+            'results'  => $good_borrow
+        ]);
+    }
+
+
     public function goods(Request $request, Location $location)
     {
         
@@ -65,6 +80,16 @@ class HomeController extends Controller
         
         return response()->json([
             'results'  => $goods
+        ]);
+    }
+
+
+    public function shelf(Request $request, Location $location)
+    {
+        $shelf = DB::table('good_locations')->join('locations','good_locations.location_id', '=', 'locations.id')->where('locations.id', $location->id)->groupBy('name_shelf')->select('name_shelf as id','name_shelf as text')->get();
+
+        return response()->json([
+            'results'  => $shelf
         ]);
     }
 
@@ -92,16 +117,6 @@ class HomeController extends Controller
         ]);
     }
 
-    public function shelf(Request $request, Location $location)
-    {
-        // $shelf = DB::table('good_locations')->join('locations','good_locations.location_id', '=', 'locations.id')->where('locations.id', $location->id)->select('name_shelf as id','name_shelf as text')->get();
-
-        $shelf =  Goodlocation::select(['*', 'name_shelf as text'])->get();
-
-        return response()->json([
-            'results'  => $shelf
-        ]);
-    }
 
 
     

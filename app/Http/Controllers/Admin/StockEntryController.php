@@ -33,8 +33,6 @@ class StockEntryController extends Controller
     {
         $good = Good::select(['*','name as text'])->get();
         $location  = Location::all();
-        $nameshelf = Goodlocation::select(['*', 'name_shelf as text'])->get();
-        // $nameshelf  = DB::table('good_locations')->where('location_id', $location->id)->select('name_shelf')->distinct()->get();
         
         if ($request->isMethod('POST')){
 
@@ -83,7 +81,7 @@ class StockEntryController extends Controller
         ]);
 
     }
-    return view('stockentry.add', ['good' => $good ,'location' => $location, 'nameshelf' => $nameshelf]);
+    return view('stockentry.add', ['good' => $good ,'location' => $location, ]);
     }
 
 

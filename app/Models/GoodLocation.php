@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Auth;
 
 class GoodLocation extends Model
 {
@@ -18,4 +19,14 @@ class GoodLocation extends Model
     {
         return $this->hasMany('App\Models\Good');
     }
+
+    public static function boot(){
+        parent::boot();
+
+        static::creating(function($model)
+        {
+            $model->user_id = Auth::id();
+        });
+    }
+
 }

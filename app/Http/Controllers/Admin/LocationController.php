@@ -49,7 +49,7 @@ class LocationController extends Controller
     public function update(Request $request, $id)
     {
         $validator = $request->validate([
-            'name'       => 'required|string|max:191',
+            'name'       => 'required|string|max:191|unique:locations',
         ]);
 
         $location          = Location::find($id);

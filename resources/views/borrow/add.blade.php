@@ -124,7 +124,7 @@
          ajax: {
              url: function (params) {
             
-                 return '/find/goods/' + $('#location').val();
+                 return '/find/goods/borrow/' + $('#location').val();
              },
              dataType: 'json'
          }

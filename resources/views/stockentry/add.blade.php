@@ -9,7 +9,8 @@
          <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
                <li class="breadcrumb-item"><a href="#">Home</a></li>
-               <li class="breadcrumb-item active">Pools</li>
+               <li class="breadcrumb-item">Stock Entry</li>
+                <li class="breadcrumb-item active">Add</li>
             </ol>
          </div>
       </div>
@@ -44,12 +45,9 @@
                      <label for="exampleInputPassword1">Name Shelf</label>
                      <select class="js-example-basic-single form-control select-custom" id="nameshelf" name="nameshelf" width="100%">
                         <option value="" disabled selected>Pilih Rak</option>
-                        @foreach($nameshelf as $item)
-                        <option value="{{$item->name_shelf}}">{{$item->name_shelf}}</option>
-                        @endforeach
                      </select>
                   </div>
-                    <div class="form-group" id="formexpired" style="display: none">
+                    <div class="form-group" id="formexpired">
                        <label for="exampleInputPassword1">Date_expired</label>
                        <div class="input-group date" data-provide="datepicker">
                           <input class="datepicker form-control" id="date_expired" name="date_expired" data-date-format="mm/dd/yyyy" autocomplete="off">
@@ -58,7 +56,12 @@
                           </div>
                        </div>
                     </div>
+
+                   <div class="form-group">
+                          <button class="btn btn-warning float-right" id="add">Add</button>
+                    </div>
                </div>
+
                <!-- /.card-body -->
                <div class="card-footer">
                   <button type="submit" class="btn btn-primary">Submit</button>
@@ -71,6 +74,33 @@
 @endsection
 @section('script')
 <script>
+
+  $(function () {
+      $('#add').on('click', function( e ) {
+            e.preventDefault();
+            $('<div/>').addClass( 'new-text-div' )
+            .html( $('<div class="form-group">'+
+                '<label for="inputProjectLeader">Barang</label>'+
+                '<select name="good_id[]" id="good_id" class="form-control custom-select">'+
+                '<option selected="" disabled="">Pilih Barang Input</option>'+
+                  '</select></div>'+
+                  '<div class="form-group">'+
+                  '<label for="inputAmount">Jumlah Barang</label>'+
+                  '<input class="form-control" type="textbox" name="amount[]" placeholder="Masukkan jumlah"></div>'+
+                  '  <div class="form-group">'+
+                  '<label for="js-example-basic-singlepleInputPassword1">Location</label>'+
+                  '<select class="js-example-basic-single form-control select-custom" id="location" name="location_id[]" width="100%"></select>'+
+                  '</div>'
+
+                  ))
+            .append( $('<button/>').addClass( 'float-left remove btn-primary' ).text( 'Remove' ) )
+            .insertBefore( this );
+        });
+        $(document).on('click', 'button.remove', function( e ) {
+            e.preventDefault();
+            $(this).closest( 'div.new-text-div' ).remove();
+        });
+    });
  jQuery(document).ready(function() {
 
 
@@ -87,6 +117,7 @@
              dataType: 'json'
          }
      });
+
 
     $('#nameshelf').select2({
          placeholder: "Pilih Rak",

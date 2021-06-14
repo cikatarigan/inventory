@@ -95,6 +95,11 @@ jQuery(document).ready(function($) {
              "orderable": true,
          },
         {
+            title :"Unit",
+             "data": "unit",
+             "orderable": true,
+         },
+        {
         title :"Action",
            render: function(data, type, row) {
 

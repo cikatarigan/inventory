@@ -57,8 +57,7 @@ class ReturnController extends Controller
     public function create(Request $request)
     {
 
-        $location  = Location::all();
-        $nameshelf = Goodlocation::select(['*', 'name_shelf as text'])->get();
+ 
 
         if($request->isMethod('post')){
              $user = User::find($request->userview);
@@ -75,15 +74,17 @@ class ReturnController extends Controller
                     $return->location_id = $request->locationview;
                     $return->name_shelf = $request->nameview;
                     $return->description = $request->descriptionview;
+                    $return->status = 'Status';
                     $return->save();
 
-
-                    $stockentry = new StockEntry;
-                    
-
                     $borrow = Borrow::where('user_id', $request->user_id)->where('good_id', $request->good_id)->sum('amount');
-                    $borrow->status = Borrow::Done;
+
+                    dd($borrow);
+                    $borrow->status = Borrow::Done; 
                     $borrow->update();
+
+                    $goodlocation = Goodlocation::firstOrCreate(['good_id' => $request->good_id, 'location_id' => $request->location_id, 'name_shelf' => $request->nameshelf]);
+
 
                     $goods = $return->good_id;
 
@@ -114,7 +115,7 @@ class ReturnController extends Controller
                 ]);  
             }
         }
-     return view('return.add',['location' => $location, 'nameshelf' => $nameshelf]);
+     return view('return.add');
     }
 
 }

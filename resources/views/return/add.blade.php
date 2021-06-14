@@ -43,19 +43,15 @@
                   <div class="form-group">
                      <label for="exampleInputPassword1">Location</label>
                      <select class="js-example-basic-single form-control select-custom" id="location" name="location" width="100%">
-                        <option value="" disabled selected>Pilih Lokasi</option>
-                        @foreach($location as $item)
-                        <option value="{{$item->id}}">{{$item->name}}</option>
-                        @endforeach
                      </select>
                   </div>
                   <div class="form-group">
                      <label for="exampleInputPassword1">Name Shelf</label>
                      <select class="js-example-basic-single form-control select-custom" id="nameshelf" name="nameshelf" width="100%">
                         <option value="" disabled selected>Pilih Rak</option>
-                        @foreach($nameshelf as $item)
-                        <option value="{{$item->name_shelf}}">{{$item->name_shelf}}</option>
-                        @endforeach
+
+
+
                      </select>
                   </div>
                   <div class="form-group">
@@ -131,21 +127,27 @@
          }
      });
 
-    $("#nameshelf").select2({
-       placeholder: "Pilih rak",
-       tags: true,
-    });
 
-    
-    $('#good').on('select2:select', function (e) {
-        var data = e.params.data;
-        console.log(data);
-        if(data.isexpired == 'on'){
-          $('#formexpired').show();
-        }else{
-          $('#formexpired').hide();
-        }
-    });
+
+     $('#location').select2({
+         placeholder: "Pilih location",
+         ajax: {
+             url: '/find/locations',
+             dataType: 'json'
+         }
+     });
+
+
+    $('#nameshelf').select2({
+         placeholder: "Pilih Rak",
+         tags: true,
+         ajax: {
+             url: function (params) {
+                 return '/find/shelf/' + $('#location').val();
+             },
+             dataType: 'json'
+         }
+     });
     
     $('#date_expired').datepicker({
        maxDate: '0'
@@ -171,6 +173,7 @@
                      var amount = $("#amount").val();
                      var user = $("#user").val();
                      var description = $("description").val();
+                     console.log(description);
                       $('#FormReturn #locationview').val(location);
                       $('#FormReturn #goodview').val(good);
                       $('#FormReturn #amountview').val(amount);

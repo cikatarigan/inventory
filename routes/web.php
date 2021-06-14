@@ -22,6 +22,7 @@ Route::get('/', 'HomeController@index')->name('home');
       });
             Route::get('find/locations', 'HomeController@locations');
             Route::get('find/goods/{location}', 'HomeController@goods');
+            Route::get('find/goods/borrow/{location}', 'HomeController@goods_borrow');
 
             Route::get('find/users', 'HomeController@users');
             Route::get('find/borrows/{user}', 'HomeController@borrows');
