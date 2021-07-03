@@ -33,12 +33,17 @@ class StockEntry extends Model
     }
 
     public function good_location(){
-        return $this->belongsTo(GoodLocation::class, 'good_id', 'good_id');
+        return $this->belongsTo(GoodLocation::class);
     }
     
     public function user()
     {
         return $this->belongsTo(user::class);
+    }
+
+    public function allotment_item()
+    {
+        return $this->hasMany(AllotmentItem::class,'entry_id','id');
     }
   
 

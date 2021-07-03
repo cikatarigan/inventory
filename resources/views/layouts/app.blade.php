@@ -147,6 +147,14 @@
                         </a>
                      </li>
                      @endif
+                     @if(Auth::user()->hasPermissionTo('expired.index','web'))
+                     <li class="nav-item">
+                        <a href="{{route('expired.index')}}" class="nav-link">
+                        <i class="nav-icon fas fa-exclamation-triangle"></i>
+                           <p>Expired</p>
+                        </a>
+                     </li>
+                     @endif
                     @if(Auth::user()->hasPermissionTo('user.index','web'))
                      <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">

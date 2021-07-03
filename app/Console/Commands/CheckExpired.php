@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use App\Models\Expired;
 use App\Models\Good;
 use App\Models\StockTransaction;
+use App\Models\StockEntry;
+use App\Models\AllotmentItem;
 use Auth;
 
 class CheckExpired extends Command
@@ -45,22 +47,24 @@ class CheckExpired extends Command
      */
     public function handle()
     {
-            $data = DB::table('stock_entries')->whereDate('date_expired', '=', Carbon::now())->get();
-      
+            $data = StockEntry::whereDate('date_expired', '=', Carbon::now())->get();
+
+        
+
             foreach ($data as $item) {
-                $amount = Good::find($item->good_id);
-                $amount_ttl = StockTransaction::where('location_id', $item->location_id)->where('good_id', $item->good_id)->orderBy('created_at', 'desc')->first();
-              
+
+                $goods = Good::find($item->good_id);
+                              
                 $expired = New Expired;
                 $expired->good_id = $item->good_id; 
                 $expired->entry_id = $item->id;
                 $expired->location_id = $item->location_id;
-                $expired->amount = $amount_ttl->end_balance;
+                $expired->amount =  $item->amount -  $item->allotment_item()->sum('amount');     
                 $expired->save();
 
                 $stocktransaction = New stocktransaction;
-                $stocktransaction->start_balance = $amount->getBalanceByWarehouse($amount_ttl->location_id);
-                $stocktransaction->amount = $amount_ttl->end_balance;
+                $stocktransaction->start_balance = $goods->getBalanceByWarehouse($item->location_id);
+                $stocktransaction->amount = $expired->amount;
                 $stocktransaction->end_balance = $stocktransaction->start_balance - $stocktransaction->amount;
                 $stocktransaction->type = StockTransaction::TYPE_OUT;
                 $stocktransaction->good_id = $item->good_id;

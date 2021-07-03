@@ -29,6 +29,7 @@ class CreateSamplesTable extends Migration
             $table->string('number_tree');
             $table->text('location');
             $table->string('photo');
+            $table->boolean('is_deleted')->nullable();
             
         });
     }

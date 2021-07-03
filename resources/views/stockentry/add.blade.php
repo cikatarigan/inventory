@@ -43,7 +43,7 @@
                   </div>
                   <div class="form-group">
                      <label for="exampleInputPassword1">Name Shelf</label>
-                     <select class="js-example-basic-single form-control select-custom" id="nameshelf" name="nameshelf" width="100%">
+                     <select class="js-example-basic-single form-control select-custom" id="good_location_id" name="good_location_id" width="100%">
                         <option value="" disabled selected>Pilih Rak</option>
                      </select>
                   </div>
@@ -55,10 +55,6 @@
                              <span class="glyphicon glyphicon-th"></span>
                           </div>
                        </div>
-                    </div>
-
-                   <div class="form-group">
-                          <button class="btn btn-warning float-right" id="add">Add</button>
                     </div>
                </div>
 
@@ -75,34 +71,8 @@
 @section('script')
 <script>
 
-  $(function () {
-      $('#add').on('click', function( e ) {
-            e.preventDefault();
-            $('<div/>').addClass( 'new-text-div' )
-            .html( $('<div class="form-group">'+
-                '<label for="inputProjectLeader">Barang</label>'+
-                '<select name="good_id[]" id="good_id" class="form-control custom-select">'+
-                '<option selected="" disabled="">Pilih Barang Input</option>'+
-                  '</select></div>'+
-                  '<div class="form-group">'+
-                  '<label for="inputAmount">Jumlah Barang</label>'+
-                  '<input class="form-control" type="textbox" name="amount[]" placeholder="Masukkan jumlah"></div>'+
-                  '  <div class="form-group">'+
-                  '<label for="js-example-basic-singlepleInputPassword1">Location</label>'+
-                  '<select class="js-example-basic-single form-control select-custom" id="location" name="location_id[]" width="100%"></select>'+
-                  '</div>'
-
-                  ))
-            .append( $('<button/>').addClass( 'float-left remove btn-primary' ).text( 'Remove' ) )
-            .insertBefore( this );
-        });
-        $(document).on('click', 'button.remove', function( e ) {
-            e.preventDefault();
-            $(this).closest( 'div.new-text-div' ).remove();
-        });
-    });
+ 
  jQuery(document).ready(function() {
-
 
     $("#good_id").select2({
        data: {!!json_encode($good)!!},
@@ -119,7 +89,8 @@
      });
 
 
-    $('#nameshelf').select2({
+    $('#good_location_id').select2({
+        minimumResultsForSearch: -1,
          placeholder: "Pilih Rak",
          tags: true,
          ajax: {
@@ -140,15 +111,13 @@
         }
     });
     
-    $('#date_expired').datepicker({
-        minDate: 0,
-    });
-
   
     $('#FormStockEntry').submit(function (event) {
          event.preventDefault();
          var $this = $(this);
          var form = $('#FormStockEntry');
+          $('#FormStockEntry div.form-group').removeClass('has-error');
+         $('#FormStockEntry .help-block').empty();
          var data = form.serialize();
          $.ajax({
              url: '/receipt/add',

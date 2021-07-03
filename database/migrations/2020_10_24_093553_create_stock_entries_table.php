@@ -18,10 +18,11 @@ class CreateStockEntriesTable extends Migration
             $table->unsignedBigInteger('good_id');
             $table->unsignedInteger('amount');
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('location_id');
+            $table->unsignedBigInteger('location_shelf_id');
+            $table->string('barcode');
             $table->foreign('good_id')->references('id')->on('goods');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('location_id')->references('id')->on('locations');
+            $table->foreign('location_shelf_id')->references('id')->on('location_shelves');
             $table->date('date_expired')->nullable();
             $table->timestamps();
         });

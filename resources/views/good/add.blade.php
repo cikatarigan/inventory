@@ -61,10 +61,6 @@
                   </select>
                </div>
                <div class="form-group">
-                  <label>Barcode</label>
-                  <input type="number" class="form-control" name="barcode" id="barcode" placeholder="Masukkan No Barcode / Scan" required>
-               </div>
-               <div class="form-group">
                   <label>Keterangan</label>
                   <textarea id="description" name="description" class="form-control" row="3" required placeholder="Masukkan Keterangan Barang"></textarea>
                </div>

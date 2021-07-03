@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use App\Models\StockEntry;
 use App\Models\Good;
 use App\Models\Location;
-use App\Models\Goodlocation;
+use App\Models\GoodLocation;
 use App\User;
 use App\Models\Sample;
 use App\Models\Allotment;
@@ -34,7 +34,7 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-         $expired = StockEntry::with(['good', 'location'])->whereHas('good',  function($query){
+         $expired = StockEntry::with(['good', 'good_location.location'])->whereHas('good',  function($query){
             $query->whereNotNull('isexpired');
          })->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->get();
 
@@ -86,7 +86,7 @@ class HomeController extends Controller
 
     public function shelf(Request $request, Location $location)
     {
-        $shelf = DB::table('good_locations')->join('locations','good_locations.location_id', '=', 'locations.id')->where('locations.id', $location->id)->groupBy('name_shelf')->select('name_shelf as id','name_shelf as text')->get();
+        $shelf = DB::table('good_locations')->join('locations','good_locations.location_id', '=', 'locations.id')->where('locations.id', $location->id)->select('*','name_shelf as text')->get();
 
         return response()->json([
             'results'  => $shelf

@@ -8,7 +8,7 @@ use Auth;
 class GoodLocation extends Model
 {
 
-	protected $fillable = ['good_id','location_id','name_shelf'];
+	protected $fillable = ['location_id','name_shelf'];
 	
 	public function location()
     {

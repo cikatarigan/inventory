@@ -41,3 +41,4 @@ require('icheck/icheck.min.js');
 require('tempusdominus-bootstrap-4');
 require('daterangepicker');
 require('jsbarcode');
+const Instascan = require('instascan');

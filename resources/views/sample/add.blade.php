@@ -68,7 +68,7 @@
                <div class="form-group">
                   <label for="exampleInputPassword1">Title</label>
                   <input type="text" class="form-control" id="title" name="title">
-               </div>
+             </div>
                <div class="form-group">
                   <label>Description </label>
                   <textarea id="description " name="description " class="form-control" required></textarea>
@@ -87,7 +87,7 @@
             </form>
          </div>
       </div>
- /section>
+ </section>
 @endsection
 @section('script')
 <script src="//cdn.ckeditor.com/4.11.1/full/ckeditor.js"></script>

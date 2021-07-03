@@ -86,6 +86,7 @@
         </div>
       </div>
       <!-- /.card-header -->
+      @isset($expired)
       <div class="card-body p-0">
         <div class="table-responsive">
           <table class="table m-0">
@@ -101,8 +102,8 @@
            @foreach($expired as $item)
             <tr>
               <td>{{$item->good->name}}</td>
-              <td>{{$item->location->name}}</td>
               <td>{{$item->good_location->name_shelf}}</td>
+              <td>{{$item}}</td>
               <td>{{date('d-m-Y', strtotime($item->date_expired))}}</td>
             </tr>
              @endforeach
@@ -111,6 +112,7 @@
         </div>
         <!-- /.table-responsive -->
       </div>
+      @endisset
       <!-- /.card-body -->
     <!--   <div class="card-footer clearfix">
         <a href="javascript:void(0)" class="btn btn-sm btn-info float-left">Place New Order</a>

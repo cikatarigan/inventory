@@ -48,7 +48,6 @@ class GoodController extends Controller
                 'brand'=>'required',
                 'category'=>'required',
                 'description'=>'required',
-                'barcode'=>'required',
                 'unit'=>'required',
             ]);
 
@@ -57,7 +56,6 @@ class GoodController extends Controller
             $good->brand = $request->brand;
             $good->category = $request->category;
             $good->description = $request->description;
-            $good->barcode = $request->barcode;
             $good->unit = $request->unit;
             $good->isexpired = $request->isexpired;
             $good->save();
@@ -106,7 +104,6 @@ class GoodController extends Controller
                 'brand'=>'required',
                 'category'=>'required',
                 'description'=>'required',
-                'barcode'=>'required',
                 'unit'=>'required',
             ]);
 
@@ -114,7 +111,6 @@ class GoodController extends Controller
             $good->brand = $request->brand;
             $good->category = $request->category;
             $good->description = $request->description;
-            $good->barcode = $request->barcode;
             $good->unit = $request->unit;
 
             if($request->deleted_image != null){

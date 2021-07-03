@@ -12,7 +12,8 @@
          <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
                <li class="breadcrumb-item"><a href="#">Home</a></li>
-               <li class="breadcrumb-item active">Warehouse</li>
+               <li class="breadcrumb-item ">Stock</li>
+               <li class="breadcrumb-item active">Detail Stock</li>
             </ol>
          </div>
       </div>
@@ -64,12 +65,7 @@
                         <td>:</td>
                         <td> {{$good->isexpired}}</td>
                      </tr>  
-
-                        <tr>
-                        <td><b>Barcode</b> </td>
-                        <td>:</td>
-                        <td>  <img src="/barcode/{{$good->barcode}}" width="250px;"></td>
-                     </tr>                  
+                
                   </table>
 
                 
@@ -118,6 +114,10 @@
       </section>
       </div>
    
+       <div class="col-md-4">
+      <button class="btn btn-outline-primary" onclick="scan()" >Scanner Mon Qrcode</button>
+    </div>
+
    <svg id="barcode"></svg>
 </div>
 </section>
@@ -132,6 +132,42 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"> </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"> </script>
 <script>
+
+       function scan(){
+      let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+      scanner.addListener('scan', function (content) {
+        console.log(content);
+         if(content!=''){
+          $.post('http://localhost:8000/api/scan',{data:content},function(response){
+                      if(response.info=='ok'){
+                         scanner.stop()
+                        $('#nbre').html(response.msg.nbre_visite)
+                        swal("Vous êtes autorisé à effectué votre visite", "OK !", "success");
+                         Musique.src = "/accesautoriser.wav";
+                        Musique.play();
+   
+                      }else{
+                        swal("Vous n'êtes pas autorisé à effectué votre visite", "OK !", "error");
+                         Musique.src = "/accesrefuse.wav";
+                        Musique.play();
+                      }
+                      console.log(response.msg)
+                })
+           
+         }
+        
+      });
+      Instascan.Camera.getCameras().then(function (cameras) {
+        if (cameras.length > 0) {
+          scanner.start(cameras[0]);
+        } else {
+          console.error('No cameras found.');
+        }
+      }).catch(function (e) {
+        console.error(e);
+      });
+     }
+
    jQuery(document).ready(function($) { 
   
     var date_start = "";
@@ -210,6 +246,8 @@
                        return  'Stock Entri';
                      }else if(data == 'App\\Models\\Allotment'){
                        return 'Pemberian';
+                      }else if(data == 'App\\Models\\Expired'){
+                        return 'Expired'; 
                      }else {
                        return 'Peminjaman';
                      }
@@ -229,6 +267,14 @@
                   },
                   "orderable": false,
                  },
+               {
+                  title :"QrCode",
+                   "data": "stock_entry.barcode",
+                   render : function (data, type, row){
+                    return  '{!! QrCode::generate('Make me into a QrCode') !!}'
+                  },
+                  "orderable": false,
+               },
                  {
                    title :"Tanggal",
                    "data": "created_at",

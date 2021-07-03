@@ -52,10 +52,7 @@
                   <div class="box-header">
                      <div class="box-body">
                         <div class="form-group">
-                           <div class="form-group ">
-                              
                               <input type="text" class="form-control" id="name" name="name" placeholder="Masukkan nama lokasi" required  maxlength="30">
-                           </div>
                         </div>
                      </div>
                   </div>
@@ -93,6 +90,32 @@
     </div>
   </div>
 </div>
+
+{{-- Modal location Shelf --}}
+<div class="modal" tabindex="-1" role="dialog" id="addShelfModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <form action="#" method="post" id="FormAddShelf">
+          <input type="hidden" id="id_location" name="id" value="">
+      <div class="modal-header">
+        <h4 class="modal-title"></h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <div class="form-group">
+            <input type="text" class="form-control" id="name_shelf" name="name_shelf" placeholder="Insert Name Shelf" required  maxlength="30">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Simpan</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
 @endsection
 @section('script')
 <script>
@@ -121,8 +144,10 @@ jQuery(document).ready(function($) {
            title :"Action",
                render: function(data, type, row) {
                    return  '@if(Auth::user()->hasPermissionTo('location.update','web'))<a href="#" data-toggle="tooltip" title="Edit" class="edit-btn  badge badge-info" data-name="'+row.name+'" data-id="'+row.id+'"><i class="far fa-edit fa-lg"></i></a> &nbsp;@endif' + 
-                    '@if(Auth::user()->hasPermissionTo('location.destroy','web'))<a href="#" class="btn-delete badge badge-danger" data-name="'+row.name+'" data-id="'+row.id+'"  data-toggle="tooltip" data-placement="bottom" title="Hapus"><i class="fa fa-trash fa-lg"></i></a> &nbsp;@endif';
+                    '@if(Auth::user()->hasPermissionTo('location.destroy','web'))<a href="#" class="btn-delete badge badge-danger" data-name="'+row.name+'" data-id="'+row.id+'"  data-toggle="tooltip" data-placement="bottom" title="Hapus"><i class="fa fa-trash fa-lg"></i></a> &nbsp;@endif' +
+                    '@if(Auth::user()->hasPermissionTo('sublocation.store','web'))<a href="#" data-toggle="tooltip" title="Add Sub" class="add-btn  badge badge-success" data-name="'+row.name+'" data-id="'+row.id+'"><i class="fas fa-external-link-alt  fa-lg"></i></a> &nbsp;@endif'  ;
                },
+              "orderable": false,
            }
        ],
        "order": [1, 'desc'],
@@ -246,6 +271,59 @@ jQuery(document).ready(function($) {
         })
     });
 
+
+
+
+   $('#location-table').on('click', '.add-btn', function(event) {
+        event.preventDefault();
+        var id = $(this).data('id');
+        var name = $(this).data('name');
+        $('#FormAddShelf #id_location').val(id);
+        $('#addShelfModal').modal('show');
+        $('#FormAddShelf .modal-title').text("Add Shelf");
+
+    });
+
+    $('#FormAddShelf').submit(function (event) {
+         event.preventDefault();
+         var $this = $(this);
+         var form = $('#FormAddShelf');
+         $('#FormAddShelf div.form-group').removeClass('has-error');
+         $('#FormAddShelf .help-block').empty();
+         
+         var data = form.serialize();
+         $.ajax({
+             url: '/sub/location/add',
+             type: 'POST',
+             data: data,
+             cache: false,
+             success: function (data) {
+                 console.log(data)
+                 if (data.success) {
+                     toastr.success(data.message);
+                     $('#addShelfModal').modal('hide');
+                     $("#FormAddShelf")[0].reset();
+                 } else {
+                     toastr.error(data.message);
+                 }
+             },
+             error: function(response) {
+               if(response.status === 422){
+                let errors = response.responseJSON.errors;
+                $.each(errors, function(key, error){
+                  var item = form.find('input[name='+ key +']');
+                  item = (item.length > 0) ? item : form.find('select[name='+ key +']');
+                  item = (item.length > 0) ? item : form.find('textarea[name='+ key +']');
+                  item = (item.length > 0) ? item : form.find("input[name='"+ key +"[]']");
+   
+                 var parent = (item.parent().hasClass('form-group')) ? item.parent() : item.parent().parent();
+                  parent.addClass('has-error');
+                  parent.append('<span class="help-block" style="color:red;">'+ error +'</span>');
+                })
+              }
+            }
+         })
+     });
 
 }); 
 </script>

@@ -138,14 +138,14 @@ jQuery(document).ready(function($) {
                "data": "name",
                "orderable": true,
            },
-           {
-              title :"barcode",
-               "data": "barcode",
-               render : function (data, type, row){
-                return  '<img src="/barcode/'+data+'" alt="barcode" style="width: 250;" />';
-              },
-              "orderable": false,
-           },
+           // {
+           //    title :"barcode",
+           //     "data": "barcode",
+           //     render : function (data, type, row){
+           //      return  '<img src="/barcode/'+data+'" alt="barcode" style="width: 250;" />';
+           //    },
+           //    "orderable": false,
+           // },
            {
               title :"Category",
                "data": "category",

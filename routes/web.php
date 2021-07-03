@@ -20,6 +20,14 @@ Route::get('/', 'HomeController@index')->name('home');
       Route::get('barcode/{barcode}' , function($barcode){
             return response(base64_decode(\DNS1D::getBarcodePNG($barcode, 'I25')))->withHeaders(['Content-Type' =>'image/png']);
       });
+
+      Route::get('qrcode/{qrcode}', function ($qrcode) {
+           $image = \QrCode::size(300)->generate($qrcode);
+           return response($image)->header('Content-type','image/png');
+       });
+
+
+
             Route::get('find/locations', 'HomeController@locations');
             Route::get('find/goods/{location}', 'HomeController@goods');
             Route::get('find/goods/borrow/{location}', 'HomeController@goods_borrow');
@@ -61,12 +69,13 @@ Route::get('/', 'HomeController@index')->name('home');
             Route::match(['get', 'post'], 'permission',	'Admin\PermissionController@index')->name('permission.index');
 
             //Location
-            Route::match(['get', 'post'], 'location',	'Admin\locationController@index')->name('location.index');
-            Route::post('location/add',				'Admin\locationController@create')->name('location.store');
-            Route::post('location/update/{id}',			'Admin\locationController@update')->name('location.update');
-            Route::post('location/delete/', 		'Admin\locationController@destroy')->name('location.destroy');
-            Route::match(['POST', 'GET'], 'location/trash', 'Admin\locationController@trash')->name('location.trash');
-            Route::post('location/restore', 		'Admin\locationController@restore')->name('location.restore');
+            Route::match(['get', 'post'], 'location',	'Admin\LocationController@index')->name('location.index');
+            Route::post('location/add',				'Admin\LocationController@create')->name('location.store');
+            Route::post('sub/location/add',                     'Admin\LocationController@sub_location')->name('sublocation.store');
+            Route::post('location/update/{id}',			'Admin\LocationController@update')->name('location.update');
+            Route::post('location/delete/', 		'Admin\LocationController@destroy')->name('location.destroy');
+            Route::match(['POST', 'GET'], 'location/trash', 'Admin\LocationController@trash')->name('location.trash');
+            Route::post('location/restore', 		'Admin\LocationController@restore')->name('location.restore');
             
             //Good
             Route::match(['get', 'post'], 'good',	'Admin\GoodController@index')->name('good.index');
@@ -110,5 +119,8 @@ Route::get('/', 'HomeController@index')->name('home');
             Route::match(['get', 'post'], 'return',   'Admin\ReturnController@index')->name('return.index');
             Route::match(['get', 'post'],'return/check', 'Admin\ReturnController@check')->name('return.check');
             Route::match(['get', 'post'],'return/add', 'Admin\ReturnController@create')->name('return.add');
-            
+
+
+            //Expired
+             Route::match(['get', 'post'], 'expired',    'Admin\ExpiredController@index')->name('expired.index');
         });	

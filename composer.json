@@ -15,9 +15,10 @@
         "laravel/framework": "^7.0",
         "laravel/tinker": "^2.0",
         "laravel/ui": "2.4",
+        "milon/barcode": "^7.0",
+        "simplesoftwareio/simple-qrcode": "~4",
         "spatie/laravel-permission": "^3.17",
-        "yajra/laravel-datatables-oracle": "~9.0",
-        "milon/barcode": "^7.0"
+        "yajra/laravel-datatables-oracle": "~9.0"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

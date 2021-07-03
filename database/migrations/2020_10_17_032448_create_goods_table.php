@@ -19,7 +19,6 @@ class CreateGoodsTable extends Migration
             $table->string('brand');
             $table->string('category');
             $table->text('description');
-            $table->string('barcode');
             $table->string('unit');
             $table->string('isexpired')->nullable();
             $table->string('status')->nullable();

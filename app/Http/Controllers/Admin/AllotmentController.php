@@ -64,16 +64,25 @@ class AllotmentController extends Controller
 
         if ($request->isMethod('POST')){
 
-
             $user = User::find($request->user);
-            $amount = Good::find($request->good);
+            $goods = Good::find($request->good);
+
+            if(!Hash::check($request->password, $user->password)){
+                 return response()->json([
+                    'success'=>false,
+                    'message'   => 'Password User Salah'
+                ]);  
+            }
+
+            if($goods->getBalanceByWarehouse($request->location) < $request->amount){
+                return response()->json([
+                    'success'=>false,
+                    'message' => 'stock tidak cukup'
+                ]);
+            }
 
             $entry = StockEntry::whereDate('date_expired', '>=', Carbon::now())->where('good_id' , $request->good)->where('location_id', $request->location)->orderBy('created_at', 'asc')->get();
 
-         
-            
-
-            if(Hash::check($request->password, $user->password)){
 
             try{
             DB::statement('SET autocommit=0');
@@ -87,19 +96,34 @@ class AllotmentController extends Controller
             $allotment->description = $request->description;
             $allotment->save();
 
-            foreach ($entry as  $key => $item) {
-                $itemallotment = New AllotmentItem;
-                $itemallotment->entry_id =  $item->id;
-                $itemallotment->allotment_id = $allotment->id;
-                $itemallotment->amount = $entry->amount[$key];
-                $itemallotment->save();
+
+            $amount =  $request->amount;
+            foreach ($entry as  $item) {
+                $stock_amount = $item->amount -  $item->allotment_item()->sum('amount') ;
+                if($stock_amount >  0 ){
+                    $itemallotment = New AllotmentItem;
+                    $itemallotment->entry_id =  $item->id;
+                    $itemallotment->allotment_id = $allotment->id;
+                     
+                    if($amount <= $stock_amount){
+                        $itemallotment->amount = $amount;
+                        $itemallotment->save();
+                        break;
+                    }else{
+                       $itemallotment->amount = $stock_amount;
+                       $itemallotment->save();
+                       $amount = $amount - $itemallotment->amount;  
+                    }
+                
+                }
+            
             }
              
 
             $goods = $allotment->good;
 
             $stocktransaction = New stocktransaction;
-            $stocktransaction->start_balance = $amount->getBalanceByWarehouse($request->location);
+            $stocktransaction->start_balance = $goods->getBalanceByWarehouse($request->location);
             $stocktransaction->amount = $request->amount;
             $stocktransaction->end_balance = $stocktransaction->start_balance - $stocktransaction->amount;
             $stocktransaction->type = StockTransaction::TYPE_OUT;
@@ -120,12 +144,7 @@ class AllotmentController extends Controller
                     'success'=>true,
                     'message'   => 'Pemberian Telah Berhasil'
             ]);
-            }else{
-                 return response()->json([
-                    'success'=>false,
-                    'message'   => 'Password User Salah'
-                ]);  
-            }
+            
 
 
         }

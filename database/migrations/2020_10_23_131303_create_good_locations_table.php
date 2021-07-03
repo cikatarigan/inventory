@@ -15,11 +15,9 @@ class CreateGoodLocationsTable extends Migration
     {
         Schema::create('good_locations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('good_id');
             $table->unsignedBigInteger('location_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('name_shelf');
-            $table->foreign('good_id')->references('id')->on('goods');
             $table->foreign('location_id')->references('id')->on('locations');
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();

@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Location;
 use DataTables;
 use validator;
+use App\Models\LocationShelf;
 use Illuminate\Http\Request;
+use Auth;
 
 class LocationController extends Controller
 {
@@ -15,10 +17,8 @@ class LocationController extends Controller
         if( $request->isMethod('post') ){
         
             $model = Location::all();
-        
             return DataTables::of($model)->make();
-        }
-
+        }   
         return view('location.index');
     }
 
@@ -44,6 +44,27 @@ class LocationController extends Controller
                  'message'   => 'Location Successfully Add'
             ]);
         }
+    }
+
+
+    public function sub_location(Request $request)
+    {
+            
+        $validator = $request->validate([
+            'name_shelf'       => 'required|string|max:191|unique:good_locations,name_shelf',
+        ]);
+
+        $goodlocation = New LocationShelf();
+        $goodlocation->location_id = $request->id ;
+        $goodlocation->name_shelf = $request->name_shelf;
+        $goodlocation->user_id = Auth::id();
+        $goodlocation->save();
+
+        return response()->json([
+            'success' => true,
+            'message'   => 'Name Shelf Successfully Add'
+        ]);
+
     }
 
     public function update(Request $request, $id)

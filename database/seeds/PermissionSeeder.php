@@ -21,13 +21,14 @@ class PermissionSeeder extends Seeder
       $role = Role::firstOrCreate(['name' => 'guest' , 'description' => 'Guest/ Pengunjung']);
 
       $permission = collect([
-        //Warehouse
+        //Location
         Permission::firstOrCreate(['name' =>'location.index','guard_name'=>'web'],['display_name' => 'Daftar location']),
         Permission::firstOrCreate(['name' =>'location.store','guard_name'=>'web'],['display_name' => 'Daftar location - Menambahkan location Baru']),
         Permission::firstOrCreate(['name' =>'location.update','guard_name'=>'web'],['display_name' => 'Daftar location - Mengedit location']),
         Permission::firstOrCreate(['name' =>'location.destroy','guard_name'=>'web'],['display_name' => 'Daftar location - Menghapus location']),
         Permission::firstOrCreate(['name' =>'location.trash','guard_name'=>'web'],['display_name' => 'Daftar location Terhapus']),
         Permission::firstOrCreate(['name' =>'location.restore','guard_name'=>'web'],['display_name' => 'Daftar location Terhapus - Restore location Terhapus']),
+        Permission::firstOrCreate(['name' =>'sublocation.store','guard_name'=>'web'],['display_name' => 'Daftar Name Shelf']),
         //Good
         Permission::firstOrCreate(['name' =>'good.index','guard_name'=>'web'],['display_name' => 'Daftar Barang']),
         Permission::firstOrCreate(['name' =>'good.store','guard_name'=>'web'],['display_name' => 'Daftar Barang - Menambahkan Barang Baru']),
@@ -74,7 +75,11 @@ class PermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' =>'sample.update','guard_name'=>'web'],['display_name' => 'Daftar Sample - Mengubah Sample']),
         Permission::firstOrCreate(['name' =>'sample.view','guard_name'=>'web'],['display_name' => 'Daftar Sample - Melihat Data Sample']),
         Permission::firstOrCreate(['name' =>'sample.destroy','guard_name'=>'web'],['display_name' => 'Daftar Sample - Menghapus Data Sample']),
+
+        // Expired
+        Permission::firstOrCreate(['name' =>'expired.index','guard_name'=>'web'],['display_name' => 'Daftar Expired']),
         ]);
+        
 
         $role_admin->syncPermissions($permission->map(function ($item, $key) { return $item->name;}));
     }

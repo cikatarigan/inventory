@@ -14,9 +14,9 @@ class Location extends Model
     	return $this->hasMany(StockEntry::class);
     }
 
-    public function goodlocation()
+    public function locationshelf()
     {
-        return $this->hasMany(GoodLocation::class);
+        return $this->hasMany(LocationShelf::class);
     }
 
 

@@ -15,7 +15,8 @@ use DB;
 use validator;
 use Carbon\Carbon;
 use Auth;
-
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Str;
 
 class StockEntryController extends Controller
 {
@@ -39,7 +40,8 @@ class StockEntryController extends Controller
          $validator = $request->validate([
             'good_id' => 'required',
             'amount' => 'required|numeric|min:1',
-            'location_id' => 'required',
+            'location_shelf_id' => 'required',
+            'barcode' => 'unique:stock_entries,barcode'
         ]);
 
          try{
@@ -49,11 +51,10 @@ class StockEntryController extends Controller
             $stockentry = New StockEntry;
             $stockentry->good_id = $request->good_id;
             $stockentry->amount = $request->amount;
-            $stockentry->location_id = $request->location_id;
+            $stockentry->location_shelf_id = $request->good_location_id;
+            $stockentry->barcode = Str::random(15);
             $stockentry->date_expired = Carbon::parse($request->date_expired);
             $stockentry->save();
-
-            $goodlocation = Goodlocation::firstOrCreate(['good_id' => $request->good_id, 'location_id' => $request->location_id, 'name_shelf' => $request->nameshelf]);
 
             $goods = $stockentry->good;
             

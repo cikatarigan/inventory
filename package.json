@@ -32,6 +32,7 @@
         "datepicker-bootstrap": "^1.9.13",
         "daterangepicker": "^3.1.0",
         "icheck": "^1.0.2",
+        "instascan": "^1.0.0",
         "jquery-ui": "^1.12.1",
         "jsbarcode": "^3.11.3",
         "moment": "^2.29.1",
