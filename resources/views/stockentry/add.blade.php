@@ -43,7 +43,7 @@
                   </div>
                   <div class="form-group">
                      <label for="exampleInputPassword1">Name Shelf</label>
-                     <select class="js-example-basic-single form-control select-custom" id="good_location_id" name="good_location_id" width="100%">
+                     <select class="js-example-basic-single form-control select-custom" id="location_shelf" name="location_shelf" width="100%">
                         <option value="" disabled selected>Pilih Rak</option>
                      </select>
                   </div>
@@ -89,7 +89,7 @@
      });
 
 
-    $('#good_location_id').select2({
+    $('#location_shelf').select2({
         minimumResultsForSearch: -1,
          placeholder: "Pilih Rak",
          tags: true,

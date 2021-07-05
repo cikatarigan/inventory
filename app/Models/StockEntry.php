@@ -32,8 +32,8 @@ class StockEntry extends Model
         return $this->belongsTo(Good::class);
     }
 
-    public function good_location(){
-        return $this->belongsTo(GoodLocation::class);
+    public function location_shelf(){
+        return $this->belongsTo(LocationShelf::class);
     }
     
     public function user()

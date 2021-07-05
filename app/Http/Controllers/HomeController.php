@@ -61,8 +61,8 @@ class HomeController extends Controller
 
     public function goods_borrow(Request $request, Location $location)
     {
-         $good_borrow = DB::table('goods')->join('good_locations', 'goods.id', '=', 'good_locations.good_id')
-        ->where('good_locations.location_id', $location->id)->whereNull('goods.isexpired')
+         $good_borrow = DB::table('goods')->join('location_shelves', 'goods.id', '=', 'location_shelves.good_id')
+        ->where('location_shelves.location_id', $location->id)->whereNull('goods.isexpired')
         ->select([ 'good_id as id','goods.name as text'])->get();
         
         return response()->json([
@@ -74,8 +74,8 @@ class HomeController extends Controller
     public function goods(Request $request, Location $location)
     {
         
-        $goods = DB::table('goods')->join('good_locations', 'goods.id', '=', 'good_locations.good_id')
-        ->where('good_locations.location_id', $location->id)
+        $goods = DB::table('goods')->join('location_shelves', 'goods.id', '=', 'location_shelves.good_id')
+        ->where('location_shelves.location_id', $location->id)
         ->select([ 'good_id as id','goods.name as text'])->get();
         
         return response()->json([
@@ -83,10 +83,9 @@ class HomeController extends Controller
         ]);
     }
 
-
     public function shelf(Request $request, Location $location)
     {
-        $shelf = DB::table('good_locations')->join('locations','good_locations.location_id', '=', 'locations.id')->where('locations.id', $location->id)->select('*','name_shelf as text')->get();
+        $shelf = DB::table('location_shelves')->join('locations','location_shelves.location_id', '=', 'locations.id')->where('locations.id', $location->id)->select('*','name_shelf as text')->get();
 
         return response()->json([
             'results'  => $shelf

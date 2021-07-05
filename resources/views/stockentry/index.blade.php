@@ -120,7 +120,12 @@
               },
               {
               title :"Lokasi",
-                  "data": "location.name",
+                  "data": "location_shelf.location.name",
+                  "orderable": true,
+              },
+              {
+              title :"Tempat Lokasi",
+                  "data": "location_shelf.name_shelf",
                   "orderable": true,
               },
                {

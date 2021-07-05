@@ -24,7 +24,7 @@ class StockEntryController extends Controller
     {
 
     	if( $request->isMethod('post') ){
-    		$model = StockEntry::with(['location', 'good', 'user'])->get();
+    		$model = StockEntry::with(['location_shelf.location', 'good', 'user'])->get();
             return DataTables::of($model)->make();
         }
         return view('stockentry.index');
@@ -40,19 +40,19 @@ class StockEntryController extends Controller
          $validator = $request->validate([
             'good_id' => 'required',
             'amount' => 'required|numeric|min:1',
-            'location_shelf_id' => 'required',
-            'barcode' => 'unique:stock_entries,barcode'
+            'location_shelf' => 'required',
+            'qrcode' => 'unique:stock_entries,qrcode'
         ]);
 
          try{
             DB::statement('SET autocommit=0');
-            DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, good_locations WRITE, stock_transactions WRITE, goods WRITE');
+            DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, location_shelves WRITE, stock_transactions WRITE, goods WRITE');
 
             $stockentry = New StockEntry;
             $stockentry->good_id = $request->good_id;
             $stockentry->amount = $request->amount;
-            $stockentry->location_shelf_id = $request->good_location_id;
-            $stockentry->barcode = Str::random(15);
+            $stockentry->location_shelf_id = $request->location_shelf;
+            $stockentry->qrcode = Str::random(15);
             $stockentry->date_expired = Carbon::parse($request->date_expired);
             $stockentry->save();
 

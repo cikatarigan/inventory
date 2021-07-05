@@ -20,11 +20,11 @@ class GoodController extends Controller
     public function index(Request $request)
     {
     
-        $name_shelf = DB::table('good_locations')->select('name_shelf')->groupBy('name_shelf')->get();
+        $name_shelf = DB::table('location_shelves')->select('name_shelf')->groupBy('name_shelf')->get();
         $location = Location::all();
 
         if( $request->isMethod('post') ){
-            $model = Good::with(['good_location']);
+            $model = Good::with(['location_shelves']);
             return DataTables::of($model)->make();
         }
         

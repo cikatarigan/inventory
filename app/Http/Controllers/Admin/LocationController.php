@@ -51,7 +51,7 @@ class LocationController extends Controller
     {
             
         $validator = $request->validate([
-            'name_shelf'       => 'required|string|max:191|unique:good_locations,name_shelf',
+            'name_shelf'       => 'required|string|max:191|unique:location_shelves,name_shelf',
         ]);
 
         $goodlocation = New LocationShelf();
