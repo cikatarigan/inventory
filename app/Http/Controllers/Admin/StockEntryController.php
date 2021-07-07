@@ -8,7 +8,7 @@ use App\Models\StockEntry;
 use App\Models\StockTransaction;
 use App\Models\Good;
 use App\Models\Location;
-use App\Models\GoodLocation;
+use App\Models\GoodShelf;
 use DataTables;
 use DateTime;
 use DB;
@@ -46,7 +46,7 @@ class StockEntryController extends Controller
 
          try{
             DB::statement('SET autocommit=0');
-            DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, location_shelves WRITE, stock_transactions WRITE, goods WRITE');
+            DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, location_shelves WRITE, good_shelves WRITE, stock_transactions WRITE, goods WRITE');
 
             $stockentry = New StockEntry;
             $stockentry->good_id = $request->good_id;
@@ -55,6 +55,9 @@ class StockEntryController extends Controller
             $stockentry->qrcode = Str::random(15);
             $stockentry->date_expired = Carbon::parse($request->date_expired);
             $stockentry->save();
+
+  
+            $goodshelf = GoodShelf::firstOrCreate(['good_id' => $request->good_id, 'location_shelf_id' =>$request->location_shelf]);
 
             $goods = $stockentry->good;
             

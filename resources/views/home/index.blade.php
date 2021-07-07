@@ -102,8 +102,8 @@
            @foreach($expired as $item)
             <tr>
               <td>{{$item->good->name}}</td>
-              <td>{{$item->good_location->name_shelf}}</td>
-              <td>{{$item}}</td>
+              <td>{{$item->location_shelf->location->name}}</td>
+              <td>{{$item->location_shelf->name_shelf}}</td>
               <td>{{date('d-m-Y', strtotime($item->date_expired))}}</td>
             </tr>
              @endforeach

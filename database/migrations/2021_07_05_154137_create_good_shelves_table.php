@@ -15,7 +15,11 @@ class CreateGoodShelvesTable extends Migration
     {
         Schema::create('good_shelves', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->unsignedBigInteger('good_id');
+            $table->unsignedBigInteger('location_shelf_id');
+            $table->foreign('good_id')->references('id')->on('goods');
+            $table->foreign('location_shelf_id')->references('id')->on('location_shelves');
+
         });
     }
 

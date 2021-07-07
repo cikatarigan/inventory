@@ -27,6 +27,9 @@ Route::get('/', 'HomeController@index')->name('home');
        });
 
 
+       Route::match(['POST', 'GET'], '/scan', 'HomeController@scan')->name('scan');
+
+
 
             Route::get('find/locations', 'HomeController@locations');
             Route::get('find/goods/{location}', 'HomeController@goods');

@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use App\Models\StockEntry;
 use App\Models\Good;
 use App\Models\Location;
-use App\Models\GoodLocation;
+use App\Models\LocationShelf;
 use App\User;
 use App\Models\Sample;
 use App\Models\Allotment;
@@ -34,7 +34,7 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-         $expired = StockEntry::with(['good', 'good_location.location'])->whereHas('good',  function($query){
+         $expired = StockEntry::with(['good', 'location_shelf.location'])->whereHas('good',  function($query){
             $query->whereNotNull('isexpired');
          })->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->get();
 
@@ -61,8 +61,8 @@ class HomeController extends Controller
 
     public function goods_borrow(Request $request, Location $location)
     {
-         $good_borrow = DB::table('goods')->join('location_shelves', 'goods.id', '=', 'location_shelves.good_id')
-        ->where('location_shelves.location_id', $location->id)->whereNull('goods.isexpired')
+        $good_borrow = DB::table('goods')->join('good_shelves', 'goods.id', '=', 'good_shelves.good_id')
+        ->where('good_shelves.location_id', $location->id)
         ->select([ 'good_id as id','goods.name as text'])->get();
         
         return response()->json([
@@ -74,10 +74,9 @@ class HomeController extends Controller
     public function goods(Request $request, Location $location)
     {
         
-        $goods = DB::table('goods')->join('location_shelves', 'goods.id', '=', 'location_shelves.good_id')
-        ->where('location_shelves.location_id', $location->id)
-        ->select([ 'good_id as id','goods.name as text'])->get();
-        
+         $goods = DB::table('goods')->join('location_shelves', 'goods.id', '=', 'location_shelves.good_id')
+        ->where('location_shelves.location_shelf_id', $location->id)->whereNull('goods.isexpired')
+        ->select([ '*','goods.name as text'])->get();
         return response()->json([
             'results'  => $goods
         ]);
@@ -116,7 +115,10 @@ class HomeController extends Controller
         ]);
     }
 
-
+    public function scan()
+    {
+        return view('scan.index');
+    }
 
     
 }
