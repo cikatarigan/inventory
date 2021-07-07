@@ -38,7 +38,7 @@ class StockController extends Controller
         
         if ($request->isMethod('post')){
 
-        $model  = StockTransaction::where('good_id', $id)->with(['location','good','stock_entry'])->orderBy('created_at', 'DESC'); 
+        $model  = StockTransaction::where('good_id', $id)->with(['location','good'])->orderBy('created_at', 'DESC'); 
 
             if ($request->location_id) {                   
                   $model->where('location_id', '=', $request->location_id);

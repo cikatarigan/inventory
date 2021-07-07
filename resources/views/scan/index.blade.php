@@ -1,8 +1,10 @@
 @extends('layouts.app')
 @section('content')
-     <div class="container">
+<section class="content">
+   <div class="card">
+
         <div class="row justify-content-center mt-5">
-            <div class="col-md-5">
+            <div class="col-md-12">
                 <div class="card-header bg-transparent mb-0">
                     <h5 class="text-center">
                       <span class="font-weight-bold text-primary">
@@ -11,14 +13,27 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <video id="preview" width="300" height="300"></video>
+                    <video id="preview" width="100%" height="500"></video>
+                     <form class="" action="{{Route('scan')}}">
+                      <div class="d-flex justify-content-center">
+                         <div class="p-2 bd-highlight">
                     <div class="form-group">
                         <input type="text" class="form-control" name="qrcode" id=qrcode>
                     </div>
+                  </div>
+                   <div class="p-2 bd-highlight">
+                    <div class="form-group">
+                          <button type="submit" class="btn btn-login btn-outline-success">Cari</button>
+                      </div>
+                    </div>
+                      </div>
+
+                  </form>  
                  </div> 
             </div>
         </div>
      </div>
+   </section>
 @endsection
 @section('script')
   <script   type="text/javascript" src="{{asset('js/instascan.min.js')}}"></script> 

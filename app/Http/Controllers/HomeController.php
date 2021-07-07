@@ -115,8 +115,12 @@ class HomeController extends Controller
         ]);
     }
 
-    public function scan()
+    public function scan(Request $request)
     {
+        if( $request->isMethod('post') ){
+
+ 
+        }
         return view('scan.index');
     }
 

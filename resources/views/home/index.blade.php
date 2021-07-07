@@ -96,6 +96,7 @@
               <th>Lokasi</th>
               <th>Spesifik Lokasi</th>
               <th>Date Expired</th>
+              <th>Buang Barang</th>
             </tr>
             </thead>
             <tbody>

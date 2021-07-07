@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\models\location;
 
 class StockTransaction extends Model
 {
@@ -18,9 +17,7 @@ class StockTransaction extends Model
           return $this->belongsTo(Good::class);
     }
 
-    public function stock_entry(){
-    	return $this->belongsTo('App\Models\StockEntry', 'location_id', 'location_id');
-    }
+
 
 }
 
