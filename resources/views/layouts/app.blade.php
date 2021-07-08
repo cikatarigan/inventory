@@ -90,6 +90,15 @@
                         </a>
                      </li>
                      @endif
+                     <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                          <i class="nav-icon fas fa-users"></i>
+                          <p>
+                            Master Data
+                            <i class="right fas fa-angle-left"></i>
+                          </p>
+                        </a>
+                       <ul class="nav nav-treeview" style="display: none;">
                      @if(Auth::user()->hasPermissionTo('location.index','web'))
                      <li class="nav-item">
                         <a href="{{route('location.index')}}" class="nav-link">
@@ -105,6 +114,8 @@
                            <p>Goods</p>
                         </a>
                      </li>
+                   </ul>
+                 </li>
                      @endif
                      @if(Auth::user()->hasPermissionTo('stockentry.index','web'))
                      <li class="nav-item">
@@ -122,6 +133,15 @@
                         </a>
                      </li>
                      @endif
+                       <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                          <i class="nav-icon fas fa-users"></i>
+                          <p>
+                            Log Data
+                            <i class="right fas fa-angle-left"></i>
+                          </p>
+                        </a>
+                       <ul class="nav nav-treeview" style="display: none;">
                      @if(Auth::user()->hasPermissionTo('borrow.index','web'))
                      <li class="nav-item">
                         <a href="{{route('borrow.index')}}" class="nav-link">
@@ -146,6 +166,9 @@
                         </a>
                      </li>
                      @endif
+                   </ul>
+                   </li>
+
                      @if(Auth::user()->hasPermissionTo('expired.index','web'))
                      <li class="nav-item">
                         <a href="{{route('expired.index')}}" class="nav-link">

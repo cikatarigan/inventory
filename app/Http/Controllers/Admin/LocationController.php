@@ -17,7 +17,19 @@ class LocationController extends Controller
         if( $request->isMethod('post') ){
         
             $model = Location::all();
-            return DataTables::of($model)->make();
+ 
+              $shelf = LocationShelf::all();
+ 
+            return DataTables::of($model)->addColumn('sub_location', function ($model) use ($shelf){
+                $sub_location = [];
+                 foreach ($shelf as $location) {
+                    $sub_location[] =[
+                        'sub_location'=> $model->name_shelf,
+                
+                    ];
+                }
+                return $sub_location;
+               })->make();
         }   
         return view('location.index');
     }

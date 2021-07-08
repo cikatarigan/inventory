@@ -106,6 +106,8 @@
               <td>{{$item->location_shelf->location->name}}</td>
               <td>{{$item->location_shelf->name_shelf}}</td>
               <td>{{date('d-m-Y', strtotime($item->date_expired))}}</td>
+              <td> <a href="#"  data-id="{{$item->id}}" data-name="{{$item->good->name}}" class="btnDelete text-right btn btn-danger"><i class="fas fa-trash"></i> Buang</a></td>
+       
             </tr>
              @endforeach
             </tbody>
@@ -272,5 +274,81 @@
  </div>
 </div>
   </section>
+
+
 @endrole
+
+
+<div class="modal" tabindex="-1" role="dialog" id="ExpiredModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <form action="#" method="post" id="FormExpired">
+        <input type="hidden" id="id_delete" name="id" value="">
+      <div class="modal-header">
+        <h4 class="modal-title"></h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="del-success"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Ya</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script>
+jQuery(document).ready(function($) { 
+
+    $('.btnDelete').click(function () {
+            var id = $(this).data('id');
+            var name = $(this).data('name');
+           $('#FormExpired .modal-title').text("Konfirmasi");
+           $('#FormExpired .help-block').empty();
+           $('#FormExpired')[0].reset();
+           $('#FormExpired #del-success').html("Apakah Anda yakin ingin menghapus <b>"+name+"</b> ini ?");
+             url= 'expired/' + id;
+             console.log(url);
+        $('#ExpiredModal').modal('show');
+    });
+
+
+
+    $('#FormExpired').submit(function (event) {
+         event.preventDefault();
+         var $this = $(this);
+         var form = $('#FormExpired');
+         $('#FormExpired div.form-group').removeClass('has-error');
+         $('#FormExpired .help-block').empty();
+         
+         var data = form.serialize();
+         $.ajax({
+             url: url,
+             type: 'POST',
+             data: data,
+             cache: false,
+             success: function (data) {
+                 console.log(data)
+                 if (data.success) {
+                     toastr.success(data.message);
+                     $('#ExpiredModal').modal('hide');
+                     $("#FormExpired")[0].reset();
+                 } else {
+                     toastr.error(data.message);
+                 }
+             },
+         })
+     });
+
+
+ });
+
+</script>
 @endsection

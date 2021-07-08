@@ -3,7 +3,6 @@
 namespace App\Models;
 use App\User;
 use Auth;
-use App\Models\Location;
 use Illuminate\Database\Eloquent\Model;
 
 class StockEntry extends Model
@@ -33,7 +32,7 @@ class StockEntry extends Model
     }
 
     public function location_shelf(){
-        return $this->belongsTo(LocationShelf::class);
+        return $this->belongsTo(LocationShelf::class, 'location_shelf_id', 'id');
     }
     
     public function user()

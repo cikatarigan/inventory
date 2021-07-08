@@ -11,6 +11,7 @@ use App\Models\LocationShelf;
 use App\User;
 use App\Models\Sample;
 use App\Models\Allotment;
+use App\Models\Expired;
 use Auth;
 use DB;
 
@@ -74,8 +75,8 @@ class HomeController extends Controller
     public function goods(Request $request, Location $location)
     {
         
-         $goods = DB::table('goods')->join('location_shelves', 'goods.id', '=', 'location_shelves.good_id')
-        ->where('location_shelves.location_shelf_id', $location->id)->whereNull('goods.isexpired')
+         $goods = DB::table('goods')->join('good_shelves', 'goods.id', '=', 'good_shelves.good_id')
+        ->where('location_shelves.location_id', $location->id)->whereNull('goods.isexpired')
         ->select([ '*','goods.name as text'])->get();
         return response()->json([
             'results'  => $goods
@@ -122,6 +123,42 @@ class HomeController extends Controller
  
         }
         return view('scan.index');
+    }
+
+
+    public function expired(Request $request, $id)
+    {
+        if ($request->isMethod('post')){
+
+                $data = StockEntry::find($id);
+
+                $goods = Good::find($data->good_id);
+                              
+                $expired = New Expired;
+                $expired->good_id = $data->good_id; 
+                $expired->entry_id = $data->id;
+
+                $expired->location_id = $data->location_shelf();
+           
+                $expired->amount =  $data->amount -  $data->allotment_item()->sum('amount');     
+                $expired->save();
+
+                $stocktransaction = New stocktransaction;
+                $stocktransaction->start_balance = $goods->getBalanceByWarehouse($data->location_id);
+                $stocktransaction->amount = $expired->amount;
+                $stocktransaction->end_balance = $stocktransaction->start_balance - $stocktransaction->amount;
+                $stocktransaction->type = StockTransaction::TYPE_OUT;
+                $stocktransaction->good_id = $data->good_id;
+                $stocktransaction->user_id = 1;
+                $stocktransaction->location_id = $data->location_id;
+                $expired->stock_transaction()->save($stocktransaction);
+
+
+                return response()->json([
+                'success' => true,
+                'message'   => 'Successfully'
+            ]);
+        }
     }
 
     

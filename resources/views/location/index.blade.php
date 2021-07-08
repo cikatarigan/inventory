@@ -120,7 +120,23 @@
 @section('script')
 <script>
 jQuery(document).ready(function($) { 
-   
+  function format ( d ) {
+    var test = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+        '<tr>'+
+            '<td><b>Sub Lokasi</b></td>'+
+
+            '</tr>';+
+            
+   $.each(d.sub_location , function(index, val) { 
+     test +=  '<tr>'+
+            '<td>'+val.sub_location+'</td>'+
+        '</tr>';
+        
+    });
+  
+   return test +='</table>';
+}
+
    var table = $('#location-table').DataTable({
        "bFilter": true,
        "processing": true,
@@ -135,6 +151,12 @@ jQuery(document).ready(function($) {
            "emptyTable": "Tidak ada data yang tersedia",
        },
        "columns": [
+            {
+              "className": 'details-control',
+              "orderable": false,
+              "data": null,
+              "defaultContent": ''
+          },
            {
               title :"Nama Location",
                "data": "name",
@@ -155,6 +177,23 @@ jQuery(document).ready(function($) {
            $(nRow).attr('data', JSON.stringify(aData));
        }
    }); 
+
+   // Add event listener for opening and closing details
+    $('#location-table tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
+ 
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+            row.child( format(row.data()) ).show();
+            tr.addClass('shown');
+        }
+    } );
 
     var url;
 

@@ -40,6 +40,9 @@ Route::get('/', 'HomeController@index')->name('home');
             Route::get('find/shelf/{location}', 'HomeController@shelf');
 
 
+            Route::post('expired/{id}', 'HomeController@expired')->name('expired.goods');
+
+
             Route::get('/login', 'Auth\LoginController@showLoginForm')->name('auth.login');
 		Route::post('/login', 'Auth\LoginController@login')->name('auth.login.submit');
             Route::post('/logout', 'Auth\LoginController@logout')->name('auth.logout');
