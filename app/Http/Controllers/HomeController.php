@@ -125,6 +125,13 @@ class HomeController extends Controller
         return view('scan.index');
     }
 
+    public function result (Request $request)
+    {
+        $search = $request->q;
+        $data = StockEntry::with('good')->where('qrcode', $search)->first();
+        return view('scan.result', ['data' => $data]);
+    }
+
 
     public function expired(Request $request, $id)
     {

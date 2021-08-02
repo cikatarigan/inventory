@@ -28,6 +28,8 @@ Route::get('/', 'HomeController@index')->name('home');
 
 
             Route::get('/scan', 'HomeController@scan')->name('scan');
+            Route::get('/scan/result' ,'HomeController@result')->name('result');
+
 
 
             Route::get('find/locations', 'HomeController@locations');

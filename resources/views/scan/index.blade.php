@@ -14,11 +14,11 @@
                 </div>
                 <div class="card-body">
                     <video id="preview" width="100%" height="500"></video>
-                     <form class="" action="{{Route('scan')}}">
+                     <form class="" action="{{Route('result')}}">
                       <div class="d-flex justify-content-center">
                          <div class="p-2 bd-highlight">
                     <div class="form-group">
-                        <input type="text" class="form-control" name="qrcode" id=qrcode>
+                        <input type="text" class="form-control" name="q" id=q>
                     </div>
                   </div>
                    <div class="p-2 bd-highlight">

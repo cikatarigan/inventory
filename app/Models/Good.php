@@ -48,4 +48,9 @@ class Good extends Model
         return $this->hasMany(Borrow::class);
      }
 
+    public function stockentry()
+    {
+        return $this->hasMany(StockEntry::class);
+    }
+
 }
