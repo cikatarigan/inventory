@@ -152,7 +152,7 @@
      });
 
      $('#location_id').change(function (event) {
-         $('#nameshelf').empty();
+         $('#location_shelf').empty();
      });
 
  });

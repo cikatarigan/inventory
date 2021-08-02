@@ -92,7 +92,7 @@
                      @endif
                      <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
-                          <i class="nav-icon fas fa-users"></i>
+                          <i class="nav-icon fas fa-database"></i>
                           <p>
                             Master Data
                             <i class="right fas fa-angle-left"></i>
@@ -135,7 +135,7 @@
                      @endif
                        <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
-                          <i class="nav-icon fas fa-users"></i>
+                          <i class="nav-icon fas fa-clipboard-list"></i>
                           <p>
                             Log Data
                             <i class="right fas fa-angle-left"></i>

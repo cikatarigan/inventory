@@ -22,7 +22,7 @@ class Good extends Model
     }
 
     public function good_shelves(){
-        return $this->belongsTo(GoodShelf::class);
+        return $this->hasMany(GoodShelf::class);
     }
 
     public function location()

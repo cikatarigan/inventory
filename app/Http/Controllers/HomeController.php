@@ -129,7 +129,43 @@ class HomeController extends Controller
     {
         $search = $request->q;
         $data = StockEntry::with('good')->where('qrcode', $search)->first();
-        return view('scan.result', ['data' => $data]);
+        $amount = $data->amount -  $data->allotment_item()->sum('amount');
+        $users = User::where('id', '!=', auth()->id())->get();
+
+        if ($request->isMethod('post')){
+           
+            $validator = $request->validate([
+            'user_id' => 'required',
+       
+           ]);
+            $this->validate($request, [
+             'amount' => ['required', 'numeric','max:' . ($amount)],
+            ]); 
+            if($request->log == 1){
+                $data = New Borrow;
+                $data->description = $request->description;
+                $data->status = Borrow::STILL_BORROW;
+            }else if($request->log == 2){
+                $data = New GiveBack;
+            }else {
+                $data = New Allotment;
+                $data->description = $request->description;
+            }
+
+                $data->good_id = $request->good_id;
+                $data->user_id = $request->user;
+                $data->handle_by = Auth::id();
+                $data->amount = $request->amount;
+                $data->save();
+
+             return response()->json([
+                'success' => true,
+                'message'   => 'Successfully'
+            ]);
+
+        }
+
+        return view('scan.result', ['data' => $data, 'amount' => $amount ,'users' => $users]);
     }
 
 
