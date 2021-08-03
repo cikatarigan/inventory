@@ -317,9 +317,13 @@ jQuery(document).ready(function($) {
         event.preventDefault();
         var id = $(this).data('id');
         var name = $(this).data('name');
+         $('#FormAddShelf div.form-group').removeClass('has-error');
+         $('#FormAddShelf .help-block').empty();
+         $('#FormAddShelf #name_shelf').empty();
         $('#FormAddShelf #id_location').val(id);
         $('#addShelfModal').modal('show');
         $('#FormAddShelf .modal-title').text("Add Shelf");
+
 
     });
 

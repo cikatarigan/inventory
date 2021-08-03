@@ -36,7 +36,7 @@
             </li>
             @endforeach
          </ul>
-         {{$amount}}
+         
       </div>
       <div class="details col-md-6">
          <h3 class="product-description">{{$data->good->name}}</h3>
@@ -61,6 +61,11 @@
                <td><b>Expired</b> </td>
                <td>:</td>
                <td> {{$data->date_expired}}</td>
+            </tr>
+            <tr>
+               <td><b>Amount</b> </td>
+               <td>:</td>
+               <td>{{$amount}}</td>
             </tr>
          </table>
          {{$data->good->good_shelves}}

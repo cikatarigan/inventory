@@ -15,13 +15,11 @@ class CreateAllotmentsTable extends Migration
     {
         Schema::create('allotments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('location_id');
             $table->unsignedBigInteger('good_id');
             $table->unsignedInteger('amount');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('handle_by');
             $table->text('description')->nullable();
-            $table->foreign('location_id')->references('id')->on('locations');
             $table->foreign('good_id')->references('id')->on('goods');
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('handle_by')->references('id')->on('users');
