@@ -16,20 +16,12 @@ class LocationController extends Controller
     {
         if( $request->isMethod('post') ){
         
-            $model = Location::all();
+            $model = Location::with(['locationshelf'])->get();
  
-              $shelf = LocationShelf::all();
+          
+
  
-            return DataTables::of($model)->addColumn('sub_location', function ($model) use ($shelf){
-                $sub_location = [];
-                 foreach ($shelf as $location) {
-                    $sub_location[] =[
-                        'sub_location'=> $model->name_shelf,
-                
-                    ];
-                }
-                return $sub_location;
-               })->make();
+            return DataTables::of($model)->make();
         }   
         return view('location.index');
     }
@@ -78,6 +70,17 @@ class LocationController extends Controller
         ]);
 
     }
+
+    public function sub_trash(Request $request)
+    {
+        $location = LocationShelf::find($request->id);
+        $location->delete();
+            return response()->json([
+                'success'=>true,
+                'message'   => 'Sub Location Successfully Delete'
+            ]);
+    }
+
 
     public function update(Request $request, $id)
     {

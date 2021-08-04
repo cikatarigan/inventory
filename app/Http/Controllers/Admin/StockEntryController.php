@@ -48,12 +48,19 @@ class StockEntryController extends Controller
             DB::statement('SET autocommit=0');
             DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, location_shelves WRITE, good_shelves WRITE, stock_transactions WRITE, goods WRITE');
 
+            $checkgood  = Good::find($request->good_id);
+
             $stockentry = New StockEntry;
             $stockentry->good_id = $request->good_id;
             $stockentry->amount = $request->amount;
             $stockentry->location_shelf_id = $request->location_shelf;
             $stockentry->qrcode = Str::random(15);
             $stockentry->date_expired = Carbon::parse($request->date_expired);
+            if($checkgood->isexpired == 'on'){
+                $stockentry->status = StockEntry::TYPE_STILL_USE;    
+            }else{
+                $stockentry->status = StockEntry::TYPE_NO_EXPIRED;  
+            }
             $stockentry->save();
 
   

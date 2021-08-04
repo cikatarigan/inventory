@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class StockEntry extends Model
 {
+
+    const TYPE_EXPIRED   = "Expired";
+    const TYPE_NO_EXPIRED = "No Expired";
+    const TYPE_STILL_USE = "Still Use" ;
+
     public static function boot(){
     	parent::boot();
 

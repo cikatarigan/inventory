@@ -67,12 +67,36 @@
    </div>
 </div>
 
-{{-- Modal Delete --}}
+{{-- Modal Delete Location--}}
 <div class="modal" tabindex="-1" role="dialog" id="deleteLocationModal">
   <div class="modal-dialog">
     <div class="modal-content">
         <form action="#" method="post" id="FormDeleteLocation">
         <input type="hidden" id="id_delete" name="id" value="">
+      <div class="modal-header">
+        <h4 class="modal-title"></h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="del-success"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Ya</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{{-- Modal Delete SubLocation--}}
+<div class="modal" tabindex="-1" role="dialog" id="deleteSubLocationModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <form action="#" method="post" id="FormDeleteSubLocation">
+        <input type="hidden" id="id_deletesub" name="id" value="">
       <div class="modal-header">
         <h4 class="modal-title"></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -124,12 +148,13 @@ jQuery(document).ready(function($) {
     var test = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
         '<tr>'+
             '<td><b>Sub Lokasi</b></td>'+
-
+              '<td><b>Action</b></td>'+
             '</tr>';+
             
-   $.each(d.sub_location , function(index, val) { 
+   $.each(d.locationshelf , function(index, val) { 
      test +=  '<tr>'+
-            '<td>'+val.sub_location+'</td>'+
+            '<td>'+val.name_shelf+'</td>'+
+            '<td><a href="#" data-toggle="tooltip" title="Delete" class="btn-deletesub  badge badge-danger"  data-id="'+val.id+'" data-name="'+val.name_shelf+'"><i class="fas fa-trash fa-lg"></i></a></td>'+
         '</tr>';
         
     });
@@ -280,7 +305,7 @@ jQuery(document).ready(function($) {
          })
      });
 
-       // Delete
+       // Delete Location
        $('#location-table').on('click', '.btn-delete', function(event) {
         event.preventDefault();
         var id = $(this).data('id');
@@ -310,7 +335,35 @@ jQuery(document).ready(function($) {
         })
     });
 
-
+      // DeleteSub Location
+     $('#location-table').on('click', '.btn-deletesub', function(event) {
+      event.preventDefault();
+      var id = $(this).data('id');
+      var name = $(this).data('name');
+      $('#FormDeleteSubLocation #id_deletesub').val(id);
+      $('#deleteSubLocationModal').modal('show');
+      $('#FormDeleteSubLocation .modal-title').text("Konfirmasi Hapus");
+      $('#FormDeleteSubLocation #del-success').html("Apakah Anda yakin ingin menghapus Lokasi <b>"+name+"</b> ini ?");
+    });
+   
+   $('#FormDeleteSubLocation').submit(function(event) {
+        event.preventDefault();
+        var form =$('#FormDeleteSubLocation');
+        var data = form.serialize();
+        $.ajax({
+            url: '/sub/location/delete',
+            type: 'POST',
+            data : data,
+            cache : false,
+            success: function(data){
+               if (data.success){
+                  toastr.success(data.message);
+                  $('#deleteSubLocationModal').modal('hide');
+                  table.draw();
+               }
+            },
+        })
+    });
 
 
    $('#location-table').on('click', '.add-btn', function(event) {
@@ -346,6 +399,7 @@ jQuery(document).ready(function($) {
                      toastr.success(data.message);
                      $('#addShelfModal').modal('hide');
                      $("#FormAddShelf")[0].reset();
+                     table.draw();
                  } else {
                      toastr.error(data.message);
                  }

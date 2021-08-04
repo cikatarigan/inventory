@@ -114,7 +114,6 @@ class AllotmentController extends Controller
                        $itemallotment->save();
                        $amount = $amount - $itemallotment->amount;  
                     }
-                
                 }
             
             }

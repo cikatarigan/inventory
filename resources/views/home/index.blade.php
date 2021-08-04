@@ -86,7 +86,7 @@
         </div>
       </div>
       <!-- /.card-header -->
-      @isset($expired)
+
       <div class="card-body p-0">
         <div class="table-responsive">
           <table class="table m-0">
@@ -100,6 +100,7 @@
             </tr>
             </thead>
             <tbody>
+          @if ($expired->isNotEmpty())
            @foreach($expired as $item)
             <tr>
               <td>{{$item->good->name}}</td>
@@ -107,21 +108,18 @@
               <td>{{$item->location_shelf->name_shelf}}</td>
               <td>{{date('d-m-Y', strtotime($item->date_expired))}}</td>
               <td> <a href="#"  data-id="{{$item->id}}" data-name="{{$item->good->name}}" class="btnDelete text-right btn btn-danger"><i class="fas fa-trash"></i> Buang</a></td>
-       
             </tr>
              @endforeach
+             @else
+             <tr>
+              <td colspan="5">Tidak Ada Data</td>
+             </tr>
+             @endif
             </tbody>
           </table>
         </div>
         <!-- /.table-responsive -->
       </div>
-      @endisset
-      <!-- /.card-body -->
-    <!--   <div class="card-footer clearfix">
-        <a href="javascript:void(0)" class="btn btn-sm btn-info float-left">Place New Order</a>
-        <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Orders</a>
-      </div> -->
-      <!-- /.card-footer -->
     </div>
  </div>
  <div class="col-md-4">
@@ -310,6 +308,8 @@ jQuery(document).ready(function($) {
     $('.btnDelete').click(function () {
             var id = $(this).data('id');
             var name = $(this).data('name');
+            var locationshelf = $(this).data('location-shelf');
+            var location  = $(this).data('location');
            $('#FormExpired .modal-title').text("Konfirmasi");
            $('#FormExpired .help-block').empty();
            $('#FormExpired')[0].reset();
@@ -340,6 +340,7 @@ jQuery(document).ready(function($) {
                      toastr.success(data.message);
                      $('#ExpiredModal').modal('hide');
                      $("#FormExpired")[0].reset();
+                       location.reload();
                  } else {
                      toastr.error(data.message);
                  }

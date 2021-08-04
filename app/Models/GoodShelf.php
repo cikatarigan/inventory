@@ -21,9 +21,8 @@ class GoodShelf extends Model
    	   return $this->belongsTo('App\Models\Good');
    }
 
-
     public function location_shelves(){
-      return $this->belongsTo(LocationShelf::class);
+      return $this->belongsTo('App\Models\LocationShelf', 'location_shelf_id', 'id');
     }
 
 }

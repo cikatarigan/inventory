@@ -14,6 +14,7 @@ use App\Models\Allotment;
 use App\Models\Expired;
 use Auth;
 use DB;
+use App\Models\StockTransaction;
 
 use App\Models\Borrow;
 class HomeController extends Controller
@@ -37,7 +38,7 @@ class HomeController extends Controller
     {
          $expired = StockEntry::with(['good', 'location_shelf.location'])->whereHas('good',  function($query){
             $query->whereNotNull('isexpired');
-         })->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->get();
+         })->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->where('status', '!=' ,'expired')->get();
 
          $borrow = Borrow::with('good.good_images')->where('status', 'Still Borrow')->get();
          $allotment = Allotment::where('user_id', Auth::id())->get();
@@ -66,10 +67,10 @@ class HomeController extends Controller
         // ->where('good_shelves.location_id', $location->id)
         // ->select([ 'good_id as id','goods.name as text'])->get();
         
-       $good_borrow = Good::with(['good_shelves.location_shelves'])->whereHas('good_shelves.location_shelves', function($query)use ($location){
-            $query->where('location_id', $location->id);
-        })->select([ '*','goods.name as text'])->get();
-  
+       $good_borrow = Good::with(['good_shelves.location_shelves'])->whereHas('good_shelves.location_shelves', function($query) use ($location){
+        $query->where('location_id' , $location->id)->select([ '*','name_shelf as text']);
+       })->get();
+            // dd($good_borrow->good_shelves);
         return response()->json([
             'results'  => $good_borrow
         ]);
@@ -95,7 +96,7 @@ class HomeController extends Controller
 
     public function shelf(Request $request, Location $location)
     {
-        $shelf = DB::table('location_shelves')->join('locations','location_shelves.location_id', '=', 'locations.id')->where('locations.id', $location->id)->select('*','name_shelf as text')->get();
+        $shelf = DB::table('location_shelves')->join('locations','location_shelves.location_id', '=', 'locations.id')->where('locations.id', $location->id)->select('location_shelves.id as id','name_shelf as text')->get();
 
         return response()->json([
             'results'  => $shelf
@@ -181,29 +182,33 @@ class HomeController extends Controller
 
     public function expired(Request $request, $id)
     {
+                $data = StockEntry::with('location_shelf.location')->find($id);
+               
+                $goods = Good::find($data->good_id);
+
         if ($request->isMethod('post')){
 
-                $data = StockEntry::find($id);
-
-                $goods = Good::find($data->good_id);
                               
                 $expired = New Expired;
                 $expired->good_id = $data->good_id; 
                 $expired->entry_id = $data->id;
-
-                $expired->location_id = $data->location_shelf();
-           
-                $expired->amount =  $data->amount -  $data->allotment_item()->sum('amount');     
+                $expired->location_shelf_id = $data->location_shelf_id;
+                $expired->amount =  $data->amount -  $data->allotment_item()->sum('amount');
+                $expired->location_id = $data->location_shelf->location->id;
                 $expired->save();
 
+                $stockentry = StockEntry::find($data->id);
+                $stockentry->status = StockEntry::TYPE_EXPIRED;
+                $stockentry->save();
+
                 $stocktransaction = New stocktransaction;
-                $stocktransaction->start_balance = $goods->getBalanceByWarehouse($data->location_id);
+                $stocktransaction->start_balance = $goods->getBalanceByWarehouse($data->location_shelf->location->id);
                 $stocktransaction->amount = $expired->amount;
                 $stocktransaction->end_balance = $stocktransaction->start_balance - $stocktransaction->amount;
                 $stocktransaction->type = StockTransaction::TYPE_OUT;
                 $stocktransaction->good_id = $data->good_id;
                 $stocktransaction->user_id = 1;
-                $stocktransaction->location_id = $data->location_id;
+                $stocktransaction->location_id = $data->location_shelf->location->id;
                 $expired->stock_transaction()->save($stocktransaction);
 
 

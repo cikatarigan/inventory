@@ -78,6 +78,8 @@ Route::get('/', 'HomeController@index')->name('home');
             Route::match(['get', 'post'], 'location',	'Admin\LocationController@index')->name('location.index');
             Route::post('location/add',				'Admin\LocationController@create')->name('location.store');
             Route::post('sub/location/add',                     'Admin\LocationController@sub_location')->name('sublocation.store');
+
+            Route::post('sub/location/delete',                     'Admin\LocationController@sub_trash')->name('sublocation.destroy');
             Route::post('location/update/{id}',			'Admin\LocationController@update')->name('location.update');
             Route::post('location/delete/', 		'Admin\LocationController@destroy')->name('location.destroy');
             Route::match(['POST', 'GET'], 'location/trash', 'Admin\LocationController@trash')->name('location.trash');

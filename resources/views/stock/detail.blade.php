@@ -142,114 +142,125 @@
       lengthMenu: [[25, 100, -1], [25, 100, "All"]],
       pageLength: 25,
       language: {
-        buttons: {
-                      colvis : 'show / hide', // label button show / hide
-                      colvisRestore: "Reset Kolom" //lael untuk reset kolom ke default
-                    }
-                  },
-                  buttons : [
-                  {extend: 'colvis', postfixButtons: [ 'colvisRestore' ] },
-                  {extend:'csv'},
-                  {extend: 'pdf', title:'File PDF Datatables'},
-                  {extend: 'excel', title: 'File Excel Datatables'},
-                  {extend:'print',title: 'Print Datatables'},
-                  ],
-                  "bFilter": true,
-                  "processing": true,
-                  "serverSide": true,
-                  "lengthChange": true,
-                  "responsive" : true,
-                  "ajax": {
-                    "url": "{{route('stock.detail' ,['id' => $id] )}}",
-                    "type": "POST",
-                    "data": function (d) {
-                      return $.extend({}, d, {
-                        location_id : $('#location_id').val(),
-                        date_start : date_start,
-                        date_end : date_end,
-                      });
-                    }
-                  },
-                  "language": {
-                    "emptyTable": "Tidak ada data yang tersedia",
-                  },
-                  "columns": [{
-                    title : "Stock Awal",
-                    "data": "start_balance",
-                    "orderable": false,
-                  },
-                  {
-                   title :"Jumlah",
-                   render : function (data, type, row){
-                     if(row.type == 'IN'){
-                       return '<span class="text-success">+ '+row.amount+'</span>';
-                     }else{
-                       return '<span class="text-danger">- '+row.amount+ '</span>';
-                     }
-                   },
-                   "orderable": false,
-                 },
-                 {
-                   title :"Stock Akhir",
-                   "data": "end_balance",
-                   "orderable": false,
-                 },
-                 {
-   
-                   title :"Type",
-                   "data": "detailable_type",
-                   render: function (data) {
-                     if(data == 'App\\Models\\StockTaking'){
-                       return'Stock Opname';
-                     }else if(data == 'App\\Models\\Production'){
-                       return 'Produksi';
-                     }else if(data == 'App\\Models\\StockEntry'){
-                       return  'Stock Entri';
-                     }else if(data == 'App\\Models\\Allotment'){
-                       return 'Pemberian';
-                      }else if(data == 'App\\Models\\Expired'){
-                        return 'Expired'; 
-                     }else {
-                       return 'Peminjaman';
-                     }
-                   },
-                   "orderable": false,
-                 },
-                 {
-                   title :"Lokasi",
-                   "data": "location.name",
-                   "orderable": false,
-                 },
-                 {
-                   title :"Expired Date",
-                   "data": "stock_entry.date_expired",
-                   render : function (data, type, row){
-                    return moment(data).format('Do MMMM YYYY')
-                  },
-                  "orderable": false,
-                 },
-        
-                 {
-                   title :"Tanggal",
-                   "data": "created_at",
-                   render : function (data, type, row){
-                    return moment(data).format('Do MMMM YYYY h:mm')
-                  },
-                  "orderable": false,
-                 }
-                ],
-                "fnCreatedRow": function(nRow, aData, iDataIndex) {
-                  $(nRow).attr('data', JSON.stringify(aData));
+      buttons: {
+                  colvis : 'show / hide', // label button show / hide
+                  colvisRestore: "Reset Kolom" //lael untuk reset kolom ke default
                 }
-              }); 
-   
+              },
+              buttons : [
+              {extend: 'colvis', postfixButtons: [ 'colvisRestore' ] },
+              {extend:'csv'},
+              {extend: 'pdf', title:'File PDF Datatables'},
+              {extend: 'excel', title: 'File Excel Datatables'},
+              {extend:'print',title: 'Print Datatables'},
+              ],
+              "bFilter": true,
+              "processing": true,
+              "serverSide": true,
+              "lengthChange": true,
+              "responsive" : true,
+              "ajax": {
+                "url": "{{route('stock.detail' ,['id' => $id] )}}",
+                "type": "POST",
+                "data": function (d) {
+                  return $.extend({}, d, {
+                    location_id : $('#location_id').val(),
+                    date_start : date_start,
+                    date_end : date_end,
+                  });
+                }
+              },
+              "language": {
+                "emptyTable": "Tidak ada data yang tersedia",
+              },
+              "columns": [{
+                title : "Stock Awal",
+                "data": "start_balance",
+                "orderable": false,
+              },
+              {
+               title :"Jumlah",
+               render : function (data, type, row){
+                 if(row.type == 'IN'){
+                   return '<span class="text-success">+ '+row.amount+'</span>';
+                 }else{
+                   return '<span class="text-danger">- '+row.amount+ '</span>';
+                 }
+               },
+               "orderable": false,
+             },
+             {
+               title :"Stock Akhir",
+               "data": "end_balance",
+               "orderable": false,
+             },
+             {
+
+               title :"Type",
+               "data": "detailable_type",
+               render: function (data) {
+                 if(data == 'App\\Models\\StockTaking'){
+                   return'Stock Opname';
+                 }else if(data == 'App\\Models\\Production'){
+                   return 'Produksi';
+                 }else if(data == 'App\\Models\\StockEntry'){
+                   return  'Stock Entri';
+                 }else if(data == 'App\\Models\\Allotment'){
+                   return 'Pemberian';
+                  }else if(data == 'App\\Models\\Expired'){
+                    return 'Expired'; 
+                 }else {
+                   return 'Peminjaman';
+                 }
+               },
+               "orderable": false,
+             },
+             {
+               title :"Lokasi",
+               "data": "location.name",
+               "orderable": false,
+             },
+              {
+               title :"Ruangan",
+               "data": "location.locationshelf",
+               render: function(data){
+                var temp  = [];
+                  $.each(data, function(i, v){
+                        temp.push(v['name_shelf']);
+                    })
+                
+               return temp;
+               },
+               "orderable": false,
+             },
+             {
+               title :"Expired Date",
+               "data": "stock_entry.date_expired",
+               render : function (data, type, row){
+                return moment(data).format('Do MMMM YYYY')
+              },
+              "orderable": false,
+             },
+    
+             {
+               title :"Tanggal",
+               "data": "created_at",
+               render : function (data, type, row){
+                return moment(data).format('Do MMMM YYYY h:mm')
+              },
+              "orderable": false,
+             }
+            ],
+            "fnCreatedRow": function(nRow, aData, iDataIndex) {
+              $(nRow).attr('data', JSON.stringify(aData));
+            }
+          }); 
+
     $('#location_id').change(function (event) {
       table.draw();              
     });
    
-   
-   
-   
+  
    }); 
 </script>
 @endsection

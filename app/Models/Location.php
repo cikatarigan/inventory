@@ -20,15 +20,4 @@ class Location extends Model
     }
 
 
-
-    // public function getGood($good_id)
-    //  {
-    //     $data = $this->stockentry()->with('good')
-    //     ->where('good_id', $good_id)->get();
-
-    //     return ($data) ;
-    //  }  
-
-
-
 }

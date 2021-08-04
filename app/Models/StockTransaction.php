@@ -17,7 +17,6 @@ class StockTransaction extends Model
           return $this->belongsTo(Good::class);
     }
 
-
-
+ 
 }
 

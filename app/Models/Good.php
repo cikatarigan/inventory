@@ -18,9 +18,8 @@ class Good extends Model
 	}
 
     public function location_shelves(){
-    	return $this->belongsTo(LocationShelf::class);
+        return $this->belongsTo(LocationShelf::class);
     }
-
     public function good_shelves(){
         return $this->hasMany(GoodShelf::class);
     }

@@ -16,6 +16,7 @@ class AddLocationShelfToStockEntryTable extends Migration
         Schema::table('stock_entries', function (Blueprint $table) {
                  $table->unsignedBigInteger('location_shelf_id');
                  $table->foreign('location_shelf_id')->references('id')->on('location_shelves');
+                 $table->string('status')->nullable();
         });
     }
 

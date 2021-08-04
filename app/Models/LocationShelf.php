@@ -21,4 +21,8 @@ class LocationShelf extends Model
             $model->user_id = Auth::id();
         });
     }
+
+    public function good_shelves(){
+      return $this->hasMany(LocationShelf::class);
+    }
 }
