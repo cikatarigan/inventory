@@ -217,20 +217,12 @@
              },
              {
                title :"Lokasi",
-               "data": "location.name",
+               "data": "location_shelf.location.name",
                "orderable": false,
              },
               {
                title :"Ruangan",
-               "data": "location.locationshelf",
-               render: function(data){
-                var temp  = [];
-                  $.each(data, function(i, v){
-                        temp.push(v['name_shelf']);
-                    })
-                
-               return temp;
-               },
+               "data": "location_shelf.name_shelf",
                "orderable": false,
              },
              {

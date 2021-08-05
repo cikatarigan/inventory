@@ -27,7 +27,7 @@ class AllotmentController extends Controller
     {
 
     	if( $request->isMethod('post') ){
-    		$model = Allotment::with(['location', 'good', 'user'])->get();
+    		$model = Allotment::with(['location_shelf.location', 'good', 'user'])->get();
             return DataTables::of($model)->make();
         }
         return view('allotment.index');
@@ -39,15 +39,17 @@ class AllotmentController extends Controller
 
         if($request->isMethod('POST')){
             
-            $amount = Good::find($request->goodview);
+            $amount = Good::find($request->goods);
 
             $validator = $request->validate([
-            'locationview' => 'required',
-            'goodview' => 'required',
+            'location_id' => 'required',
+            'location_shelf' => 'required',
+            'goods' => 'required',
+            'user' => 'required',
            ]);
 
             $this->validate($request, [
-             'amountview' => ['required', 'numeric', 'max:' . ($amount->getBalanceByWarehouse($request->locationview))],
+             'amount' => ['required', 'numeric', 'max:' . ($amount->getBalanceByWarehouse($request->location_id)),'min:1'],
             ]); 
 
              return response()->json([
@@ -64,8 +66,8 @@ class AllotmentController extends Controller
 
         if ($request->isMethod('POST')){
 
-            $user = User::find($request->user);
-            $goods = Good::find($request->good);
+            $user = User::find($request->data_user);
+            $goods = Good::find($request->data_goods);
 
             if(!Hash::check($request->password, $user->password)){
                  return response()->json([
@@ -74,30 +76,30 @@ class AllotmentController extends Controller
                 ]);  
             }
 
-            if($goods->getBalanceByWarehouse($request->location) < $request->amount){
+            if($goods->getBalanceByWarehouse($request->data_location) < $request->data_amount){
                 return response()->json([
                     'success'=>false,
                     'message' => 'stock tidak cukup'
                 ]);
             }
 
-            $entry = StockEntry::whereDate('date_expired', '>=', Carbon::now())->where('good_id' , $request->good)->where('location_id', $request->location)->orderBy('created_at', 'asc')->get();
+            $entry = StockEntry::whereDate('date_expired', '>=', Carbon::now())->where('good_id' , $request->data_goods)->where('location_shelf_id', $request->data_shelf)->orderBy('created_at', 'asc')->get();
 
 
             try{
             DB::statement('SET autocommit=0');
-            DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, good_locations WRITE, stock_transactions WRITE, goods WRITE, allotments WRITE, allotment_items WRITE' );
+            DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, stock_transactions WRITE, goods WRITE, allotments WRITE, allotment_items WRITE' );
 
             $allotment = New Allotment;
-            $allotment->location_id = $request->location;
-            $allotment->good_id = $request->good;
-            $allotment->amount = $request->amount;
-            $allotment->user_id = $request->user;
-            $allotment->description = $request->description;
+            $allotment->location_shelf_id = $request->data_shelf;
+            $allotment->good_id = $request->data_goods;
+            $allotment->amount = $request->data_amount;
+            $allotment->user_id = $request->data_user;
+            $allotment->description = $request->data_description;
             $allotment->save();
 
 
-            $amount =  $request->amount;
+            $amount =  $request->data_amount;
             foreach ($entry as  $item) {
                 $stock_amount = $item->amount -  $item->allotment_item()->sum('amount') ;
                 if($stock_amount >  0 ){
@@ -117,20 +119,27 @@ class AllotmentController extends Controller
                 }
             
             }
-             
+
+
 
             $goods = $allotment->good;
 
             $stocktransaction = New stocktransaction;
-            $stocktransaction->start_balance = $goods->getBalanceByWarehouse($request->location);
-            $stocktransaction->amount = $request->amount;
+            $stocktransaction->start_balance = $goods->getBalanceByWarehouse($request->data_location);
+            $stocktransaction->amount = $request->data_amount;
             $stocktransaction->end_balance = $stocktransaction->start_balance - $stocktransaction->amount;
             $stocktransaction->type = StockTransaction::TYPE_OUT;
-            $stocktransaction->good_id = $request->good;
+            $stocktransaction->good_id = $request->data_goods;
             $stocktransaction->user_id = Auth::id();
-            $stocktransaction->location_id = $request->location;
-
+            $stocktransaction->location_id = $request->data_location;
+            $stocktransaction->location_shelf_id = $request->data_shelf;
             $allotment->stock_transaction()->save($stocktransaction);
+
+            $good_shelf = GoodShelf::where('good_id', $request->goods_id)->where('location_shelf_id', $request->data_shelf)->first();
+            if($stocktransaction->end_balance == 0){
+                $good_shelf->delete();
+            }
+             
 
             DB::getPdo()->exec('UNLOCK TABLES');
             }catch(\Exception $e){

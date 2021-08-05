@@ -68,19 +68,19 @@
    </div>
 </div>
 {{-- Modal Delete --}}
-<div class="modal" tabindex="-1" role="dialog" id="deleteAdminModal">
+<div class="modal" tabindex="-1" role="dialog" id="ShowQrcodeModal">
    <div class="modal-dialog">
       <div class="modal-content">
          <form action="#" method="post" id="FormDeleteAdmin">
             <input type="hidden" id="id_delete" name="id" value="">
             <div class="modal-header">
-               <h4 class="modal-title"></h4>
+               <h4 class="modal-title">QR CODE</h4>
                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                <span aria-hidden="true">&times;</span>
                </button>
             </div>
             <div class="modal-body">
-               <p id="del-success"></p>
+              <img src="qrcode/{qrcode}">
             </div>
             <div class="modal-footer">
                <button type="submit" class="btn btn-primary">Ya</button>
@@ -90,6 +90,7 @@
       </div>
    </div>
 </div>
+
 @endsection
 @section('script')
 <script>
@@ -140,7 +141,15 @@
              title :"Handle By",
                   "data": "user.name",
                   "orderable": true,
-              }
+              },
+              {
+            title :"qrcode",
+               "data": "qrcode",
+               render : function (data, type, row){
+                return  '<img src="/qrcode/'+data+'" alt="barcode" style="width: 250;" />';
+              },
+              "orderable": false,
+           },
           ],
           "order": [0, 'desc'],
           "fnCreatedRow": function(nRow, aData, iDataIndex) {

@@ -38,7 +38,7 @@ class StockController extends Controller
         
         if ($request->isMethod('post')){
 
-        $model  = StockTransaction::where('good_id', $id)->with(['stockentries.location_shelf.location','good'])->orderBy('created_at', 'DESC'); 
+        $model  = StockTransaction::with(['location_shelf.location','good'])->where('good_id', $id)->orderBy('created_at', 'DESC'); 
 
             if ($request->location_id) {                   
                   $model->where('location_id', '=', $request->location_id);
@@ -50,9 +50,7 @@ class StockController extends Controller
                 $model->whereDate('created_at', '>=', $startDate )->whereDate('created_at', '<=' ,$endDate );
 
             }
-            return DataTables::of($model)->addColumn('location_shelf', function($model){
-                return $model->location->location_shelf;
-            })->make();
+            return DataTables::of($model)->make();
         }
 
 

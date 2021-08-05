@@ -60,7 +60,12 @@
               },
               {
              title :"location",
-                  "data": "location.name",
+                  "data": "location_shelf.location.name",
+                  "orderable": true,
+              },
+              {
+             title :"Ruangan Lokasi",
+                  "data": "location_shelf.name_shelf",
                   "orderable": true,
               },
                {

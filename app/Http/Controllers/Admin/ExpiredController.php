@@ -12,7 +12,7 @@ class ExpiredController extends Controller
 public function index(Request $request)
     {
         if( $request->isMethod('post') ){
-            $model = Expired::with(['good','location'])->get();
+            $model = Expired::with(['good','location_shelf.location'])->get();
             return DataTables::of($model)->make();
         }
     

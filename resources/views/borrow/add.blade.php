@@ -31,8 +31,14 @@
                   </select>
                </div>
                <div class="form-group">
+                <label for="exampleInputPassword1">Ruangan Barang</label>
+                  <select name="location_shelf" id="location_shelf" class="form-control select-custom ">
+                     <option value="" disabled selected>Ruangan barang</option>
+                  </select>
+               </div>
+               <div class="form-group">
                 <label for="exampleInputPassword1">Nama Barang</label>
-                   <select name="good" id="good" class="form-control">
+                   <select name="goods" id="goods" class="form-control">
                      <option value="" disabled selected>Barang</option>
                   </select>
                </div>
@@ -79,11 +85,12 @@
                <div class="box box-info">
                   <div class="box-header">
                      <div class="box-body">
-                          <input type="hidden" id="locationcheck" name="location" value="">
-                          <input type="hidden" id="goodcheck" name="good" value="">
-                          <input type="hidden" id="amountcheck" name="amount" value="">
-                          <input type="hidden" id="usercheck" name="user" value="">
-                          <input type="hidden" id="descriptioncheck" name="description" value="">
+                          <input type="hidden" id="locationcheck" name="data_location" value="">
+                           <input type="hidden" id="shelfCheck" name="data_shelf" value="">
+                          <input type="hidden" id="goodcheck" name="data_goods" value="">
+                          <input type="hidden" id="amountcheck" name="data_amount" value="">
+                          <input type="hidden" id="usercheck" name="data_user" value="">
+                          <input type="hidden" id="descriptioncheck" name="data_description" value="">
                            <div class="form-group">
                               <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan Password Penerima">
                            </div>
@@ -111,6 +118,7 @@
           toastr.error("{{ session('error') }}");
       @endif
 
+
      $('#location').select2({
          placeholder: "Pilih location",
          ajax: {
@@ -119,16 +127,29 @@
          }
      });
 
-     $('#good').select2({
-         placeholder: "Pilih Barang",
+    $('#location_shelf').select2({
+        minimumResultsForSearch: -1,
+         placeholder: "Pilih Rak",
+         tags: true,
          ajax: {
              url: function (params) {
-            
-                 return '/find/goods/borrow/' + $('#location').val();
+                 return '/find/shelf/' + $('#location').val();
              },
              dataType: 'json'
          }
      });
+
+     $('#goods').select2({
+         placeholder: "Pilih Barang",
+         ajax: {
+             url: function (params) {
+            
+                 return '/find/goods/' + $('#location_shelf').val();
+             },
+             dataType: 'json'
+         }
+     });
+
 
      $('#user').select2();
 
@@ -137,6 +158,8 @@
          event.preventDefault();
          var $this = $(this);
          var form = $('#FormBorrowCheck');
+          $('#FormBorrowCheck div.form-group').removeClass('has-error');
+         $('#FormBorrowCheck .help-block').empty();
          var data = form.serialize();
          $.ajax({
              url: '/borrow/check',
@@ -148,11 +171,13 @@
                  if (data.success) {
                         $('#exampleModal').modal('show');
                          var location = $("#location").val();
-                         var good = $("#good").val();
+                         var shelf = $("#location_shelf").val();
+                         var good = $("#goods").val();
                          var amount = $("#amount").val();
                          var user = $("#user").val();
                          var description = $("#description").val();
                           $('#FormBorrow #locationcheck').val(location);
+                          $('#FormBorrow #shelfCheck').val(shelf);
                           $('#FormBorrow #goodcheck').val(good);
                           $('#FormBorrow #amountcheck').val(amount);
                           $('#FormBorrow #usercheck').val(user);
@@ -220,7 +245,12 @@
      });
 
      $('#location').change(function (event) {
-         $('#good').empty();
+         $('#location_shelf').empty();
+         $('#goods').empty();
+     });
+
+     $('#location_shelf').change(function (event) {
+      $('#goods').empty();
      });
  });
 </script>

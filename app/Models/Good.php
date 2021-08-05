@@ -17,9 +17,6 @@ class Good extends Model
 		return $this->hasMany('App\Models\GoodImage', 'good_id', 'id');
 	}
 
-    public function location_shelves(){
-        return $this->belongsTo(LocationShelf::class);
-    }
     public function good_shelves(){
         return $this->hasMany(GoodShelf::class);
     }

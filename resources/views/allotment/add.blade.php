@@ -27,25 +27,31 @@
                <div class="card-body">
                <div class="form-group">
                 <label for="exampleInputPassword1">Lokasi Barang</label>
-                  <select name="locationview" id="locationview" class="form-control select-custom ">
+                  <select name="location_id" id="location_id" class="form-control select-custom ">
                      <option value="" disabled selected>Location</option>
+                  </select>
+               </div>
+                <div class="form-group">
+                <label for="exampleInputPassword1">Ruangan Barang</label>
+                  <select name="location_shelf" id="location_shelf" class="form-control select-custom ">
+                     <option value="" disabled selected>Ruangan barang</option>
                   </select>
                </div>
                <div class="form-group">
                 <label for="exampleInputPassword1">Nama Barang</label>
-                   <select name="goodview" id="goodview" class="form-control">
+                   <select name="goods" id="goods" class="form-control">
                      <option value="" disabled selected>Barang</option>
                   </select>
                </div>
                   
                   <div class="form-group">
                      <label for="exampleInputPassword1">Jumlah Barang</label>
-                     <input type="number" class="form-control" name="amountview" id="amountview" placeholder="Jumlah">
+                     <input type="number" class="form-control" name="amount" id="amount" placeholder="Jumlah">
                   </div>
 
                   <div class="form-group">
                      <label for="exampleInputPassword1">Kepada</label>
-                     <select class="js-example-basic-single form-control select-custom" name="userview" id="userview" width="100%">
+                     <select class="js-example-basic-single form-control select-custom" name="user" id="user" width="100%">
                         <option value="" disabled selected>Pilih User</option>
                         @foreach($users as $item)
                         <option value="{{$item->id}}">{{$item->name}}</option>
@@ -55,7 +61,7 @@
 
                   <div class="form-group">
                      <label for="exampleInputPassword1">Description</label>
-                     <textarea class="form-control" name="descriptionview" id="descriptionview" placeholder="Keterangan" rows="3"></textarea> 
+                     <textarea class="form-control" name="description" id="description" placeholder="Keterangan" rows="3"></textarea> 
                   </div>
                </div>
                <div class="card-footer">
@@ -67,6 +73,7 @@
    </div>
 </div>
 
+<!-- Modal Password User -->
   <div class="modal fade" tabindex="-1" role="dialog" id="exampleModal">
    <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -80,11 +87,12 @@
                <div class="box box-info">
                   <div class="box-header">
                      <div class="box-body">
-                          <input type="hidden" id="location" name="location" value="">
-                          <input type="hidden" id="good" name="good" value="">
-                          <input type="hidden" id="amount" name="amount" value="">
-                          <input type="hidden" id="user" name="user" value="">
-                          <input type="hidden" id="description" name="description" value="">
+                          <input type="hidden" id="locationCheck" name="data_location" value="">
+                          <input type="hidden" id="shelfCheck" name="data_shelf" value="">
+                          <input type="hidden" id="goodCheck" name="data_goods" value="">
+                          <input type="hidden" id="amountCheck" name="data_amount" value="">
+                          <input type="hidden" id="userCheck" name="data_user" value="">
+                          <input type="hidden" id="descriptionCheck" name="data_description" value="">
                            <div class="form-group">
                               <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan Password Penerima">
                            </div>
@@ -112,7 +120,7 @@
           toastr.error("{{ session('error') }}");
       @endif
 
-     $('#locationview').select2({
+     $('#location_id').select2({
          placeholder: "Pilih location",
          ajax: {
              url: '/find/locations',
@@ -120,18 +128,31 @@
          }
      });
 
-     $('#goodview').select2({
-         placeholder: "Pilih Barang",
+
+    $('#location_shelf').select2({
+        minimumResultsForSearch: -1,
+         placeholder: "Pilih Rak",
+         tags: true,
          ajax: {
              url: function (params) {
-            
-                 return '/find/goods/' + $('#locationview').val();
+                 return '/find/shelf/' + $('#location_id').val();
              },
              dataType: 'json'
          }
      });
 
-    $('#userview').select2();
+     $('#goods').select2({
+         placeholder: "Pilih Barang",
+         ajax: {
+             url: function (params) {
+            
+                 return '/find/goods/' + $('#location_shelf').val();
+             },
+             dataType: 'json'
+         }
+     });
+
+    $('#user').select2();
 
 
 
@@ -150,18 +171,19 @@
              success: function (data) {
                  console.log(data)
                  if (data.success) {  
-                   
-                        $('#exampleModal').modal('show');
-                         var location = $("#locationview").val();
-                         var good = $("#goodview").val();
-                         var amount = $("#amountview").val();
-                         var user = $("#userview").val();
-                         var description = $("descriptionview").val();
-                          $('#FormAllotment #location').val(location);
-                          $('#FormAllotment #good').val(good);
-                          $('#FormAllotment #amount').val(amount);
-                          $('#FormAllotment #user').val(user);
-                          $('#FormAllotment #description').val(description);
+                     $('#exampleModal').modal('show');
+                     var location = $("#location_id").val();
+                     var shelf = $("#location_shelf").val();
+                     var good = $("#goods").val();
+                     var amount = $("#amount").val();
+                     var user = $("#user").val();
+                     var description = $("description").val();
+                      $('#FormAllotment #locationCheck').val(location);
+                      $('#FormAllotment #shelfCheck').val(shelf);
+                      $('#FormAllotment #goodCheck').val(good);
+                      $('#FormAllotment #amountCheck').val(amount);
+                      $('#FormAllotment #userCheck').val(user);
+                      $('#FormAllotment #descriptionCheck').val(description);
                    
                  } else {
                      toastr.error(data.message);
@@ -228,8 +250,13 @@
      });
 
 
-     $('#locationview').change(function (event) {
-         $('#goodview').empty();
+     $('#location_id').change(function (event) {
+          $('#location_shelf').empty();
+         $('#goods').empty();
+     });
+
+     $('#location_shelf').change(function (event) {
+         $('#goods').empty();
      });
    
  });

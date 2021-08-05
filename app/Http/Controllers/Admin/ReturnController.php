@@ -33,18 +33,20 @@ class ReturnController extends Controller
     {
 
       if($request->isMethod('POST')){
-
+            $goods = Good::find($request->goods);
+            
             $this->validate($request, [
                 'location' => 'required',
-                'good' => 'required',
+                'goods' => 'required',
                 'amount' => ['required', 'numeric'],
+                'nameshelf' =>'required',
 
            ]); 
 
             $good = Good::find($request->good);
    
             $this->validate($request, [
-                'amount' => ['numeric','max: ' . ($good->borrow()->where('user_id', $request->user)->sum('amount')) ],
+                'amount' => ['numeric','max: ' . ($goods->borrow()->where('user_id', $request->user)->sum('amount')) ],
             ]);
 
 
@@ -65,7 +67,7 @@ class ReturnController extends Controller
 
                 try{
                     DB::statement('SET autocommit=0');
-                    DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, good_locations WRITE, stock_transactions WRITE, goods WRITE, borrows write, give_backs write');
+                    DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, expireds WRITE, good_shelves WRITE, stock_transactions WRITE, goods WRITE, borrows WRITE, give_backs WRITE');
 
                     $return = new GiveBack;
                     $return->good_id = $request->goodview;

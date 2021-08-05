@@ -49,6 +49,11 @@ class StockEntry extends Model
     {
         return $this->hasMany(AllotmentItem::class,'entry_id','id');
     }
+
+    public function borrow_item()
+    {
+        return $this->hasMany(BorrowItem::class,'entry_id','id');
+    }    
   
 
 }

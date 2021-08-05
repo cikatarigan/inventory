@@ -17,30 +17,36 @@ use App\Http\Middleware\CheckPermission;
 
 Route::get('/', 'HomeController@index')->name('home');    
 
-      Route::get('barcode/{barcode}' , function($barcode){
-            return response(base64_decode(\DNS1D::getBarcodePNG($barcode, 'I25')))->withHeaders(['Content-Type' =>'image/png']);
-      });
-
       Route::get('qrcode/{qrcode}', function ($qrcode) {
            $image = \QrCode::size(300)->generate($qrcode);
            return response($image)->header('Content-type','image/png');
        });
 
-
+            //Scan Result
             Route::get('/scan', 'HomeController@scan')->name('scan');
             Route::match(['get', 'post'], '/scan/result',     'HomeController@result')->name('result');
+            Route::match(['get', 'post'],'scan/check', '  HomeController@check_result')->name('scan.check');
 
-
+            //Find Location
             Route::get('find/locations', 'HomeController@locations');
-            Route::get('find/goods/{location}', 'HomeController@goods');
+
+             //Find Shelf
+            Route::get('find/shelf/{location}', 'HomeController@shelf');
+
+            //Find Goods
+            Route::get('find/goods/{shelf}', 'HomeController@goods');
+
+            //Find Borrow Goods
             Route::get('find/goods/borrow/{location}', 'HomeController@goods_borrow');
 
+            //Find User
             Route::get('find/users', 'HomeController@users');
             Route::get('find/borrows/{user}', 'HomeController@borrows');
 
-            Route::get('find/shelf/{location}', 'HomeController@shelf');
 
+           
 
+            //Expired
             Route::post('expired/{id}', 'HomeController@expired')->name('expired.goods');
 
 
@@ -111,10 +117,6 @@ Route::get('/', 'HomeController@index')->name('home');
             Route::match(['get', 'post'], 'borrow',    'Admin\BorrowController@index')->name('borrow.index');
             Route::match(['get', 'post'],'borrow/check', 'Admin\BorrowController@check')->name('borrow.check');
             Route::match(['get', 'post'],'borrow/add', 'Admin\BorrowController@create')->name('borrow.add');
-
-            //Allotment
-            Route::match(['get', 'post'], 'return',    'Admin\ReturnController@index')->name('return.index');
-            
 
             //Sample
             Route::match(['get', 'post'], 'sample',	'Admin\SampleController@index')->name('sample.index');

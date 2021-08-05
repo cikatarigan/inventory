@@ -36,4 +36,8 @@ class Allotment extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function location_shelf(){
+        return $this->belongsTo(LocationShelf::class, 'location_shelf_id', 'id');
+    }
 }

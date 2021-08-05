@@ -15,8 +15,9 @@ use App\Models\Expired;
 use Auth;
 use DB;
 use App\Models\StockTransaction;
-
+use App\Models\GoodShelf;
 use App\Models\Borrow;
+
 class HomeController extends Controller
 {
     /**
@@ -61,45 +62,29 @@ class HomeController extends Controller
     }
 
 
-    public function goods_borrow(Request $request, Location $location)
+    public function shelf(Request $request, Location $location)
     {
-        // $good_borrow = DB::table('goods')->join('good_shelves', 'goods.id', '=', 'good_shelves.good_id')
-        // ->where('good_shelves.location_id', $location->id)
-        // ->select([ 'good_id as id','goods.name as text'])->get();
-        
-       $good_borrow = Good::with(['good_shelves.location_shelves'])->whereHas('good_shelves.location_shelves', function($query) use ($location){
-        $query->where('location_id' , $location->id)->select([ '*','name_shelf as text']);
-       })->get();
-            // dd($good_borrow->good_shelves);
+
+        $shelf = DB::table('location_shelves')->join('locations','location_shelves.location_id', '=', 'locations.id')->where('locations.id', $location->id)->select('location_shelves.id as id','name_shelf as text')->get();
+
         return response()->json([
-            'results'  => $good_borrow
+            'results'  => $shelf
         ]);
     }
 
-
-    public function goods(Request $request, Location $location)
+    public function goods(Request $request, LocationShelf $shelf)
     {
-     
-        $goods = Good::with(['good_shelves.location_shelves'])->whereHas('good_shelves.location_shelves', function($query) use ($location){
-            $query->where('location_id', $location->id);
+       
+
+        $goods = Good::with(['good_shelves.location_shelves',])->whereHas('good_shelves.location_shelves', function($query) use ($shelf){
+            $query->where('id', $shelf->id);
         })->select([ '*','goods.name as text'])->get();
   
-        dd($goods);
-
         //  $goods = DB::table('goods')->join('good_shelves', 'goods.id', '=', 'good_shelves.good_id')
         // ->whereHas('location_shelves.location_id', $location->id)->whereNull('goods.isexpired')
         // ->select([ '*','goods.name as text'])->get();
         return response()->json([
             'results'  => $goods
-        ]);
-    }
-
-    public function shelf(Request $request, Location $location)
-    {
-        $shelf = DB::table('location_shelves')->join('locations','location_shelves.location_id', '=', 'locations.id')->where('locations.id', $location->id)->select('location_shelves.id as id','name_shelf as text')->get();
-
-        return response()->json([
-            'results'  => $shelf
         ]);
     }
 
@@ -136,6 +121,26 @@ class HomeController extends Controller
         return view('scan.index');
     }
 
+    public function check_result()
+    {
+         if($request->isMethod('POST')){
+            $amount = Good::find($request->good);    
+ 
+            $validator = $request->validate([
+            'location' => 'required',
+            'good' => 'required',
+           ]);
+
+            $this->validate($request, [
+             'amount' => ['required', 'numeric','max:' . ($amount->getBalanceByWarehouse($request->location))],
+            ]); 
+
+             return response()->json([
+                'success'=>true,
+            ]);   
+        }
+    }
+
     public function result (Request $request)
     {
         $search = $request->q;
@@ -156,18 +161,50 @@ class HomeController extends Controller
                 $data = New Borrow;
                 $data->description = $request->description;
                 $data->status = Borrow::STILL_BORROW;
-            }else if($request->log == 2){
-                $data = New GiveBack;
-            }else {
-                $data = New Allotment;
-                $data->description = $request->description;
-            }
-
                 $data->good_id = $request->good_id;
                 $data->user_id = $request->user;
                 $data->handle_by = Auth::id();
                 $data->amount = $request->amount;
                 $data->save();
+            }else if($request->log == 2){
+                $data = New GiveBack;
+                $data->good_id = $request->good_id;
+                $data->user_id = $request->user;
+                $data->handle_by = Auth::id();
+                $data->amount = $request->amount;
+                $data->save();
+            }else {
+                $data = New Allotment;
+                $data->description = $request->description;
+                $data->good_id = $request->good_id;
+                $data->user_id = $request->user;
+                $data->handle_by = Auth::id();
+                $data->amount = $request->amount;
+                $data->save();
+
+                $amount =  $request->amount;
+                foreach ($entry as  $item) {
+                $stock_amount = $item->amount -  $item->allotment_item()->sum('amount') ;
+                if($stock_amount >  0 ){
+                    $itemallotment = New AllotmentItem;
+                    $itemallotment->entry_id =  $item->id;
+                    $itemallotment->allotment_id = $allotment->id;
+                     
+                    if($amount <= $stock_amount){
+                        $itemallotment->amount = $amount;
+                        $itemallotment->save();
+                        break;
+                    }else{
+                       $itemallotment->amount = $stock_amount;
+                       $itemallotment->save();
+                       $amount = $amount - $itemallotment->amount;  
+                    }
+                }
+            
+            }
+        }
+
+                
 
              return response()->json([
                 'success' => true,
@@ -187,6 +224,10 @@ class HomeController extends Controller
                 $goods = Good::find($data->good_id);
 
         if ($request->isMethod('post')){
+
+            try{
+            DB::statement('SET autocommit=0');
+            DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, stock_transactions WRITE, goods WRITE, allotments WRITE, allotment_items WRITE, expireds WRITE, good_shelves WRITE' );
 
                               
                 $expired = New Expired;
@@ -209,7 +250,20 @@ class HomeController extends Controller
                 $stocktransaction->good_id = $data->good_id;
                 $stocktransaction->user_id = 1;
                 $stocktransaction->location_id = $data->location_shelf->location->id;
+                $stocktransaction->location_shelf_id = $data->location_shelf_id;
                 $expired->stock_transaction()->save($stocktransaction);
+
+                $good_shelf = GoodShelf::where('good_id', $data->good_id)->where('location_shelf_id', $data->location_shelf_id)->first();
+                if($stocktransaction->end_balance == 0){
+                    $good_shelf->delete();
+                }
+
+                DB::getPdo()->exec('UNLOCK TABLES');
+                }catch(\Exception $e){
+                    DB::statement('ROLLBACK');
+
+                    throw $e;
+                }
 
 
                 return response()->json([

@@ -17,6 +17,10 @@ class StockTransaction extends Model
           return $this->belongsTo(Good::class);
     }
 
+    public function location_shelf(){
+        return $this->belongsTo(LocationShelf::class, 'location_shelf_id', 'id');
+    }
+
  
 }
 

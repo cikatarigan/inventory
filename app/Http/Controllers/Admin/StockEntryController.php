@@ -76,6 +76,7 @@ class StockEntryController extends Controller
             $stocktransaction->good_id = $request->good_id;
             $stocktransaction->user_id = Auth::id();
             $stocktransaction->location_id = $request->location_id;
+            $stocktransaction->location_shelf_id = $request->location_shelf;
 
             $stockentry->stock_transaction()->save($stocktransaction);
 

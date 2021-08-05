@@ -32,7 +32,7 @@
                   </div>
                   <div class="form-group">
                      <label for="exampleInputPassword1">Barang</label>
-                     <select class="js-example-basic-single form-control select-custom" id="good" name="good" width="100%">
+                     <select class="js-example-basic-single form-control select-custom" id="goods" name="goods" width="100%">
                       <option value="" disabled selected>Pilih Barang</option>
                      </select>
                   </div>
@@ -83,11 +83,11 @@
                <div class="box box-info">
                   <div class="box-header">
                      <div class="box-body">
-                          <input type="hidden" id="locationview" name="locationview" value="">
-                          <input type="hidden" id="goodview" name="goodview" value="">
-                          <input type="hidden" id="amountview" name="amountview" value="">
-                          <input type="hidden" id="userview" name="userview" value="">
-                          <input type="hidden" id="descriptionview" name="descriptionview" value="">
+                          <input type="hidden" id="locationCheck" name="data_location" value="">
+                          <input type="hidden" id="goodsCheck" name="data_goods" value="">
+                          <input type="hidden" id="amountCheck" name="amountCheck" value="">
+                          <input type="hidden" id="userCheck" name="userCheck" value="">
+                          <input type="hidden" id="descriptionCheck" name="descriptionCheck" value="">
                            <div class="form-group">
                               <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan Password Penerima">
                            </div>
@@ -116,7 +116,7 @@
          }
      });
 
-     $('#good').select2({
+     $('#goods').select2({
          placeholder: "Pilih Barang",
          ajax: {
              url: function (params) {
@@ -127,9 +127,7 @@
          }
      });
 
-
-
-     $('#location').select2({
+    $('#location').select2({
          placeholder: "Pilih location",
          ajax: {
              url: '/find/locations',
@@ -139,6 +137,7 @@
 
 
     $('#nameshelf').select2({
+        minimumResultsForSearch: -1,
          placeholder: "Pilih Rak",
          tags: true,
          ajax: {
@@ -148,12 +147,7 @@
              dataType: 'json'
          }
      });
-    
-    $('#date_expired').datepicker({
-       maxDate: '0'
-    });
-
-  
+      
     $('#FormReturnCheck').submit(function (event) {
          event.preventDefault();
          var $this = $(this);
@@ -169,16 +163,18 @@
                  if (data.success) {  
                     $('#exampleModal').modal('show');
                      var location = $("#location").val();
-                     var good = $("#good").val();
+                     var shelf = $('#nameshelf').val();
+                     var good = $("#goods").val();
                      var amount = $("#amount").val();
                      var user = $("#user").val();
                      var description = $("description").val();
                      console.log(description);
-                      $('#FormReturn #locationview').val(location);
-                      $('#FormReturn #goodview').val(good);
-                      $('#FormReturn #amountview').val(amount);
-                      $('#FormReturn #userview').val(user);
-                      $('#FormReturn #descriptionview').val(description);
+                      $('#FormReturn #locationCheck').val(location);
+                       $('#FormReturn #shelfCheck').val(shelf);
+                      $('#FormReturn #goodsCheck').val(good);
+                      $('#FormReturn #amountCheck').val(amount);
+                      $('#FormReturn #userCheck').val(user);
+                      $('#FormReturn #descriptionCheck').val(description);
                    
                  } else {
                      toastr.error(data.message);
@@ -242,7 +238,7 @@
      });
 
      $('#user').change(function (event) {
-         $('#good').empty();
+         $('#goods').empty();
      });
 
  });
