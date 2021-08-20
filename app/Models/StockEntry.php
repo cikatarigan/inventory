@@ -25,12 +25,7 @@ class StockEntry extends Model
     {
     	return $this->morphOne(StockTransaction::class, "detailable");
     }
-
-    public function location()
-    {
-        return $this->belongsTo(Location::class);
-    }
-
+    
     public function good()
     {
         return $this->belongsTo(Good::class);

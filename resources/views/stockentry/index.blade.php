@@ -67,12 +67,12 @@
       </div>
    </div>
 </div>
-{{-- Modal Delete --}}
+{{-- Modal show barcode --}}
 <div class="modal" tabindex="-1" role="dialog" id="ShowQrcodeModal">
    <div class="modal-dialog">
       <div class="modal-content">
          <form action="#" method="post" id="FormDeleteAdmin">
-            <input type="hidden" id="id_delete" name="id" value="">
+
             <div class="modal-header">
                <h4 class="modal-title">QR CODE</h4>
                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -80,11 +80,15 @@
                </button>
             </div>
             <div class="modal-body">
-              <img src="qrcode/{qrcode}">
+              <div class="text-center">
+               
+                 <div id="qrcode"></div>
+                 
+              </div>
             </div>
             <div class="modal-footer">
-               <button type="submit" class="btn btn-primary">Ya</button>
                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+               <input type="button" value="Print this QR Code" onclick="javascript:window.print()">
             </div>
          </form>
       </div>
@@ -93,8 +97,13 @@
 
 @endsection
 @section('script')
+
 <script>
-   jQuery(document).ready(function($) { 
+
+ jQuery(document).ready(function($) { 
+
+
+
       var table = $('#stockentry-table').DataTable({
           "bFilter": true,
           "processing": true,
@@ -142,21 +151,38 @@
                   "data": "user.name",
                   "orderable": true,
               },
-              {
-            title :"qrcode",
-               "data": "qrcode",
-               render : function (data, type, row){
-                return  '<img src="/qrcode/'+data+'" alt="barcode" style="width: 250;" />';
-              },
+            {
+           title :"Action",
+               render: function(data, type, row) {
+                   return  '<a href="#" data-toggle="tooltip" title="QR CODE" class="edit-btn  badge badge-info" data-qrcode="'+row.qrcode+'"  data-id="'+row.id+'"><i class="fas fa-qrcode fa-lg"></i></a> &nbsp;' 
+                     ;
+               },
               "orderable": false,
-           },
+           }
           ],
           "order": [0, 'desc'],
           "fnCreatedRow": function(nRow, aData, iDataIndex) {
               $(nRow).attr('data', JSON.stringify(aData));
           }
       }); 
-  
-   }); 
+
+
+
+     // showQrCode
+     $('#stockentry-table').on('click', '.edit-btn', function(e){
+         var aData = JSON.parse($(this).parent().parent().attr('data'));
+         $('#id').val(aData.id);
+         $('#ShowQrcodeModal').modal('show');
+          $('#qrcode').empty();
+            $('#qrcode').qrcode({
+             text: aData.qrcode,
+          });
+       
+     });
+     
+    $( "#btn-print" ).click(function() {
+       printData();
+    });
+});
 </script>
 @endsection

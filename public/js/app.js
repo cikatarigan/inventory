@@ -33745,6 +33745,2826 @@ b[_type],e=/wn|up/.test(d)?t:v;if(!c[n]){if(d==_click)A(a,!1,!0);else{if(/wn|er|
 
 /***/ }),
 
+/***/ "./node_modules/jquery-qrcode2/dist/jquery-qrcode.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/jquery-qrcode2/dist/jquery-qrcode.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*! jquery-qrcode v0.17.0 - https://larsjung.de/jquery-qrcode/ */
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(true)
+		module.exports = factory();
+	else {}
+})((typeof self !== 'undefined' ? self : this), function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {var WIN = global.window;
+var JQ = WIN.jQuery; // Check if canvas is available in the browser (as Modernizr does)
+
+var HAS_CANVAS = function () {
+  var el = WIN.document.createElement('canvas');
+  return !!(el.getContext && el.getContext('2d'));
+}();
+
+var is_img_el = function is_img_el(x) {
+  return x && typeof x.tagName === 'string' && x.tagName.toUpperCase() === 'IMG';
+}; // Wrapper for the original QR code generator.
+
+
+var create_qrcode = function create_qrcode(text, level, version, quiet) {
+  var qr = {};
+
+  var qr_gen = __webpack_require__(2);
+
+  qr_gen.stringToBytes = qr_gen.stringToBytesFuncs['UTF-8'];
+  var vqr = qr_gen(version, level);
+  vqr.addData(text);
+  vqr.make();
+  quiet = quiet || 0;
+  var module_count = vqr.getModuleCount();
+  var quiet_module_count = module_count + 2 * quiet;
+
+  var is_dark = function is_dark(row, col) {
+    row -= quiet;
+    col -= quiet;
+    return row >= 0 && row < module_count && col >= 0 && col < module_count && vqr.isDark(row, col);
+  };
+
+  var add_blank = function add_blank(l, t, r, b) {
+    var prev_is_dark = qr.is_dark;
+    var module_size = 1 / quiet_module_count;
+
+    qr.is_dark = function (row, col) {
+      var ml = col * module_size;
+      var mt = row * module_size;
+      var mr = ml + module_size;
+      var mb = mt + module_size;
+      return prev_is_dark(row, col) && (l > mr || ml > r || t > mb || mt > b);
+    };
+  };
+
+  qr.text = text;
+  qr.level = level;
+  qr.version = version;
+  qr.module_count = quiet_module_count;
+  qr.is_dark = is_dark;
+  qr.add_blank = add_blank;
+  return qr;
+}; // Returns a minimal QR code for the given text starting with version `min_ver`.
+// Returns `undefined` if `text` is too long to be encoded in `max_ver`.
+
+
+var create_min_qrcode = function create_min_qrcode(text, level, min_ver, max_ver, quiet) {
+  min_ver = Math.max(1, min_ver || 1);
+  max_ver = Math.min(40, max_ver || 40);
+
+  for (var ver = min_ver; ver <= max_ver; ver += 1) {
+    try {
+      return create_qrcode(text, level, ver, quiet);
+    } catch (err) {
+      /* empty */
+    }
+  }
+
+  return undefined;
+};
+
+var draw_background_label = function draw_background_label(qr, context, settings) {
+  var size = settings.size;
+  var font = 'bold ' + settings.mSize * size + 'px ' + settings.fontname;
+  var ctx = JQ('<canvas/>')[0].getContext('2d');
+  ctx.font = font;
+  var w = ctx.measureText(settings.label).width;
+  var sh = settings.mSize;
+  var sw = w / size;
+  var sl = (1 - sw) * settings.mPosX;
+  var st = (1 - sh) * settings.mPosY;
+  var sr = sl + sw;
+  var sb = st + sh;
+  var pad = 0.01;
+
+  if (settings.mode === 1) {
+    // Strip
+    qr.add_blank(0, st - pad, size, sb + pad);
+  } else {
+    // Box
+    qr.add_blank(sl - pad, st - pad, sr + pad, sb + pad);
+  }
+
+  context.fillStyle = settings.fontcolor;
+  context.font = font;
+  context.fillText(settings.label, sl * size, st * size + 0.75 * settings.mSize * size);
+};
+
+var draw_background_img = function draw_background_img(qr, context, settings) {
+  var size = settings.size;
+  var w = settings.image.naturalWidth || 1;
+  var h = settings.image.naturalHeight || 1;
+  var sh = settings.mSize;
+  var sw = sh * w / h;
+  var sl = (1 - sw) * settings.mPosX;
+  var st = (1 - sh) * settings.mPosY;
+  var sr = sl + sw;
+  var sb = st + sh;
+  var pad = 0.01;
+
+  if (settings.mode === 3) {
+    // Strip
+    qr.add_blank(0, st - pad, size, sb + pad);
+  } else {
+    // Box
+    qr.add_blank(sl - pad, st - pad, sr + pad, sb + pad);
+  }
+
+  context.drawImage(settings.image, sl * size, st * size, sw * size, sh * size);
+};
+
+var draw_background = function draw_background(qr, context, settings) {
+  if (is_img_el(settings.background)) {
+    context.drawImage(settings.background, 0, 0, settings.size, settings.size);
+  } else if (settings.background) {
+    context.fillStyle = settings.background;
+    context.fillRect(settings.left, settings.top, settings.size, settings.size);
+  }
+
+  var mode = settings.mode;
+
+  if (mode === 1 || mode === 2) {
+    draw_background_label(qr, context, settings);
+  } else if (is_img_el(settings.image) && (mode === 3 || mode === 4)) {
+    draw_background_img(qr, context, settings);
+  }
+};
+
+var draw_modules_default = function draw_modules_default(qr, context, settings, left, top, width, row, col) {
+  if (qr.is_dark(row, col)) {
+    context.rect(left, top, width, width);
+  }
+};
+
+var draw_modules_rounded_dark = function draw_modules_rounded_dark(ctx, l, t, r, b, rad, nw, ne, se, sw) {
+  if (nw) {
+    ctx.moveTo(l + rad, t);
+  } else {
+    ctx.moveTo(l, t);
+  }
+
+  if (ne) {
+    ctx.lineTo(r - rad, t);
+    ctx.arcTo(r, t, r, b, rad);
+  } else {
+    ctx.lineTo(r, t);
+  }
+
+  if (se) {
+    ctx.lineTo(r, b - rad);
+    ctx.arcTo(r, b, l, b, rad);
+  } else {
+    ctx.lineTo(r, b);
+  }
+
+  if (sw) {
+    ctx.lineTo(l + rad, b);
+    ctx.arcTo(l, b, l, t, rad);
+  } else {
+    ctx.lineTo(l, b);
+  }
+
+  if (nw) {
+    ctx.lineTo(l, t + rad);
+    ctx.arcTo(l, t, r, t, rad);
+  } else {
+    ctx.lineTo(l, t);
+  }
+};
+
+var draw_modules_rounded_light = function draw_modules_rounded_light(ctx, l, t, r, b, rad, nw, ne, se, sw) {
+  if (nw) {
+    ctx.moveTo(l + rad, t);
+    ctx.lineTo(l, t);
+    ctx.lineTo(l, t + rad);
+    ctx.arcTo(l, t, l + rad, t, rad);
+  }
+
+  if (ne) {
+    ctx.moveTo(r - rad, t);
+    ctx.lineTo(r, t);
+    ctx.lineTo(r, t + rad);
+    ctx.arcTo(r, t, r - rad, t, rad);
+  }
+
+  if (se) {
+    ctx.moveTo(r - rad, b);
+    ctx.lineTo(r, b);
+    ctx.lineTo(r, b - rad);
+    ctx.arcTo(r, b, r - rad, b, rad);
+  }
+
+  if (sw) {
+    ctx.moveTo(l + rad, b);
+    ctx.lineTo(l, b);
+    ctx.lineTo(l, b - rad);
+    ctx.arcTo(l, b, l + rad, b, rad);
+  }
+};
+
+var draw_modules_rounded = function draw_modules_rounded(qr, context, settings, left, top, width, row, col) {
+  var is_dark = qr.is_dark;
+  var right = left + width;
+  var bottom = top + width;
+  var radius = settings.radius * width;
+  var rowT = row - 1;
+  var rowB = row + 1;
+  var colL = col - 1;
+  var colR = col + 1;
+  var center = is_dark(row, col);
+  var northwest = is_dark(rowT, colL);
+  var north = is_dark(rowT, col);
+  var northeast = is_dark(rowT, colR);
+  var east = is_dark(row, colR);
+  var southeast = is_dark(rowB, colR);
+  var south = is_dark(rowB, col);
+  var southwest = is_dark(rowB, colL);
+  var west = is_dark(row, colL);
+
+  if (center) {
+    draw_modules_rounded_dark(context, left, top, right, bottom, radius, !north && !west, !north && !east, !south && !east, !south && !west);
+  } else {
+    draw_modules_rounded_light(context, left, top, right, bottom, radius, north && west && northwest, north && east && northeast, south && east && southeast, south && west && southwest);
+  }
+};
+
+var draw_modules = function draw_modules(qr, context, settings) {
+  var module_count = qr.module_count;
+  var module_size = settings.size / module_count;
+  var fn = draw_modules_default;
+  var row;
+  var col;
+
+  if (settings.radius > 0 && settings.radius <= 0.5) {
+    fn = draw_modules_rounded;
+  }
+
+  context.beginPath();
+
+  for (row = 0; row < module_count; row += 1) {
+    for (col = 0; col < module_count; col += 1) {
+      var l = settings.left + col * module_size;
+      var t = settings.top + row * module_size;
+      var w = module_size;
+      fn(qr, context, settings, l, t, w, row, col);
+    }
+  }
+
+  if (is_img_el(settings.fill)) {
+    context.strokeStyle = 'rgba(0,0,0,0.5)';
+    context.lineWidth = 2;
+    context.stroke();
+    var prev = context.globalCompositeOperation;
+    context.globalCompositeOperation = 'destination-out';
+    context.fill();
+    context.globalCompositeOperation = prev;
+    context.clip();
+    context.drawImage(settings.fill, 0, 0, settings.size, settings.size);
+    context.restore();
+  } else {
+    context.fillStyle = settings.fill;
+    context.fill();
+  }
+}; // Draws QR code to the given `canvas` and returns it.
+
+
+var draw_on_canvas = function draw_on_canvas(canvas, settings) {
+  var qr = create_min_qrcode(settings.text, settings.ecLevel, settings.minVersion, settings.maxVersion, settings.quiet);
+
+  if (!qr) {
+    return null;
+  }
+
+  var $canvas = JQ(canvas).data('qrcode', qr);
+  var context = $canvas[0].getContext('2d');
+  draw_background(qr, context, settings);
+  draw_modules(qr, context, settings);
+  return $canvas;
+}; // Returns a `canvas` element representing the QR code for the given settings.
+
+
+var create_canvas = function create_canvas(settings) {
+  var $canvas = JQ('<canvas/>').attr('width', settings.size).attr('height', settings.size);
+  return draw_on_canvas($canvas, settings);
+}; // Returns an `image` element representing the QR code for the given settings.
+
+
+var create_img = function create_img(settings) {
+  return JQ('<img/>').attr('src', create_canvas(settings)[0].toDataURL('image/png'));
+}; // Returns a `div` element representing the QR code for the given settings.
+
+
+var create_div = function create_div(settings) {
+  var qr = create_min_qrcode(settings.text, settings.ecLevel, settings.minVersion, settings.maxVersion, settings.quiet);
+
+  if (!qr) {
+    return null;
+  } // some shortcuts to improve compression
+
+
+  var settings_size = settings.size;
+  var settings_bgColor = settings.background;
+  var math_floor = Math.floor;
+  var module_count = qr.module_count;
+  var module_size = math_floor(settings_size / module_count);
+  var offset = math_floor(0.5 * (settings_size - module_size * module_count));
+  var row;
+  var col;
+  var container_css = {
+    position: 'relative',
+    left: 0,
+    top: 0,
+    padding: 0,
+    margin: 0,
+    width: settings_size,
+    height: settings_size
+  };
+  var dark_css = {
+    position: 'absolute',
+    padding: 0,
+    margin: 0,
+    width: module_size,
+    height: module_size,
+    'background-color': settings.fill
+  };
+  var $div = JQ('<div/>').data('qrcode', qr).css(container_css);
+
+  if (settings_bgColor) {
+    $div.css('background-color', settings_bgColor);
+  }
+
+  for (row = 0; row < module_count; row += 1) {
+    for (col = 0; col < module_count; col += 1) {
+      if (qr.is_dark(row, col)) {
+        JQ('<div/>').css(dark_css).css({
+          left: offset + col * module_size,
+          top: offset + row * module_size
+        }).appendTo($div);
+      }
+    }
+  }
+
+  return $div;
+};
+
+var create_html = function create_html(settings) {
+  if (HAS_CANVAS && settings.render === 'canvas') {
+    return create_canvas(settings);
+  } else if (HAS_CANVAS && settings.render === 'image') {
+    return create_img(settings);
+  }
+
+  return create_div(settings);
+};
+
+var DEFAULTS = {
+  // render method: `'canvas'`, `'image'` or `'div'`
+  render: 'canvas',
+  // version range somewhere in 1 .. 40
+  minVersion: 1,
+  maxVersion: 40,
+  // error correction level: `'L'`, `'M'`, `'Q'` or `'H'`
+  ecLevel: 'L',
+  // offset in pixel if drawn onto existing canvas
+  left: 0,
+  top: 0,
+  // size in pixel
+  size: 200,
+  // code color or image element
+  fill: '#000',
+  // background color or image element, `null` for transparent background
+  background: '#fff',
+  // content
+  text: 'no text',
+  // corner radius relative to module width: 0.0 .. 0.5
+  radius: 0,
+  // quiet zone in modules
+  quiet: 0,
+  // modes
+  // 0: normal
+  // 1: label strip
+  // 2: label box
+  // 3: image strip
+  // 4: image box
+  mode: 0,
+  mSize: 0.1,
+  mPosX: 0.5,
+  mPosY: 0.5,
+  label: 'no label',
+  fontname: 'sans',
+  fontcolor: '#000',
+  image: null
+};
+
+JQ.fn.qrcode = module.exports = function main(options) {
+  var settings = JQ.extend({}, DEFAULTS, options);
+  return this.each(function (idx, el) {
+    if (el.nodeName.toLowerCase() === 'canvas') {
+      draw_on_canvas(el, settings);
+    } else {
+      JQ(el).append(create_html(settings));
+    }
+  });
+};
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(1)))
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || new Function("return this")();
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+var qrcode = function() {
+
+  //---------------------------------------------------------------------
+  // qrcode
+  //---------------------------------------------------------------------
+
+  /**
+   * qrcode
+   * @param typeNumber 1 to 40
+   * @param errorCorrectionLevel 'L','M','Q','H'
+   */
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+
+      mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+
+      for (var r = -1; r <= 7; r += 1) {
+
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+
+        for (var c = -1; c <= 7; c += 1) {
+
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+
+    var getBestMaskPattern = function() {
+
+      var minLostPoint = 0;
+      var pattern = 0;
+
+      for (var i = 0; i < 8; i += 1) {
+
+        makeImpl(true, i);
+
+        var lostPoint = QRUtil.getLostPoint(_this);
+
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+
+      return pattern;
+    };
+
+    var setupTimingPattern = function() {
+
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+
+    var setupPositionAdjustPattern = function() {
+
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+
+      for (var i = 0; i < pos.length; i += 1) {
+
+        for (var j = 0; j < pos.length; j += 1) {
+
+          var row = pos[i];
+          var col = pos[j];
+
+          if (_modules[row][col] != null) {
+            continue;
+          }
+
+          for (var r = -2; r <= 2; r += 1) {
+
+            for (var c = -2; c <= 2; c += 1) {
+
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    var setupTypeNumber = function(test) {
+
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+
+      // vertical
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+
+      // horizontal
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+
+      // fixed module
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+
+        if (col == 6) col -= 1;
+
+        while (true) {
+
+          for (var c = 0; c < 2; c += 1) {
+
+            if (_modules[row][col - c] == null) {
+
+              var dark = false;
+
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+
+              var mask = maskFunc(row, col - c);
+
+              if (mask) {
+                dark = !dark;
+              }
+
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+
+          row += inc;
+
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+
+      var offset = 0;
+
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+
+        dcdata[r] = new Array(dcCount);
+
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+
+      var data = new Array(totalCodeCount);
+      var index = 0;
+
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+
+      var buffer = qrBitBuffer();
+
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+
+      // calc num max data.
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+
+      // end code
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+
+      // padding
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+
+      // padding
+      while (true) {
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+
+      return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data, mode) {
+
+      mode = mode || 'Byte';
+
+      var newData = null;
+
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+
+        _typeNumber = typeNumber;
+      }
+
+      makeImpl(false, getBestMaskPattern() );
+    };
+
+    _this.createTableTag = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var qrHtml = '';
+
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+
+        qrHtml += '<tr>';
+
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+
+        qrHtml += '</tr>';
+      }
+
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+
+      return qrHtml;
+    };
+
+    _this.createSvgTag = function(cellSize, margin) {
+
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        // Called by options.
+        opts = arguments[0];
+        // overwrite cellSize and margin.
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+      }
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet">';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+
+      return qrSvg;
+    };
+
+    _this.createDataURL = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+
+    _this.createImgTag = function(cellSize, margin, alt) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += alt;
+        img += '"';
+      }
+      img += '/>';
+
+      return img;
+    };
+
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r1, r2, p;
+
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+
+        ascii += '\n';
+      }
+
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r, p;
+
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          line += p ? white : black;
+        }
+
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(row * cellSize, col * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+
+  //---------------------------------------------------------------------
+  // qrcode.createStringToBytes
+  //---------------------------------------------------------------------
+
+  /**
+   * @param unicodeData base64 string of byte array.
+   * [16bit Unicode],[16bit Bytes], ...
+   * @param numChars
+   */
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+
+    // create conversion map.
+
+    var unicodeMap = function() {
+
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+
+      return unicodeMap;
+    }();
+
+    var unknownChar = '?'.charCodeAt(0);
+
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              // 1byte
+              bytes.push(b);
+            } else {
+              // 2bytes
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+
+  //---------------------------------------------------------------------
+  // QRMode
+  //---------------------------------------------------------------------
+
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+
+  //---------------------------------------------------------------------
+  // QRErrorCorrectionLevel
+  //---------------------------------------------------------------------
+
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+
+  //---------------------------------------------------------------------
+  // QRMaskPattern
+  //---------------------------------------------------------------------
+
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+
+  //---------------------------------------------------------------------
+  // QRUtil
+  //---------------------------------------------------------------------
+
+  var QRUtil = function() {
+
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+
+    var _this = {};
+
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+
+    _this.getMaskFunction = function(maskPattern) {
+
+      switch (maskPattern) {
+
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+
+    _this.getLengthInBits = function(mode, type) {
+
+      if (1 <= type && type < 10) {
+
+        // 1 - 9
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 27) {
+
+        // 10 - 26
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 41) {
+
+        // 27 - 40
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else {
+        throw 'type:' + type;
+      }
+    };
+
+    _this.getLostPoint = function(qrcode) {
+
+      var moduleCount = qrcode.getModuleCount();
+
+      var lostPoint = 0;
+
+      // LEVEL1
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+
+          for (var r = -1; r <= 1; r += 1) {
+
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+
+            for (var c = -1; c <= 1; c += 1) {
+
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+
+              if (r == 0 && c == 0) {
+                continue;
+              }
+
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+
+      // LEVEL2
+
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+
+      // LEVEL3
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      // LEVEL4
+
+      var darkCount = 0;
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+
+      return lostPoint;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // QRMath
+  //---------------------------------------------------------------------
+
+  var QRMath = function() {
+
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+
+    // initialize tables
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+
+    var _this = {};
+
+    _this.glog = function(n) {
+
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+
+      return LOG_TABLE[n];
+    };
+
+    _this.gexp = function(n) {
+
+      while (n < 0) {
+        n += 255;
+      }
+
+      while (n >= 256) {
+        n -= 255;
+      }
+
+      return EXP_TABLE[n];
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrPolynomial
+  //---------------------------------------------------------------------
+
+  function qrPolynomial(num, shift) {
+
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+
+    var _this = {};
+
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+
+    _this.getLength = function() {
+      return _num.length;
+    };
+
+    _this.multiply = function(e) {
+
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+
+      return qrPolynomial(num, 0);
+    };
+
+    _this.mod = function(e) {
+
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+
+      // recursive call
+      return qrPolynomial(num, 0).mod(e);
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // QRRSBlock
+  //---------------------------------------------------------------------
+
+  var QRRSBlock = function() {
+
+    var RS_BLOCK_TABLE = [
+
+      // L
+      // M
+      // Q
+      // H
+
+      // 1
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+
+      // 2
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+
+      // 3
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+
+      // 4
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+
+      // 5
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+
+      // 6
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+
+      // 7
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+
+      // 8
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+
+      // 9
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+
+      // 10
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+
+      // 11
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+
+      // 12
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+
+      // 13
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+
+      // 14
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+
+      // 15
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+
+      // 16
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+
+      // 17
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+
+      // 18
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+
+      // 19
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+
+      // 20
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+
+      // 21
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+
+      // 22
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+
+      // 23
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+
+      // 24
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+
+      // 25
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+
+      // 26
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+
+      // 27
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+
+      // 28
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+
+      // 29
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+
+      // 30
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+
+      // 31
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+
+      // 32
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+
+      // 33
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+
+      // 34
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+
+      // 35
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+
+      // 36
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+
+      // 37
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+
+      // 38
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+
+      // 39
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+
+      // 40
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+
+    var _this = {};
+
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+
+      var length = rsBlock.length / 3;
+
+      var list = [];
+
+      for (var i = 0; i < length; i += 1) {
+
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+
+      return list;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrBitBuffer
+  //---------------------------------------------------------------------
+
+  var qrBitBuffer = function() {
+
+    var _buffer = [];
+    var _length = 0;
+
+    var _this = {};
+
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+
+    _this.putBit = function(bit) {
+
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+
+      _length += 1;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrNumber
+  //---------------------------------------------------------------------
+
+  var qrNumber = function(data) {
+
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _data;
+
+      var i = 0;
+
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrAlphaNum
+  //---------------------------------------------------------------------
+
+  var qrAlphaNum = function(data) {
+
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var s = _data;
+
+      var i = 0;
+
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+
+    var getCode = function(c) {
+
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qr8BitByte
+  //---------------------------------------------------------------------
+
+  var qr8BitByte = function(data) {
+
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrKanji
+  //---------------------------------------------------------------------
+
+  var qrKanji = function(data) {
+
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      // self test for sjis support.
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+
+    var _bytes = stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _bytes;
+
+      var i = 0;
+
+      while (i + 1 < data.length) {
+
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+
+        buffer.put(c, 13);
+
+        i += 2;
+      }
+
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+
+    return _this;
+  };
+
+  //=====================================================================
+  // GIF Support etc.
+  //
+
+  //---------------------------------------------------------------------
+  // byteArrayOutputStream
+  //---------------------------------------------------------------------
+
+  var byteArrayOutputStream = function() {
+
+    var _bytes = [];
+
+    var _this = {};
+
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64EncodeOutputStream
+  //---------------------------------------------------------------------
+
+  var base64EncodeOutputStream = function() {
+
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+
+    var _this = {};
+
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+
+    var encode = function(n) {
+      if (n < 0) {
+        // error.
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+
+    _this.writeByte = function(n) {
+
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+
+    _this.flush = function() {
+
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+
+      if (_length % 3 != 0) {
+        // padding
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+
+    _this.toString = function() {
+      return _base64;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64DecodeInputStream
+  //---------------------------------------------------------------------
+
+  var base64DecodeInputStream = function(str) {
+
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+
+    var _this = {};
+
+    _this.read = function() {
+
+      while (_buflen < 8) {
+
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+
+        var c = _str.charAt(_pos);
+        _pos += 1;
+
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          // ignore if whitespace.
+          continue;
+        }
+
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // gifImage (B/W)
+  //---------------------------------------------------------------------
+
+  var gifImage = function(width, height) {
+
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+
+    var _this = {};
+
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+
+    _this.write = function(out) {
+
+      //---------------------------------
+      // GIF Signature
+
+      out.writeString('GIF87a');
+
+      //---------------------------------
+      // Screen Descriptor
+
+      out.writeShort(_width);
+      out.writeShort(_height);
+
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Global Color Map
+
+      // black
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+
+      // white
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+
+      //---------------------------------
+      // Image Descriptor
+
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Local Color Map
+
+      //---------------------------------
+      // Raster Data
+
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+
+      out.writeByte(lzwMinCodeSize);
+
+      var offset = 0;
+
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+
+      //---------------------------------
+      // GIF Terminator
+      out.writeString(';');
+    };
+
+    var bitOutputStream = function(out) {
+
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+
+      var _this = {};
+
+      _this.write = function(data, length) {
+
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+
+      return _this;
+    };
+
+    var getLZWRaster = function(lzwMinCodeSize) {
+
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+
+      // Setup LZWTable
+      var table = lzwTable();
+
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+
+      // clear code
+      bitOut.write(clearCode, bitLength);
+
+      var dataIndex = 0;
+
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+
+      while (dataIndex < _data.length) {
+
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+
+        if (table.contains(s + c) ) {
+
+          s = s + c;
+
+        } else {
+
+          bitOut.write(table.indexOf(s), bitLength);
+
+          if (table.size() < 0xfff) {
+
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+
+            table.add(s + c);
+          }
+
+          s = c;
+        }
+      }
+
+      bitOut.write(table.indexOf(s), bitLength);
+
+      // end code
+      bitOut.write(endCode, bitLength);
+
+      bitOut.flush();
+
+      return byteOut.toByteArray();
+    };
+
+    var lzwTable = function() {
+
+      var _map = {};
+      var _size = 0;
+
+      var _this = {};
+
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+
+      _this.size = function() {
+        return _size;
+      };
+
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+
+      return _this;
+    };
+
+    return _this;
+  };
+
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+
+    var b = byteArrayOutputStream();
+    gif.write(b);
+
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+
+    return 'data:image/gif;base64,' + base64;
+  };
+
+  //---------------------------------------------------------------------
+  // returns qrcode function.
+
+  return qrcode;
+}();
+
+// multibyte support
+!function() {
+
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        // surrogate pair
+        else {
+          i++;
+          // UTF-16 encodes 0x10000-0x10FFFF by
+          // subtracting 0x10000 and splitting the
+          // 20 bits of 0x0-0xFFFFF into two halves
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+
+}();
+
+(function (factory) {
+  if (true) {
+      !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+}(function () {
+    return qrcode;
+}));
+
+
+/***/ })
+/******/ ]);
+});
+
+/***/ }),
+
 /***/ "./node_modules/jquery/dist/jquery.js":
 /*!********************************************!*\
   !*** ./node_modules/jquery/dist/jquery.js ***!
@@ -44626,3832 +47446,6 @@ if ( typeof noGlobal === "undefined" ) {
 return jQuery;
 } );
 
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/JsBarcode.js":
-/*!*************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/JsBarcode.js ***!
-  \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _barcodes = __webpack_require__(/*! ./barcodes/ */ "./node_modules/jsbarcode/bin/barcodes/index.js");
-
-var _barcodes2 = _interopRequireDefault(_barcodes);
-
-var _merge = __webpack_require__(/*! ./help/merge.js */ "./node_modules/jsbarcode/bin/help/merge.js");
-
-var _merge2 = _interopRequireDefault(_merge);
-
-var _linearizeEncodings = __webpack_require__(/*! ./help/linearizeEncodings.js */ "./node_modules/jsbarcode/bin/help/linearizeEncodings.js");
-
-var _linearizeEncodings2 = _interopRequireDefault(_linearizeEncodings);
-
-var _fixOptions = __webpack_require__(/*! ./help/fixOptions.js */ "./node_modules/jsbarcode/bin/help/fixOptions.js");
-
-var _fixOptions2 = _interopRequireDefault(_fixOptions);
-
-var _getRenderProperties = __webpack_require__(/*! ./help/getRenderProperties.js */ "./node_modules/jsbarcode/bin/help/getRenderProperties.js");
-
-var _getRenderProperties2 = _interopRequireDefault(_getRenderProperties);
-
-var _optionsFromStrings = __webpack_require__(/*! ./help/optionsFromStrings.js */ "./node_modules/jsbarcode/bin/help/optionsFromStrings.js");
-
-var _optionsFromStrings2 = _interopRequireDefault(_optionsFromStrings);
-
-var _ErrorHandler = __webpack_require__(/*! ./exceptions/ErrorHandler.js */ "./node_modules/jsbarcode/bin/exceptions/ErrorHandler.js");
-
-var _ErrorHandler2 = _interopRequireDefault(_ErrorHandler);
-
-var _exceptions = __webpack_require__(/*! ./exceptions/exceptions.js */ "./node_modules/jsbarcode/bin/exceptions/exceptions.js");
-
-var _defaults = __webpack_require__(/*! ./options/defaults.js */ "./node_modules/jsbarcode/bin/options/defaults.js");
-
-var _defaults2 = _interopRequireDefault(_defaults);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// The protype of the object returned from the JsBarcode() call
-
-
-// Help functions
-var API = function API() {};
-
-// The first call of the library API
-// Will return an object with all barcodes calls and the data that is used
-// by the renderers
-
-
-// Default values
-
-
-// Exceptions
-// Import all the barcodes
-var JsBarcode = function JsBarcode(element, text, options) {
-	var api = new API();
-
-	if (typeof element === "undefined") {
-		throw Error("No element to render on was provided.");
-	}
-
-	// Variables that will be pased through the API calls
-	api._renderProperties = (0, _getRenderProperties2.default)(element);
-	api._encodings = [];
-	api._options = _defaults2.default;
-	api._errorHandler = new _ErrorHandler2.default(api);
-
-	// If text is set, use the simple syntax (render the barcode directly)
-	if (typeof text !== "undefined") {
-		options = options || {};
-
-		if (!options.format) {
-			options.format = autoSelectBarcode();
-		}
-
-		api.options(options)[options.format](text, options).render();
-	}
-
-	return api;
-};
-
-// To make tests work TODO: remove
-JsBarcode.getModule = function (name) {
-	return _barcodes2.default[name];
-};
-
-// Register all barcodes
-for (var name in _barcodes2.default) {
-	if (_barcodes2.default.hasOwnProperty(name)) {
-		// Security check if the propery is a prototype property
-		registerBarcode(_barcodes2.default, name);
-	}
-}
-function registerBarcode(barcodes, name) {
-	API.prototype[name] = API.prototype[name.toUpperCase()] = API.prototype[name.toLowerCase()] = function (text, options) {
-		var api = this;
-		return api._errorHandler.wrapBarcodeCall(function () {
-			// Ensure text is options.text
-			options.text = typeof options.text === 'undefined' ? undefined : '' + options.text;
-
-			var newOptions = (0, _merge2.default)(api._options, options);
-			newOptions = (0, _optionsFromStrings2.default)(newOptions);
-			var Encoder = barcodes[name];
-			var encoded = encode(text, Encoder, newOptions);
-			api._encodings.push(encoded);
-
-			return api;
-		});
-	};
-}
-
-// encode() handles the Encoder call and builds the binary string to be rendered
-function encode(text, Encoder, options) {
-	// Ensure that text is a string
-	text = "" + text;
-
-	var encoder = new Encoder(text, options);
-
-	// If the input is not valid for the encoder, throw error.
-	// If the valid callback option is set, call it instead of throwing error
-	if (!encoder.valid()) {
-		throw new _exceptions.InvalidInputException(encoder.constructor.name, text);
-	}
-
-	// Make a request for the binary data (and other infromation) that should be rendered
-	var encoded = encoder.encode();
-
-	// Encodings can be nestled like [[1-1, 1-2], 2, [3-1, 3-2]
-	// Convert to [1-1, 1-2, 2, 3-1, 3-2]
-	encoded = (0, _linearizeEncodings2.default)(encoded);
-
-	// Merge
-	for (var i = 0; i < encoded.length; i++) {
-		encoded[i].options = (0, _merge2.default)(options, encoded[i].options);
-	}
-
-	return encoded;
-}
-
-function autoSelectBarcode() {
-	// If CODE128 exists. Use it
-	if (_barcodes2.default["CODE128"]) {
-		return "CODE128";
-	}
-
-	// Else, take the first (probably only) barcode
-	return Object.keys(_barcodes2.default)[0];
-}
-
-// Sets global encoder options
-// Added to the api by the JsBarcode function
-API.prototype.options = function (options) {
-	this._options = (0, _merge2.default)(this._options, options);
-	return this;
-};
-
-// Will create a blank space (usually in between barcodes)
-API.prototype.blank = function (size) {
-	var zeroes = new Array(size + 1).join("0");
-	this._encodings.push({ data: zeroes });
-	return this;
-};
-
-// Initialize JsBarcode on all HTML elements defined.
-API.prototype.init = function () {
-	// Should do nothing if no elements where found
-	if (!this._renderProperties) {
-		return;
-	}
-
-	// Make sure renderProperies is an array
-	if (!Array.isArray(this._renderProperties)) {
-		this._renderProperties = [this._renderProperties];
-	}
-
-	var renderProperty;
-	for (var i in this._renderProperties) {
-		renderProperty = this._renderProperties[i];
-		var options = (0, _merge2.default)(this._options, renderProperty.options);
-
-		if (options.format == "auto") {
-			options.format = autoSelectBarcode();
-		}
-
-		this._errorHandler.wrapBarcodeCall(function () {
-			var text = options.value;
-			var Encoder = _barcodes2.default[options.format.toUpperCase()];
-			var encoded = encode(text, Encoder, options);
-
-			render(renderProperty, encoded, options);
-		});
-	}
-};
-
-// The render API call. Calls the real render function.
-API.prototype.render = function () {
-	if (!this._renderProperties) {
-		throw new _exceptions.NoElementException();
-	}
-
-	if (Array.isArray(this._renderProperties)) {
-		for (var i = 0; i < this._renderProperties.length; i++) {
-			render(this._renderProperties[i], this._encodings, this._options);
-		}
-	} else {
-		render(this._renderProperties, this._encodings, this._options);
-	}
-
-	return this;
-};
-
-API.prototype._defaults = _defaults2.default;
-
-// Prepares the encodings and calls the renderer
-function render(renderProperties, encodings, options) {
-	encodings = (0, _linearizeEncodings2.default)(encodings);
-
-	for (var i = 0; i < encodings.length; i++) {
-		encodings[i].options = (0, _merge2.default)(options, encodings[i].options);
-		(0, _fixOptions2.default)(encodings[i].options);
-	}
-
-	(0, _fixOptions2.default)(options);
-
-	var Renderer = renderProperties.renderer;
-	var renderer = new Renderer(renderProperties.element, encodings, options);
-	renderer.render();
-
-	if (renderProperties.afterRender) {
-		renderProperties.afterRender();
-	}
-}
-
-// Export to browser
-if (typeof window !== "undefined") {
-	window.JsBarcode = JsBarcode;
-}
-
-// Export to jQuery
-/*global jQuery */
-if (typeof jQuery !== 'undefined') {
-	jQuery.fn.JsBarcode = function (content, options) {
-		var elementArray = [];
-		jQuery(this).each(function () {
-			elementArray.push(this);
-		});
-		return JsBarcode(elementArray, content, options);
-	};
-}
-
-// Export to commonJS
-module.exports = JsBarcode;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/Barcode.js":
-/*!********************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/Barcode.js ***!
-  \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Barcode = function Barcode(data, options) {
-	_classCallCheck(this, Barcode);
-
-	this.data = data;
-	this.text = options.text || data;
-	this.options = options;
-};
-
-exports.default = Barcode;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128.js":
-/*!****************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128.js ***!
-  \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Barcode2 = __webpack_require__(/*! ../Barcode.js */ "./node_modules/jsbarcode/bin/barcodes/Barcode.js");
-
-var _Barcode3 = _interopRequireDefault(_Barcode2);
-
-var _constants = __webpack_require__(/*! ./constants */ "./node_modules/jsbarcode/bin/barcodes/CODE128/constants.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-// This is the master class,
-// it does require the start code to be included in the string
-var CODE128 = function (_Barcode) {
-	_inherits(CODE128, _Barcode);
-
-	function CODE128(data, options) {
-		_classCallCheck(this, CODE128);
-
-		// Get array of ascii codes from data
-		var _this = _possibleConstructorReturn(this, (CODE128.__proto__ || Object.getPrototypeOf(CODE128)).call(this, data.substring(1), options));
-
-		_this.bytes = data.split('').map(function (char) {
-			return char.charCodeAt(0);
-		});
-		return _this;
-	}
-
-	_createClass(CODE128, [{
-		key: 'valid',
-		value: function valid() {
-			// ASCII value ranges 0-127, 200-211
-			return (/^[\x00-\x7F\xC8-\xD3]+$/.test(this.data)
-			);
-		}
-
-		// The public encoding function
-
-	}, {
-		key: 'encode',
-		value: function encode() {
-			var bytes = this.bytes;
-			// Remove the start code from the bytes and set its index
-			var startIndex = bytes.shift() - 105;
-			// Get start set by index
-			var startSet = _constants.SET_BY_CODE[startIndex];
-
-			if (startSet === undefined) {
-				throw new RangeError('The encoding does not start with a start character.');
-			}
-
-			if (this.shouldEncodeAsEan128() === true) {
-				bytes.unshift(_constants.FNC1);
-			}
-
-			// Start encode with the right type
-			var encodingResult = CODE128.next(bytes, 1, startSet);
-
-			return {
-				text: this.text === this.data ? this.text.replace(/[^\x20-\x7E]/g, '') : this.text,
-				data:
-				// Add the start bits
-				CODE128.getBar(startIndex) +
-				// Add the encoded bits
-				encodingResult.result +
-				// Add the checksum
-				CODE128.getBar((encodingResult.checksum + startIndex) % _constants.MODULO) +
-				// Add the end bits
-				CODE128.getBar(_constants.STOP)
-			};
-		}
-
-		// GS1-128/EAN-128
-
-	}, {
-		key: 'shouldEncodeAsEan128',
-		value: function shouldEncodeAsEan128() {
-			var isEAN128 = this.options.ean128 || false;
-			if (typeof isEAN128 === 'string') {
-				isEAN128 = isEAN128.toLowerCase() === 'true';
-			}
-			return isEAN128;
-		}
-
-		// Get a bar symbol by index
-
-	}], [{
-		key: 'getBar',
-		value: function getBar(index) {
-			return _constants.BARS[index] ? _constants.BARS[index].toString() : '';
-		}
-
-		// Correct an index by a set and shift it from the bytes array
-
-	}, {
-		key: 'correctIndex',
-		value: function correctIndex(bytes, set) {
-			if (set === _constants.SET_A) {
-				var charCode = bytes.shift();
-				return charCode < 32 ? charCode + 64 : charCode - 32;
-			} else if (set === _constants.SET_B) {
-				return bytes.shift() - 32;
-			} else {
-				return (bytes.shift() - 48) * 10 + bytes.shift() - 48;
-			}
-		}
-	}, {
-		key: 'next',
-		value: function next(bytes, pos, set) {
-			if (!bytes.length) {
-				return { result: '', checksum: 0 };
-			}
-
-			var nextCode = void 0,
-			    index = void 0;
-
-			// Special characters
-			if (bytes[0] >= 200) {
-				index = bytes.shift() - 105;
-				var nextSet = _constants.SWAP[index];
-
-				// Swap to other set
-				if (nextSet !== undefined) {
-					nextCode = CODE128.next(bytes, pos + 1, nextSet);
-				}
-				// Continue on current set but encode a special character
-				else {
-						// Shift
-						if ((set === _constants.SET_A || set === _constants.SET_B) && index === _constants.SHIFT) {
-							// Convert the next character so that is encoded correctly
-							bytes[0] = set === _constants.SET_A ? bytes[0] > 95 ? bytes[0] - 96 : bytes[0] : bytes[0] < 32 ? bytes[0] + 96 : bytes[0];
-						}
-						nextCode = CODE128.next(bytes, pos + 1, set);
-					}
-			}
-			// Continue encoding
-			else {
-					index = CODE128.correctIndex(bytes, set);
-					nextCode = CODE128.next(bytes, pos + 1, set);
-				}
-
-			// Get the correct binary encoding and calculate the weight
-			var enc = CODE128.getBar(index);
-			var weight = index * pos;
-
-			return {
-				result: enc + nextCode.result,
-				checksum: weight + nextCode.checksum
-			};
-		}
-	}]);
-
-	return CODE128;
-}(_Barcode3.default);
-
-exports.default = CODE128;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128A.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128A.js ***!
-  \*****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _CODE2 = __webpack_require__(/*! ./CODE128.js */ "./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128.js");
-
-var _CODE3 = _interopRequireDefault(_CODE2);
-
-var _constants = __webpack_require__(/*! ./constants */ "./node_modules/jsbarcode/bin/barcodes/CODE128/constants.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var CODE128A = function (_CODE) {
-	_inherits(CODE128A, _CODE);
-
-	function CODE128A(string, options) {
-		_classCallCheck(this, CODE128A);
-
-		return _possibleConstructorReturn(this, (CODE128A.__proto__ || Object.getPrototypeOf(CODE128A)).call(this, _constants.A_START_CHAR + string, options));
-	}
-
-	_createClass(CODE128A, [{
-		key: 'valid',
-		value: function valid() {
-			return new RegExp('^' + _constants.A_CHARS + '+$').test(this.data);
-		}
-	}]);
-
-	return CODE128A;
-}(_CODE3.default);
-
-exports.default = CODE128A;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128B.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128B.js ***!
-  \*****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _CODE2 = __webpack_require__(/*! ./CODE128.js */ "./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128.js");
-
-var _CODE3 = _interopRequireDefault(_CODE2);
-
-var _constants = __webpack_require__(/*! ./constants */ "./node_modules/jsbarcode/bin/barcodes/CODE128/constants.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var CODE128B = function (_CODE) {
-	_inherits(CODE128B, _CODE);
-
-	function CODE128B(string, options) {
-		_classCallCheck(this, CODE128B);
-
-		return _possibleConstructorReturn(this, (CODE128B.__proto__ || Object.getPrototypeOf(CODE128B)).call(this, _constants.B_START_CHAR + string, options));
-	}
-
-	_createClass(CODE128B, [{
-		key: 'valid',
-		value: function valid() {
-			return new RegExp('^' + _constants.B_CHARS + '+$').test(this.data);
-		}
-	}]);
-
-	return CODE128B;
-}(_CODE3.default);
-
-exports.default = CODE128B;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128C.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128C.js ***!
-  \*****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _CODE2 = __webpack_require__(/*! ./CODE128.js */ "./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128.js");
-
-var _CODE3 = _interopRequireDefault(_CODE2);
-
-var _constants = __webpack_require__(/*! ./constants */ "./node_modules/jsbarcode/bin/barcodes/CODE128/constants.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var CODE128C = function (_CODE) {
-	_inherits(CODE128C, _CODE);
-
-	function CODE128C(string, options) {
-		_classCallCheck(this, CODE128C);
-
-		return _possibleConstructorReturn(this, (CODE128C.__proto__ || Object.getPrototypeOf(CODE128C)).call(this, _constants.C_START_CHAR + string, options));
-	}
-
-	_createClass(CODE128C, [{
-		key: 'valid',
-		value: function valid() {
-			return new RegExp('^' + _constants.C_CHARS + '+$').test(this.data);
-		}
-	}]);
-
-	return CODE128C;
-}(_CODE3.default);
-
-exports.default = CODE128C;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128_AUTO.js":
-/*!*********************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128_AUTO.js ***!
-  \*********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _CODE2 = __webpack_require__(/*! ./CODE128 */ "./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128.js");
-
-var _CODE3 = _interopRequireDefault(_CODE2);
-
-var _auto = __webpack_require__(/*! ./auto */ "./node_modules/jsbarcode/bin/barcodes/CODE128/auto.js");
-
-var _auto2 = _interopRequireDefault(_auto);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var CODE128AUTO = function (_CODE) {
-	_inherits(CODE128AUTO, _CODE);
-
-	function CODE128AUTO(data, options) {
-		_classCallCheck(this, CODE128AUTO);
-
-		// ASCII value ranges 0-127, 200-211
-		if (/^[\x00-\x7F\xC8-\xD3]+$/.test(data)) {
-			var _this = _possibleConstructorReturn(this, (CODE128AUTO.__proto__ || Object.getPrototypeOf(CODE128AUTO)).call(this, (0, _auto2.default)(data), options));
-		} else {
-			var _this = _possibleConstructorReturn(this, (CODE128AUTO.__proto__ || Object.getPrototypeOf(CODE128AUTO)).call(this, data, options));
-		}
-		return _possibleConstructorReturn(_this);
-	}
-
-	return CODE128AUTO;
-}(_CODE3.default);
-
-exports.default = CODE128AUTO;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/CODE128/auto.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/CODE128/auto.js ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _constants = __webpack_require__(/*! ./constants */ "./node_modules/jsbarcode/bin/barcodes/CODE128/constants.js");
-
-// Match Set functions
-var matchSetALength = function matchSetALength(string) {
-	return string.match(new RegExp('^' + _constants.A_CHARS + '*'))[0].length;
-};
-var matchSetBLength = function matchSetBLength(string) {
-	return string.match(new RegExp('^' + _constants.B_CHARS + '*'))[0].length;
-};
-var matchSetC = function matchSetC(string) {
-	return string.match(new RegExp('^' + _constants.C_CHARS + '*'))[0];
-};
-
-// CODE128A or CODE128B
-function autoSelectFromAB(string, isA) {
-	var ranges = isA ? _constants.A_CHARS : _constants.B_CHARS;
-	var untilC = string.match(new RegExp('^(' + ranges + '+?)(([0-9]{2}){2,})([^0-9]|$)'));
-
-	if (untilC) {
-		return untilC[1] + String.fromCharCode(204) + autoSelectFromC(string.substring(untilC[1].length));
-	}
-
-	var chars = string.match(new RegExp('^' + ranges + '+'))[0];
-
-	if (chars.length === string.length) {
-		return string;
-	}
-
-	return chars + String.fromCharCode(isA ? 205 : 206) + autoSelectFromAB(string.substring(chars.length), !isA);
-}
-
-// CODE128C
-function autoSelectFromC(string) {
-	var cMatch = matchSetC(string);
-	var length = cMatch.length;
-
-	if (length === string.length) {
-		return string;
-	}
-
-	string = string.substring(length);
-
-	// Select A/B depending on the longest match
-	var isA = matchSetALength(string) >= matchSetBLength(string);
-	return cMatch + String.fromCharCode(isA ? 206 : 205) + autoSelectFromAB(string, isA);
-}
-
-// Detect Code Set (A, B or C) and format the string
-
-exports.default = function (string) {
-	var newString = void 0;
-	var cLength = matchSetC(string).length;
-
-	// Select 128C if the string start with enough digits
-	if (cLength >= 2) {
-		newString = _constants.C_START_CHAR + autoSelectFromC(string);
-	} else {
-		// Select A/B depending on the longest match
-		var isA = matchSetALength(string) > matchSetBLength(string);
-		newString = (isA ? _constants.A_START_CHAR : _constants.B_START_CHAR) + autoSelectFromAB(string, isA);
-	}
-
-	return newString.replace(/[\xCD\xCE]([^])[\xCD\xCE]/, // Any sequence between 205 and 206 characters
-	function (match, char) {
-		return String.fromCharCode(203) + char;
-	});
-};
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/CODE128/constants.js":
-/*!******************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/CODE128/constants.js ***!
-  \******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _SET_BY_CODE;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-// constants for internal usage
-var SET_A = exports.SET_A = 0;
-var SET_B = exports.SET_B = 1;
-var SET_C = exports.SET_C = 2;
-
-// Special characters
-var SHIFT = exports.SHIFT = 98;
-var START_A = exports.START_A = 103;
-var START_B = exports.START_B = 104;
-var START_C = exports.START_C = 105;
-var MODULO = exports.MODULO = 103;
-var STOP = exports.STOP = 106;
-var FNC1 = exports.FNC1 = 207;
-
-// Get set by start code
-var SET_BY_CODE = exports.SET_BY_CODE = (_SET_BY_CODE = {}, _defineProperty(_SET_BY_CODE, START_A, SET_A), _defineProperty(_SET_BY_CODE, START_B, SET_B), _defineProperty(_SET_BY_CODE, START_C, SET_C), _SET_BY_CODE);
-
-// Get next set by code
-var SWAP = exports.SWAP = {
-	101: SET_A,
-	100: SET_B,
-	99: SET_C
-};
-
-var A_START_CHAR = exports.A_START_CHAR = String.fromCharCode(208); // START_A + 105
-var B_START_CHAR = exports.B_START_CHAR = String.fromCharCode(209); // START_B + 105
-var C_START_CHAR = exports.C_START_CHAR = String.fromCharCode(210); // START_C + 105
-
-// 128A (Code Set A)
-// ASCII characters 00 to 95 (0–9, A–Z and control codes), special characters, and FNC 1–4
-var A_CHARS = exports.A_CHARS = "[\x00-\x5F\xC8-\xCF]";
-
-// 128B (Code Set B)
-// ASCII characters 32 to 127 (0–9, A–Z, a–z), special characters, and FNC 1–4
-var B_CHARS = exports.B_CHARS = "[\x20-\x7F\xC8-\xCF]";
-
-// 128C (Code Set C)
-// 00–99 (encodes two digits with a single code point) and FNC1
-var C_CHARS = exports.C_CHARS = "(\xCF*[0-9]{2}\xCF*)";
-
-// CODE128 includes 107 symbols:
-// 103 data symbols, 3 start symbols (A, B and C), and 1 stop symbol (the last one)
-// Each symbol consist of three black bars (1) and three white spaces (0).
-var BARS = exports.BARS = [11011001100, 11001101100, 11001100110, 10010011000, 10010001100, 10001001100, 10011001000, 10011000100, 10001100100, 11001001000, 11001000100, 11000100100, 10110011100, 10011011100, 10011001110, 10111001100, 10011101100, 10011100110, 11001110010, 11001011100, 11001001110, 11011100100, 11001110100, 11101101110, 11101001100, 11100101100, 11100100110, 11101100100, 11100110100, 11100110010, 11011011000, 11011000110, 11000110110, 10100011000, 10001011000, 10001000110, 10110001000, 10001101000, 10001100010, 11010001000, 11000101000, 11000100010, 10110111000, 10110001110, 10001101110, 10111011000, 10111000110, 10001110110, 11101110110, 11010001110, 11000101110, 11011101000, 11011100010, 11011101110, 11101011000, 11101000110, 11100010110, 11101101000, 11101100010, 11100011010, 11101111010, 11001000010, 11110001010, 10100110000, 10100001100, 10010110000, 10010000110, 10000101100, 10000100110, 10110010000, 10110000100, 10011010000, 10011000010, 10000110100, 10000110010, 11000010010, 11001010000, 11110111010, 11000010100, 10001111010, 10100111100, 10010111100, 10010011110, 10111100100, 10011110100, 10011110010, 11110100100, 11110010100, 11110010010, 11011011110, 11011110110, 11110110110, 10101111000, 10100011110, 10001011110, 10111101000, 10111100010, 11110101000, 11110100010, 10111011110, 10111101110, 11101011110, 11110101110, 11010000100, 11010010000, 11010011100, 1100011101011];
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/CODE128/index.js":
-/*!**************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/CODE128/index.js ***!
-  \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.CODE128C = exports.CODE128B = exports.CODE128A = exports.CODE128 = undefined;
-
-var _CODE128_AUTO = __webpack_require__(/*! ./CODE128_AUTO.js */ "./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128_AUTO.js");
-
-var _CODE128_AUTO2 = _interopRequireDefault(_CODE128_AUTO);
-
-var _CODE128A = __webpack_require__(/*! ./CODE128A.js */ "./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128A.js");
-
-var _CODE128A2 = _interopRequireDefault(_CODE128A);
-
-var _CODE128B = __webpack_require__(/*! ./CODE128B.js */ "./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128B.js");
-
-var _CODE128B2 = _interopRequireDefault(_CODE128B);
-
-var _CODE128C = __webpack_require__(/*! ./CODE128C.js */ "./node_modules/jsbarcode/bin/barcodes/CODE128/CODE128C.js");
-
-var _CODE128C2 = _interopRequireDefault(_CODE128C);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.CODE128 = _CODE128_AUTO2.default;
-exports.CODE128A = _CODE128A2.default;
-exports.CODE128B = _CODE128B2.default;
-exports.CODE128C = _CODE128C2.default;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/CODE39/index.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/CODE39/index.js ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.CODE39 = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Barcode2 = __webpack_require__(/*! ../Barcode.js */ "./node_modules/jsbarcode/bin/barcodes/Barcode.js");
-
-var _Barcode3 = _interopRequireDefault(_Barcode2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // Encoding documentation:
-// https://en.wikipedia.org/wiki/Code_39#Encoding
-
-var CODE39 = function (_Barcode) {
-	_inherits(CODE39, _Barcode);
-
-	function CODE39(data, options) {
-		_classCallCheck(this, CODE39);
-
-		data = data.toUpperCase();
-
-		// Calculate mod43 checksum if enabled
-		if (options.mod43) {
-			data += getCharacter(mod43checksum(data));
-		}
-
-		return _possibleConstructorReturn(this, (CODE39.__proto__ || Object.getPrototypeOf(CODE39)).call(this, data, options));
-	}
-
-	_createClass(CODE39, [{
-		key: "encode",
-		value: function encode() {
-			// First character is always a *
-			var result = getEncoding("*");
-
-			// Take every character and add the binary representation to the result
-			for (var i = 0; i < this.data.length; i++) {
-				result += getEncoding(this.data[i]) + "0";
-			}
-
-			// Last character is always a *
-			result += getEncoding("*");
-
-			return {
-				data: result,
-				text: this.text
-			};
-		}
-	}, {
-		key: "valid",
-		value: function valid() {
-			return this.data.search(/^[0-9A-Z\-\.\ \$\/\+\%]+$/) !== -1;
-		}
-	}]);
-
-	return CODE39;
-}(_Barcode3.default);
-
-// All characters. The position in the array is the (checksum) value
-
-
-var characters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "-", ".", " ", "$", "/", "+", "%", "*"];
-
-// The decimal representation of the characters, is converted to the
-// corresponding binary with the getEncoding function
-var encodings = [20957, 29783, 23639, 30485, 20951, 29813, 23669, 20855, 29789, 23645, 29975, 23831, 30533, 22295, 30149, 24005, 21623, 29981, 23837, 22301, 30023, 23879, 30545, 22343, 30161, 24017, 21959, 30065, 23921, 22385, 29015, 18263, 29141, 17879, 29045, 18293, 17783, 29021, 18269, 17477, 17489, 17681, 20753, 35770];
-
-// Get the binary representation of a character by converting the encodings
-// from decimal to binary
-function getEncoding(character) {
-	return getBinary(characterValue(character));
-}
-
-function getBinary(characterValue) {
-	return encodings[characterValue].toString(2);
-}
-
-function getCharacter(characterValue) {
-	return characters[characterValue];
-}
-
-function characterValue(character) {
-	return characters.indexOf(character);
-}
-
-function mod43checksum(data) {
-	var checksum = 0;
-	for (var i = 0; i < data.length; i++) {
-		checksum += characterValue(data[i]);
-	}
-
-	checksum = checksum % 43;
-	return checksum;
-}
-
-exports.CODE39 = CODE39;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN.js":
-/*!************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN.js ***!
-  \************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _constants = __webpack_require__(/*! ./constants */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/constants.js");
-
-var _encoder = __webpack_require__(/*! ./encoder */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/encoder.js");
-
-var _encoder2 = _interopRequireDefault(_encoder);
-
-var _Barcode2 = __webpack_require__(/*! ../Barcode */ "./node_modules/jsbarcode/bin/barcodes/Barcode.js");
-
-var _Barcode3 = _interopRequireDefault(_Barcode2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-// Base class for EAN8 & EAN13
-var EAN = function (_Barcode) {
-	_inherits(EAN, _Barcode);
-
-	function EAN(data, options) {
-		_classCallCheck(this, EAN);
-
-		// Make sure the font is not bigger than the space between the guard bars
-		var _this = _possibleConstructorReturn(this, (EAN.__proto__ || Object.getPrototypeOf(EAN)).call(this, data, options));
-
-		_this.fontSize = !options.flat && options.fontSize > options.width * 10 ? options.width * 10 : options.fontSize;
-
-		// Make the guard bars go down half the way of the text
-		_this.guardHeight = options.height + _this.fontSize / 2 + options.textMargin;
-		return _this;
-	}
-
-	_createClass(EAN, [{
-		key: 'encode',
-		value: function encode() {
-			return this.options.flat ? this.encodeFlat() : this.encodeGuarded();
-		}
-	}, {
-		key: 'leftText',
-		value: function leftText(from, to) {
-			return this.text.substr(from, to);
-		}
-	}, {
-		key: 'leftEncode',
-		value: function leftEncode(data, structure) {
-			return (0, _encoder2.default)(data, structure);
-		}
-	}, {
-		key: 'rightText',
-		value: function rightText(from, to) {
-			return this.text.substr(from, to);
-		}
-	}, {
-		key: 'rightEncode',
-		value: function rightEncode(data, structure) {
-			return (0, _encoder2.default)(data, structure);
-		}
-	}, {
-		key: 'encodeGuarded',
-		value: function encodeGuarded() {
-			var textOptions = { fontSize: this.fontSize };
-			var guardOptions = { height: this.guardHeight };
-
-			return [{ data: _constants.SIDE_BIN, options: guardOptions }, { data: this.leftEncode(), text: this.leftText(), options: textOptions }, { data: _constants.MIDDLE_BIN, options: guardOptions }, { data: this.rightEncode(), text: this.rightText(), options: textOptions }, { data: _constants.SIDE_BIN, options: guardOptions }];
-		}
-	}, {
-		key: 'encodeFlat',
-		value: function encodeFlat() {
-			var data = [_constants.SIDE_BIN, this.leftEncode(), _constants.MIDDLE_BIN, this.rightEncode(), _constants.SIDE_BIN];
-
-			return {
-				data: data.join(''),
-				text: this.text
-			};
-		}
-	}]);
-
-	return EAN;
-}(_Barcode3.default);
-
-exports.default = EAN;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN13.js":
-/*!**************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN13.js ***!
-  \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _constants = __webpack_require__(/*! ./constants */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/constants.js");
-
-var _EAN2 = __webpack_require__(/*! ./EAN */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN.js");
-
-var _EAN3 = _interopRequireDefault(_EAN2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // Encoding documentation:
-// https://en.wikipedia.org/wiki/International_Article_Number_(EAN)#Binary_encoding_of_data_digits_into_EAN-13_barcode
-
-// Calculate the checksum digit
-// https://en.wikipedia.org/wiki/International_Article_Number_(EAN)#Calculation_of_checksum_digit
-var checksum = function checksum(number) {
-	var res = number.substr(0, 12).split('').map(function (n) {
-		return +n;
-	}).reduce(function (sum, a, idx) {
-		return idx % 2 ? sum + a * 3 : sum + a;
-	}, 0);
-
-	return (10 - res % 10) % 10;
-};
-
-var EAN13 = function (_EAN) {
-	_inherits(EAN13, _EAN);
-
-	function EAN13(data, options) {
-		_classCallCheck(this, EAN13);
-
-		// Add checksum if it does not exist
-		if (data.search(/^[0-9]{12}$/) !== -1) {
-			data += checksum(data);
-		}
-
-		// Adds a last character to the end of the barcode
-		var _this = _possibleConstructorReturn(this, (EAN13.__proto__ || Object.getPrototypeOf(EAN13)).call(this, data, options));
-
-		_this.lastChar = options.lastChar;
-		return _this;
-	}
-
-	_createClass(EAN13, [{
-		key: 'valid',
-		value: function valid() {
-			return this.data.search(/^[0-9]{13}$/) !== -1 && +this.data[12] === checksum(this.data);
-		}
-	}, {
-		key: 'leftText',
-		value: function leftText() {
-			return _get(EAN13.prototype.__proto__ || Object.getPrototypeOf(EAN13.prototype), 'leftText', this).call(this, 1, 6);
-		}
-	}, {
-		key: 'leftEncode',
-		value: function leftEncode() {
-			var data = this.data.substr(1, 6);
-			var structure = _constants.EAN13_STRUCTURE[this.data[0]];
-			return _get(EAN13.prototype.__proto__ || Object.getPrototypeOf(EAN13.prototype), 'leftEncode', this).call(this, data, structure);
-		}
-	}, {
-		key: 'rightText',
-		value: function rightText() {
-			return _get(EAN13.prototype.__proto__ || Object.getPrototypeOf(EAN13.prototype), 'rightText', this).call(this, 7, 6);
-		}
-	}, {
-		key: 'rightEncode',
-		value: function rightEncode() {
-			var data = this.data.substr(7, 6);
-			return _get(EAN13.prototype.__proto__ || Object.getPrototypeOf(EAN13.prototype), 'rightEncode', this).call(this, data, 'RRRRRR');
-		}
-
-		// The "standard" way of printing EAN13 barcodes with guard bars
-
-	}, {
-		key: 'encodeGuarded',
-		value: function encodeGuarded() {
-			var data = _get(EAN13.prototype.__proto__ || Object.getPrototypeOf(EAN13.prototype), 'encodeGuarded', this).call(this);
-
-			// Extend data with left digit & last character
-			if (this.options.displayValue) {
-				data.unshift({
-					data: '000000000000',
-					text: this.text.substr(0, 1),
-					options: { textAlign: 'left', fontSize: this.fontSize }
-				});
-
-				if (this.options.lastChar) {
-					data.push({
-						data: '00'
-					});
-					data.push({
-						data: '00000',
-						text: this.options.lastChar,
-						options: { fontSize: this.fontSize }
-					});
-				}
-			}
-
-			return data;
-		}
-	}]);
-
-	return EAN13;
-}(_EAN3.default);
-
-exports.default = EAN13;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN2.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN2.js ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _constants = __webpack_require__(/*! ./constants */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/constants.js");
-
-var _encoder = __webpack_require__(/*! ./encoder */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/encoder.js");
-
-var _encoder2 = _interopRequireDefault(_encoder);
-
-var _Barcode2 = __webpack_require__(/*! ../Barcode */ "./node_modules/jsbarcode/bin/barcodes/Barcode.js");
-
-var _Barcode3 = _interopRequireDefault(_Barcode2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // Encoding documentation:
-// https://en.wikipedia.org/wiki/EAN_2#Encoding
-
-var EAN2 = function (_Barcode) {
-	_inherits(EAN2, _Barcode);
-
-	function EAN2(data, options) {
-		_classCallCheck(this, EAN2);
-
-		return _possibleConstructorReturn(this, (EAN2.__proto__ || Object.getPrototypeOf(EAN2)).call(this, data, options));
-	}
-
-	_createClass(EAN2, [{
-		key: 'valid',
-		value: function valid() {
-			return this.data.search(/^[0-9]{2}$/) !== -1;
-		}
-	}, {
-		key: 'encode',
-		value: function encode() {
-			// Choose the structure based on the number mod 4
-			var structure = _constants.EAN2_STRUCTURE[parseInt(this.data) % 4];
-			return {
-				// Start bits + Encode the two digits with 01 in between
-				data: '1011' + (0, _encoder2.default)(this.data, structure, '01'),
-				text: this.text
-			};
-		}
-	}]);
-
-	return EAN2;
-}(_Barcode3.default);
-
-exports.default = EAN2;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN5.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN5.js ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _constants = __webpack_require__(/*! ./constants */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/constants.js");
-
-var _encoder = __webpack_require__(/*! ./encoder */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/encoder.js");
-
-var _encoder2 = _interopRequireDefault(_encoder);
-
-var _Barcode2 = __webpack_require__(/*! ../Barcode */ "./node_modules/jsbarcode/bin/barcodes/Barcode.js");
-
-var _Barcode3 = _interopRequireDefault(_Barcode2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // Encoding documentation:
-// https://en.wikipedia.org/wiki/EAN_5#Encoding
-
-var checksum = function checksum(data) {
-	var result = data.split('').map(function (n) {
-		return +n;
-	}).reduce(function (sum, a, idx) {
-		return idx % 2 ? sum + a * 9 : sum + a * 3;
-	}, 0);
-	return result % 10;
-};
-
-var EAN5 = function (_Barcode) {
-	_inherits(EAN5, _Barcode);
-
-	function EAN5(data, options) {
-		_classCallCheck(this, EAN5);
-
-		return _possibleConstructorReturn(this, (EAN5.__proto__ || Object.getPrototypeOf(EAN5)).call(this, data, options));
-	}
-
-	_createClass(EAN5, [{
-		key: 'valid',
-		value: function valid() {
-			return this.data.search(/^[0-9]{5}$/) !== -1;
-		}
-	}, {
-		key: 'encode',
-		value: function encode() {
-			var structure = _constants.EAN5_STRUCTURE[checksum(this.data)];
-			return {
-				data: '1011' + (0, _encoder2.default)(this.data, structure, '01'),
-				text: this.text
-			};
-		}
-	}]);
-
-	return EAN5;
-}(_Barcode3.default);
-
-exports.default = EAN5;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN8.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN8.js ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _EAN2 = __webpack_require__(/*! ./EAN */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN.js");
-
-var _EAN3 = _interopRequireDefault(_EAN2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // Encoding documentation:
-// http://www.barcodeisland.com/ean8.phtml
-
-// Calculate the checksum digit
-var checksum = function checksum(number) {
-	var res = number.substr(0, 7).split('').map(function (n) {
-		return +n;
-	}).reduce(function (sum, a, idx) {
-		return idx % 2 ? sum + a : sum + a * 3;
-	}, 0);
-
-	return (10 - res % 10) % 10;
-};
-
-var EAN8 = function (_EAN) {
-	_inherits(EAN8, _EAN);
-
-	function EAN8(data, options) {
-		_classCallCheck(this, EAN8);
-
-		// Add checksum if it does not exist
-		if (data.search(/^[0-9]{7}$/) !== -1) {
-			data += checksum(data);
-		}
-
-		return _possibleConstructorReturn(this, (EAN8.__proto__ || Object.getPrototypeOf(EAN8)).call(this, data, options));
-	}
-
-	_createClass(EAN8, [{
-		key: 'valid',
-		value: function valid() {
-			return this.data.search(/^[0-9]{8}$/) !== -1 && +this.data[7] === checksum(this.data);
-		}
-	}, {
-		key: 'leftText',
-		value: function leftText() {
-			return _get(EAN8.prototype.__proto__ || Object.getPrototypeOf(EAN8.prototype), 'leftText', this).call(this, 0, 4);
-		}
-	}, {
-		key: 'leftEncode',
-		value: function leftEncode() {
-			var data = this.data.substr(0, 4);
-			return _get(EAN8.prototype.__proto__ || Object.getPrototypeOf(EAN8.prototype), 'leftEncode', this).call(this, data, 'LLLL');
-		}
-	}, {
-		key: 'rightText',
-		value: function rightText() {
-			return _get(EAN8.prototype.__proto__ || Object.getPrototypeOf(EAN8.prototype), 'rightText', this).call(this, 4, 4);
-		}
-	}, {
-		key: 'rightEncode',
-		value: function rightEncode() {
-			var data = this.data.substr(4, 4);
-			return _get(EAN8.prototype.__proto__ || Object.getPrototypeOf(EAN8.prototype), 'rightEncode', this).call(this, data, 'RRRR');
-		}
-	}]);
-
-	return EAN8;
-}(_EAN3.default);
-
-exports.default = EAN8;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/UPC.js":
-/*!************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/EAN_UPC/UPC.js ***!
-  \************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-exports.checksum = checksum;
-
-var _encoder = __webpack_require__(/*! ./encoder */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/encoder.js");
-
-var _encoder2 = _interopRequireDefault(_encoder);
-
-var _Barcode2 = __webpack_require__(/*! ../Barcode.js */ "./node_modules/jsbarcode/bin/barcodes/Barcode.js");
-
-var _Barcode3 = _interopRequireDefault(_Barcode2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // Encoding documentation:
-// https://en.wikipedia.org/wiki/Universal_Product_Code#Encoding
-
-var UPC = function (_Barcode) {
-	_inherits(UPC, _Barcode);
-
-	function UPC(data, options) {
-		_classCallCheck(this, UPC);
-
-		// Add checksum if it does not exist
-		if (data.search(/^[0-9]{11}$/) !== -1) {
-			data += checksum(data);
-		}
-
-		var _this = _possibleConstructorReturn(this, (UPC.__proto__ || Object.getPrototypeOf(UPC)).call(this, data, options));
-
-		_this.displayValue = options.displayValue;
-
-		// Make sure the font is not bigger than the space between the guard bars
-		if (options.fontSize > options.width * 10) {
-			_this.fontSize = options.width * 10;
-		} else {
-			_this.fontSize = options.fontSize;
-		}
-
-		// Make the guard bars go down half the way of the text
-		_this.guardHeight = options.height + _this.fontSize / 2 + options.textMargin;
-		return _this;
-	}
-
-	_createClass(UPC, [{
-		key: "valid",
-		value: function valid() {
-			return this.data.search(/^[0-9]{12}$/) !== -1 && this.data[11] == checksum(this.data);
-		}
-	}, {
-		key: "encode",
-		value: function encode() {
-			if (this.options.flat) {
-				return this.flatEncoding();
-			} else {
-				return this.guardedEncoding();
-			}
-		}
-	}, {
-		key: "flatEncoding",
-		value: function flatEncoding() {
-			var result = "";
-
-			result += "101";
-			result += (0, _encoder2.default)(this.data.substr(0, 6), "LLLLLL");
-			result += "01010";
-			result += (0, _encoder2.default)(this.data.substr(6, 6), "RRRRRR");
-			result += "101";
-
-			return {
-				data: result,
-				text: this.text
-			};
-		}
-	}, {
-		key: "guardedEncoding",
-		value: function guardedEncoding() {
-			var result = [];
-
-			// Add the first digit
-			if (this.displayValue) {
-				result.push({
-					data: "00000000",
-					text: this.text.substr(0, 1),
-					options: { textAlign: "left", fontSize: this.fontSize }
-				});
-			}
-
-			// Add the guard bars
-			result.push({
-				data: "101" + (0, _encoder2.default)(this.data[0], "L"),
-				options: { height: this.guardHeight }
-			});
-
-			// Add the left side
-			result.push({
-				data: (0, _encoder2.default)(this.data.substr(1, 5), "LLLLL"),
-				text: this.text.substr(1, 5),
-				options: { fontSize: this.fontSize }
-			});
-
-			// Add the middle bits
-			result.push({
-				data: "01010",
-				options: { height: this.guardHeight }
-			});
-
-			// Add the right side
-			result.push({
-				data: (0, _encoder2.default)(this.data.substr(6, 5), "RRRRR"),
-				text: this.text.substr(6, 5),
-				options: { fontSize: this.fontSize }
-			});
-
-			// Add the end bits
-			result.push({
-				data: (0, _encoder2.default)(this.data[11], "R") + "101",
-				options: { height: this.guardHeight }
-			});
-
-			// Add the last digit
-			if (this.displayValue) {
-				result.push({
-					data: "00000000",
-					text: this.text.substr(11, 1),
-					options: { textAlign: "right", fontSize: this.fontSize }
-				});
-			}
-
-			return result;
-		}
-	}]);
-
-	return UPC;
-}(_Barcode3.default);
-
-// Calulate the checksum digit
-// https://en.wikipedia.org/wiki/International_Article_Number_(EAN)#Calculation_of_checksum_digit
-
-
-function checksum(number) {
-	var result = 0;
-
-	var i;
-	for (i = 1; i < 11; i += 2) {
-		result += parseInt(number[i]);
-	}
-	for (i = 0; i < 11; i += 2) {
-		result += parseInt(number[i]) * 3;
-	}
-
-	return (10 - result % 10) % 10;
-}
-
-exports.default = UPC;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/UPCE.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/EAN_UPC/UPCE.js ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _encoder = __webpack_require__(/*! ./encoder */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/encoder.js");
-
-var _encoder2 = _interopRequireDefault(_encoder);
-
-var _Barcode2 = __webpack_require__(/*! ../Barcode.js */ "./node_modules/jsbarcode/bin/barcodes/Barcode.js");
-
-var _Barcode3 = _interopRequireDefault(_Barcode2);
-
-var _UPC = __webpack_require__(/*! ./UPC.js */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/UPC.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // Encoding documentation:
-// https://en.wikipedia.org/wiki/Universal_Product_Code#Encoding
-//
-// UPC-E documentation:
-// https://en.wikipedia.org/wiki/Universal_Product_Code#UPC-E
-
-var EXPANSIONS = ["XX00000XXX", "XX10000XXX", "XX20000XXX", "XXX00000XX", "XXXX00000X", "XXXXX00005", "XXXXX00006", "XXXXX00007", "XXXXX00008", "XXXXX00009"];
-
-var PARITIES = [["EEEOOO", "OOOEEE"], ["EEOEOO", "OOEOEE"], ["EEOOEO", "OOEEOE"], ["EEOOOE", "OOEEEO"], ["EOEEOO", "OEOOEE"], ["EOOEEO", "OEEOOE"], ["EOOOEE", "OEEEOO"], ["EOEOEO", "OEOEOE"], ["EOEOOE", "OEOEEO"], ["EOOEOE", "OEEOEO"]];
-
-var UPCE = function (_Barcode) {
-	_inherits(UPCE, _Barcode);
-
-	function UPCE(data, options) {
-		_classCallCheck(this, UPCE);
-
-		var _this = _possibleConstructorReturn(this, (UPCE.__proto__ || Object.getPrototypeOf(UPCE)).call(this, data, options));
-		// Code may be 6 or 8 digits;
-		// A 7 digit code is ambiguous as to whether the extra digit
-		// is a UPC-A check or number system digit.
-
-
-		_this.isValid = false;
-		if (data.search(/^[0-9]{6}$/) !== -1) {
-			_this.middleDigits = data;
-			_this.upcA = expandToUPCA(data, "0");
-			_this.text = options.text || '' + _this.upcA[0] + data + _this.upcA[_this.upcA.length - 1];
-			_this.isValid = true;
-		} else if (data.search(/^[01][0-9]{7}$/) !== -1) {
-			_this.middleDigits = data.substring(1, data.length - 1);
-			_this.upcA = expandToUPCA(_this.middleDigits, data[0]);
-
-			if (_this.upcA[_this.upcA.length - 1] === data[data.length - 1]) {
-				_this.isValid = true;
-			} else {
-				// checksum mismatch
-				return _possibleConstructorReturn(_this);
-			}
-		} else {
-			return _possibleConstructorReturn(_this);
-		}
-
-		_this.displayValue = options.displayValue;
-
-		// Make sure the font is not bigger than the space between the guard bars
-		if (options.fontSize > options.width * 10) {
-			_this.fontSize = options.width * 10;
-		} else {
-			_this.fontSize = options.fontSize;
-		}
-
-		// Make the guard bars go down half the way of the text
-		_this.guardHeight = options.height + _this.fontSize / 2 + options.textMargin;
-		return _this;
-	}
-
-	_createClass(UPCE, [{
-		key: 'valid',
-		value: function valid() {
-			return this.isValid;
-		}
-	}, {
-		key: 'encode',
-		value: function encode() {
-			if (this.options.flat) {
-				return this.flatEncoding();
-			} else {
-				return this.guardedEncoding();
-			}
-		}
-	}, {
-		key: 'flatEncoding',
-		value: function flatEncoding() {
-			var result = "";
-
-			result += "101";
-			result += this.encodeMiddleDigits();
-			result += "010101";
-
-			return {
-				data: result,
-				text: this.text
-			};
-		}
-	}, {
-		key: 'guardedEncoding',
-		value: function guardedEncoding() {
-			var result = [];
-
-			// Add the UPC-A number system digit beneath the quiet zone
-			if (this.displayValue) {
-				result.push({
-					data: "00000000",
-					text: this.text[0],
-					options: { textAlign: "left", fontSize: this.fontSize }
-				});
-			}
-
-			// Add the guard bars
-			result.push({
-				data: "101",
-				options: { height: this.guardHeight }
-			});
-
-			// Add the 6 UPC-E digits
-			result.push({
-				data: this.encodeMiddleDigits(),
-				text: this.text.substring(1, 7),
-				options: { fontSize: this.fontSize }
-			});
-
-			// Add the end bits
-			result.push({
-				data: "010101",
-				options: { height: this.guardHeight }
-			});
-
-			// Add the UPC-A check digit beneath the quiet zone
-			if (this.displayValue) {
-				result.push({
-					data: "00000000",
-					text: this.text[7],
-					options: { textAlign: "right", fontSize: this.fontSize }
-				});
-			}
-
-			return result;
-		}
-	}, {
-		key: 'encodeMiddleDigits',
-		value: function encodeMiddleDigits() {
-			var numberSystem = this.upcA[0];
-			var checkDigit = this.upcA[this.upcA.length - 1];
-			var parity = PARITIES[parseInt(checkDigit)][parseInt(numberSystem)];
-			return (0, _encoder2.default)(this.middleDigits, parity);
-		}
-	}]);
-
-	return UPCE;
-}(_Barcode3.default);
-
-function expandToUPCA(middleDigits, numberSystem) {
-	var lastUpcE = parseInt(middleDigits[middleDigits.length - 1]);
-	var expansion = EXPANSIONS[lastUpcE];
-
-	var result = "";
-	var digitIndex = 0;
-	for (var i = 0; i < expansion.length; i++) {
-		var c = expansion[i];
-		if (c === 'X') {
-			result += middleDigits[digitIndex++];
-		} else {
-			result += c;
-		}
-	}
-
-	result = '' + numberSystem + result;
-	return '' + result + (0, _UPC.checksum)(result);
-}
-
-exports.default = UPCE;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/constants.js":
-/*!******************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/EAN_UPC/constants.js ***!
-  \******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-// Standard start end and middle bits
-var SIDE_BIN = exports.SIDE_BIN = '101';
-var MIDDLE_BIN = exports.MIDDLE_BIN = '01010';
-
-var BINARIES = exports.BINARIES = {
-	'L': [// The L (left) type of encoding
-	'0001101', '0011001', '0010011', '0111101', '0100011', '0110001', '0101111', '0111011', '0110111', '0001011'],
-	'G': [// The G type of encoding
-	'0100111', '0110011', '0011011', '0100001', '0011101', '0111001', '0000101', '0010001', '0001001', '0010111'],
-	'R': [// The R (right) type of encoding
-	'1110010', '1100110', '1101100', '1000010', '1011100', '1001110', '1010000', '1000100', '1001000', '1110100'],
-	'O': [// The O (odd) encoding for UPC-E
-	'0001101', '0011001', '0010011', '0111101', '0100011', '0110001', '0101111', '0111011', '0110111', '0001011'],
-	'E': [// The E (even) encoding for UPC-E
-	'0100111', '0110011', '0011011', '0100001', '0011101', '0111001', '0000101', '0010001', '0001001', '0010111']
-};
-
-// Define the EAN-2 structure
-var EAN2_STRUCTURE = exports.EAN2_STRUCTURE = ['LL', 'LG', 'GL', 'GG'];
-
-// Define the EAN-5 structure
-var EAN5_STRUCTURE = exports.EAN5_STRUCTURE = ['GGLLL', 'GLGLL', 'GLLGL', 'GLLLG', 'LGGLL', 'LLGGL', 'LLLGG', 'LGLGL', 'LGLLG', 'LLGLG'];
-
-// Define the EAN-13 structure
-var EAN13_STRUCTURE = exports.EAN13_STRUCTURE = ['LLLLLL', 'LLGLGG', 'LLGGLG', 'LLGGGL', 'LGLLGG', 'LGGLLG', 'LGGGLL', 'LGLGLG', 'LGLGGL', 'LGGLGL'];
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/encoder.js":
-/*!****************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/EAN_UPC/encoder.js ***!
-  \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _constants = __webpack_require__(/*! ./constants */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/constants.js");
-
-// Encode data string
-var encode = function encode(data, structure, separator) {
-	var encoded = data.split('').map(function (val, idx) {
-		return _constants.BINARIES[structure[idx]];
-	}).map(function (val, idx) {
-		return val ? val[data[idx]] : '';
-	});
-
-	if (separator) {
-		var last = data.length - 1;
-		encoded = encoded.map(function (val, idx) {
-			return idx < last ? val + separator : val;
-		});
-	}
-
-	return encoded.join('');
-};
-
-exports.default = encode;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/index.js":
-/*!**************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/EAN_UPC/index.js ***!
-  \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.UPCE = exports.UPC = exports.EAN2 = exports.EAN5 = exports.EAN8 = exports.EAN13 = undefined;
-
-var _EAN = __webpack_require__(/*! ./EAN13.js */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN13.js");
-
-var _EAN2 = _interopRequireDefault(_EAN);
-
-var _EAN3 = __webpack_require__(/*! ./EAN8.js */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN8.js");
-
-var _EAN4 = _interopRequireDefault(_EAN3);
-
-var _EAN5 = __webpack_require__(/*! ./EAN5.js */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN5.js");
-
-var _EAN6 = _interopRequireDefault(_EAN5);
-
-var _EAN7 = __webpack_require__(/*! ./EAN2.js */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/EAN2.js");
-
-var _EAN8 = _interopRequireDefault(_EAN7);
-
-var _UPC = __webpack_require__(/*! ./UPC.js */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/UPC.js");
-
-var _UPC2 = _interopRequireDefault(_UPC);
-
-var _UPCE = __webpack_require__(/*! ./UPCE.js */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/UPCE.js");
-
-var _UPCE2 = _interopRequireDefault(_UPCE);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.EAN13 = _EAN2.default;
-exports.EAN8 = _EAN4.default;
-exports.EAN5 = _EAN6.default;
-exports.EAN2 = _EAN8.default;
-exports.UPC = _UPC2.default;
-exports.UPCE = _UPCE2.default;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/GenericBarcode/index.js":
-/*!*********************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/GenericBarcode/index.js ***!
-  \*********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.GenericBarcode = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Barcode2 = __webpack_require__(/*! ../Barcode.js */ "./node_modules/jsbarcode/bin/barcodes/Barcode.js");
-
-var _Barcode3 = _interopRequireDefault(_Barcode2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var GenericBarcode = function (_Barcode) {
-	_inherits(GenericBarcode, _Barcode);
-
-	function GenericBarcode(data, options) {
-		_classCallCheck(this, GenericBarcode);
-
-		return _possibleConstructorReturn(this, (GenericBarcode.__proto__ || Object.getPrototypeOf(GenericBarcode)).call(this, data, options)); // Sets this.data and this.text
-	}
-
-	// Return the corresponding binary numbers for the data provided
-
-
-	_createClass(GenericBarcode, [{
-		key: "encode",
-		value: function encode() {
-			return {
-				data: "10101010101010101010101010101010101010101",
-				text: this.text
-			};
-		}
-
-		// Resturn true/false if the string provided is valid for this encoder
-
-	}, {
-		key: "valid",
-		value: function valid() {
-			return true;
-		}
-	}]);
-
-	return GenericBarcode;
-}(_Barcode3.default);
-
-exports.GenericBarcode = GenericBarcode;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/ITF/ITF.js":
-/*!********************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/ITF/ITF.js ***!
-  \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _constants = __webpack_require__(/*! ./constants */ "./node_modules/jsbarcode/bin/barcodes/ITF/constants.js");
-
-var _Barcode2 = __webpack_require__(/*! ../Barcode */ "./node_modules/jsbarcode/bin/barcodes/Barcode.js");
-
-var _Barcode3 = _interopRequireDefault(_Barcode2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var ITF = function (_Barcode) {
-	_inherits(ITF, _Barcode);
-
-	function ITF() {
-		_classCallCheck(this, ITF);
-
-		return _possibleConstructorReturn(this, (ITF.__proto__ || Object.getPrototypeOf(ITF)).apply(this, arguments));
-	}
-
-	_createClass(ITF, [{
-		key: 'valid',
-		value: function valid() {
-			return this.data.search(/^([0-9]{2})+$/) !== -1;
-		}
-	}, {
-		key: 'encode',
-		value: function encode() {
-			var _this2 = this;
-
-			// Calculate all the digit pairs
-			var encoded = this.data.match(/.{2}/g).map(function (pair) {
-				return _this2.encodePair(pair);
-			}).join('');
-
-			return {
-				data: _constants.START_BIN + encoded + _constants.END_BIN,
-				text: this.text
-			};
-		}
-
-		// Calculate the data of a number pair
-
-	}, {
-		key: 'encodePair',
-		value: function encodePair(pair) {
-			var second = _constants.BINARIES[pair[1]];
-
-			return _constants.BINARIES[pair[0]].split('').map(function (first, idx) {
-				return (first === '1' ? '111' : '1') + (second[idx] === '1' ? '000' : '0');
-			}).join('');
-		}
-	}]);
-
-	return ITF;
-}(_Barcode3.default);
-
-exports.default = ITF;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/ITF/ITF14.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/ITF/ITF14.js ***!
-  \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _ITF2 = __webpack_require__(/*! ./ITF */ "./node_modules/jsbarcode/bin/barcodes/ITF/ITF.js");
-
-var _ITF3 = _interopRequireDefault(_ITF2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-// Calculate the checksum digit
-var checksum = function checksum(data) {
-	var res = data.substr(0, 13).split('').map(function (num) {
-		return parseInt(num, 10);
-	}).reduce(function (sum, n, idx) {
-		return sum + n * (3 - idx % 2 * 2);
-	}, 0);
-
-	return Math.ceil(res / 10) * 10 - res;
-};
-
-var ITF14 = function (_ITF) {
-	_inherits(ITF14, _ITF);
-
-	function ITF14(data, options) {
-		_classCallCheck(this, ITF14);
-
-		// Add checksum if it does not exist
-		if (data.search(/^[0-9]{13}$/) !== -1) {
-			data += checksum(data);
-		}
-		return _possibleConstructorReturn(this, (ITF14.__proto__ || Object.getPrototypeOf(ITF14)).call(this, data, options));
-	}
-
-	_createClass(ITF14, [{
-		key: 'valid',
-		value: function valid() {
-			return this.data.search(/^[0-9]{14}$/) !== -1 && +this.data[13] === checksum(this.data);
-		}
-	}]);
-
-	return ITF14;
-}(_ITF3.default);
-
-exports.default = ITF14;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/ITF/constants.js":
-/*!**************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/ITF/constants.js ***!
-  \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-var START_BIN = exports.START_BIN = '1010';
-var END_BIN = exports.END_BIN = '11101';
-
-var BINARIES = exports.BINARIES = ['00110', '10001', '01001', '11000', '00101', '10100', '01100', '00011', '10010', '01010'];
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/ITF/index.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/ITF/index.js ***!
-  \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.ITF14 = exports.ITF = undefined;
-
-var _ITF = __webpack_require__(/*! ./ITF */ "./node_modules/jsbarcode/bin/barcodes/ITF/ITF.js");
-
-var _ITF2 = _interopRequireDefault(_ITF);
-
-var _ITF3 = __webpack_require__(/*! ./ITF14 */ "./node_modules/jsbarcode/bin/barcodes/ITF/ITF14.js");
-
-var _ITF4 = _interopRequireDefault(_ITF3);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.ITF = _ITF2.default;
-exports.ITF14 = _ITF4.default;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI.js":
-/*!********************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/MSI/MSI.js ***!
-  \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Barcode2 = __webpack_require__(/*! ../Barcode.js */ "./node_modules/jsbarcode/bin/barcodes/Barcode.js");
-
-var _Barcode3 = _interopRequireDefault(_Barcode2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // Encoding documentation
-// https://en.wikipedia.org/wiki/MSI_Barcode#Character_set_and_binary_lookup
-
-var MSI = function (_Barcode) {
-	_inherits(MSI, _Barcode);
-
-	function MSI(data, options) {
-		_classCallCheck(this, MSI);
-
-		return _possibleConstructorReturn(this, (MSI.__proto__ || Object.getPrototypeOf(MSI)).call(this, data, options));
-	}
-
-	_createClass(MSI, [{
-		key: "encode",
-		value: function encode() {
-			// Start bits
-			var ret = "110";
-
-			for (var i = 0; i < this.data.length; i++) {
-				// Convert the character to binary (always 4 binary digits)
-				var digit = parseInt(this.data[i]);
-				var bin = digit.toString(2);
-				bin = addZeroes(bin, 4 - bin.length);
-
-				// Add 100 for every zero and 110 for every 1
-				for (var b = 0; b < bin.length; b++) {
-					ret += bin[b] == "0" ? "100" : "110";
-				}
-			}
-
-			// End bits
-			ret += "1001";
-
-			return {
-				data: ret,
-				text: this.text
-			};
-		}
-	}, {
-		key: "valid",
-		value: function valid() {
-			return this.data.search(/^[0-9]+$/) !== -1;
-		}
-	}]);
-
-	return MSI;
-}(_Barcode3.default);
-
-function addZeroes(number, n) {
-	for (var i = 0; i < n; i++) {
-		number = "0" + number;
-	}
-	return number;
-}
-
-exports.default = MSI;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI10.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/MSI/MSI10.js ***!
-  \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _MSI2 = __webpack_require__(/*! ./MSI.js */ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI.js");
-
-var _MSI3 = _interopRequireDefault(_MSI2);
-
-var _checksums = __webpack_require__(/*! ./checksums.js */ "./node_modules/jsbarcode/bin/barcodes/MSI/checksums.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var MSI10 = function (_MSI) {
-	_inherits(MSI10, _MSI);
-
-	function MSI10(data, options) {
-		_classCallCheck(this, MSI10);
-
-		return _possibleConstructorReturn(this, (MSI10.__proto__ || Object.getPrototypeOf(MSI10)).call(this, data + (0, _checksums.mod10)(data), options));
-	}
-
-	return MSI10;
-}(_MSI3.default);
-
-exports.default = MSI10;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI1010.js":
-/*!************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/MSI/MSI1010.js ***!
-  \************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _MSI2 = __webpack_require__(/*! ./MSI.js */ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI.js");
-
-var _MSI3 = _interopRequireDefault(_MSI2);
-
-var _checksums = __webpack_require__(/*! ./checksums.js */ "./node_modules/jsbarcode/bin/barcodes/MSI/checksums.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var MSI1010 = function (_MSI) {
-	_inherits(MSI1010, _MSI);
-
-	function MSI1010(data, options) {
-		_classCallCheck(this, MSI1010);
-
-		data += (0, _checksums.mod10)(data);
-		data += (0, _checksums.mod10)(data);
-		return _possibleConstructorReturn(this, (MSI1010.__proto__ || Object.getPrototypeOf(MSI1010)).call(this, data, options));
-	}
-
-	return MSI1010;
-}(_MSI3.default);
-
-exports.default = MSI1010;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI11.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/MSI/MSI11.js ***!
-  \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _MSI2 = __webpack_require__(/*! ./MSI.js */ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI.js");
-
-var _MSI3 = _interopRequireDefault(_MSI2);
-
-var _checksums = __webpack_require__(/*! ./checksums.js */ "./node_modules/jsbarcode/bin/barcodes/MSI/checksums.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var MSI11 = function (_MSI) {
-	_inherits(MSI11, _MSI);
-
-	function MSI11(data, options) {
-		_classCallCheck(this, MSI11);
-
-		return _possibleConstructorReturn(this, (MSI11.__proto__ || Object.getPrototypeOf(MSI11)).call(this, data + (0, _checksums.mod11)(data), options));
-	}
-
-	return MSI11;
-}(_MSI3.default);
-
-exports.default = MSI11;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI1110.js":
-/*!************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/MSI/MSI1110.js ***!
-  \************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _MSI2 = __webpack_require__(/*! ./MSI.js */ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI.js");
-
-var _MSI3 = _interopRequireDefault(_MSI2);
-
-var _checksums = __webpack_require__(/*! ./checksums.js */ "./node_modules/jsbarcode/bin/barcodes/MSI/checksums.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var MSI1110 = function (_MSI) {
-	_inherits(MSI1110, _MSI);
-
-	function MSI1110(data, options) {
-		_classCallCheck(this, MSI1110);
-
-		data += (0, _checksums.mod11)(data);
-		data += (0, _checksums.mod10)(data);
-		return _possibleConstructorReturn(this, (MSI1110.__proto__ || Object.getPrototypeOf(MSI1110)).call(this, data, options));
-	}
-
-	return MSI1110;
-}(_MSI3.default);
-
-exports.default = MSI1110;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/MSI/checksums.js":
-/*!**************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/MSI/checksums.js ***!
-  \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.mod10 = mod10;
-exports.mod11 = mod11;
-function mod10(number) {
-	var sum = 0;
-	for (var i = 0; i < number.length; i++) {
-		var n = parseInt(number[i]);
-		if ((i + number.length) % 2 === 0) {
-			sum += n;
-		} else {
-			sum += n * 2 % 10 + Math.floor(n * 2 / 10);
-		}
-	}
-	return (10 - sum % 10) % 10;
-}
-
-function mod11(number) {
-	var sum = 0;
-	var weights = [2, 3, 4, 5, 6, 7];
-	for (var i = 0; i < number.length; i++) {
-		var n = parseInt(number[number.length - 1 - i]);
-		sum += weights[i % weights.length] * n;
-	}
-	return (11 - sum % 11) % 11;
-}
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/MSI/index.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/MSI/index.js ***!
-  \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.MSI1110 = exports.MSI1010 = exports.MSI11 = exports.MSI10 = exports.MSI = undefined;
-
-var _MSI = __webpack_require__(/*! ./MSI.js */ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI.js");
-
-var _MSI2 = _interopRequireDefault(_MSI);
-
-var _MSI3 = __webpack_require__(/*! ./MSI10.js */ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI10.js");
-
-var _MSI4 = _interopRequireDefault(_MSI3);
-
-var _MSI5 = __webpack_require__(/*! ./MSI11.js */ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI11.js");
-
-var _MSI6 = _interopRequireDefault(_MSI5);
-
-var _MSI7 = __webpack_require__(/*! ./MSI1010.js */ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI1010.js");
-
-var _MSI8 = _interopRequireDefault(_MSI7);
-
-var _MSI9 = __webpack_require__(/*! ./MSI1110.js */ "./node_modules/jsbarcode/bin/barcodes/MSI/MSI1110.js");
-
-var _MSI10 = _interopRequireDefault(_MSI9);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.MSI = _MSI2.default;
-exports.MSI10 = _MSI4.default;
-exports.MSI11 = _MSI6.default;
-exports.MSI1010 = _MSI8.default;
-exports.MSI1110 = _MSI10.default;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/codabar/index.js":
-/*!**************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/codabar/index.js ***!
-  \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.codabar = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Barcode2 = __webpack_require__(/*! ../Barcode.js */ "./node_modules/jsbarcode/bin/barcodes/Barcode.js");
-
-var _Barcode3 = _interopRequireDefault(_Barcode2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // Encoding specification:
-// http://www.barcodeisland.com/codabar.phtml
-
-var codabar = function (_Barcode) {
-	_inherits(codabar, _Barcode);
-
-	function codabar(data, options) {
-		_classCallCheck(this, codabar);
-
-		if (data.search(/^[0-9\-\$\:\.\+\/]+$/) === 0) {
-			data = "A" + data + "A";
-		}
-
-		var _this = _possibleConstructorReturn(this, (codabar.__proto__ || Object.getPrototypeOf(codabar)).call(this, data.toUpperCase(), options));
-
-		_this.text = _this.options.text || _this.text.replace(/[A-D]/g, '');
-		return _this;
-	}
-
-	_createClass(codabar, [{
-		key: "valid",
-		value: function valid() {
-			return this.data.search(/^[A-D][0-9\-\$\:\.\+\/]+[A-D]$/) !== -1;
-		}
-	}, {
-		key: "encode",
-		value: function encode() {
-			var result = [];
-			var encodings = this.getEncodings();
-			for (var i = 0; i < this.data.length; i++) {
-				result.push(encodings[this.data.charAt(i)]);
-				// for all characters except the last, append a narrow-space ("0")
-				if (i !== this.data.length - 1) {
-					result.push("0");
-				}
-			}
-			return {
-				text: this.text,
-				data: result.join('')
-			};
-		}
-	}, {
-		key: "getEncodings",
-		value: function getEncodings() {
-			return {
-				"0": "101010011",
-				"1": "101011001",
-				"2": "101001011",
-				"3": "110010101",
-				"4": "101101001",
-				"5": "110101001",
-				"6": "100101011",
-				"7": "100101101",
-				"8": "100110101",
-				"9": "110100101",
-				"-": "101001101",
-				"$": "101100101",
-				":": "1101011011",
-				"/": "1101101011",
-				".": "1101101101",
-				"+": "101100110011",
-				"A": "1011001001",
-				"B": "1001001011",
-				"C": "1010010011",
-				"D": "1010011001"
-			};
-		}
-	}]);
-
-	return codabar;
-}(_Barcode3.default);
-
-exports.codabar = codabar;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/index.js":
-/*!******************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/index.js ***!
-  \******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _CODE = __webpack_require__(/*! ./CODE39/ */ "./node_modules/jsbarcode/bin/barcodes/CODE39/index.js");
-
-var _CODE2 = __webpack_require__(/*! ./CODE128/ */ "./node_modules/jsbarcode/bin/barcodes/CODE128/index.js");
-
-var _EAN_UPC = __webpack_require__(/*! ./EAN_UPC/ */ "./node_modules/jsbarcode/bin/barcodes/EAN_UPC/index.js");
-
-var _ITF = __webpack_require__(/*! ./ITF/ */ "./node_modules/jsbarcode/bin/barcodes/ITF/index.js");
-
-var _MSI = __webpack_require__(/*! ./MSI/ */ "./node_modules/jsbarcode/bin/barcodes/MSI/index.js");
-
-var _pharmacode = __webpack_require__(/*! ./pharmacode/ */ "./node_modules/jsbarcode/bin/barcodes/pharmacode/index.js");
-
-var _codabar = __webpack_require__(/*! ./codabar */ "./node_modules/jsbarcode/bin/barcodes/codabar/index.js");
-
-var _GenericBarcode = __webpack_require__(/*! ./GenericBarcode/ */ "./node_modules/jsbarcode/bin/barcodes/GenericBarcode/index.js");
-
-exports.default = {
-	CODE39: _CODE.CODE39,
-	CODE128: _CODE2.CODE128, CODE128A: _CODE2.CODE128A, CODE128B: _CODE2.CODE128B, CODE128C: _CODE2.CODE128C,
-	EAN13: _EAN_UPC.EAN13, EAN8: _EAN_UPC.EAN8, EAN5: _EAN_UPC.EAN5, EAN2: _EAN_UPC.EAN2, UPC: _EAN_UPC.UPC, UPCE: _EAN_UPC.UPCE,
-	ITF14: _ITF.ITF14,
-	ITF: _ITF.ITF,
-	MSI: _MSI.MSI, MSI10: _MSI.MSI10, MSI11: _MSI.MSI11, MSI1010: _MSI.MSI1010, MSI1110: _MSI.MSI1110,
-	pharmacode: _pharmacode.pharmacode,
-	codabar: _codabar.codabar,
-	GenericBarcode: _GenericBarcode.GenericBarcode
-};
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/barcodes/pharmacode/index.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/barcodes/pharmacode/index.js ***!
-  \*****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.pharmacode = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Barcode2 = __webpack_require__(/*! ../Barcode.js */ "./node_modules/jsbarcode/bin/barcodes/Barcode.js");
-
-var _Barcode3 = _interopRequireDefault(_Barcode2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // Encoding documentation
-// http://www.gomaro.ch/ftproot/Laetus_PHARMA-CODE.pdf
-
-var pharmacode = function (_Barcode) {
-	_inherits(pharmacode, _Barcode);
-
-	function pharmacode(data, options) {
-		_classCallCheck(this, pharmacode);
-
-		var _this = _possibleConstructorReturn(this, (pharmacode.__proto__ || Object.getPrototypeOf(pharmacode)).call(this, data, options));
-
-		_this.number = parseInt(data, 10);
-		return _this;
-	}
-
-	_createClass(pharmacode, [{
-		key: "encode",
-		value: function encode() {
-			var z = this.number;
-			var result = "";
-
-			// http://i.imgur.com/RMm4UDJ.png
-			// (source: http://www.gomaro.ch/ftproot/Laetus_PHARMA-CODE.pdf, page: 34)
-			while (!isNaN(z) && z != 0) {
-				if (z % 2 === 0) {
-					// Even
-					result = "11100" + result;
-					z = (z - 2) / 2;
-				} else {
-					// Odd
-					result = "100" + result;
-					z = (z - 1) / 2;
-				}
-			}
-
-			// Remove the two last zeroes
-			result = result.slice(0, -2);
-
-			return {
-				data: result,
-				text: this.text
-			};
-		}
-	}, {
-		key: "valid",
-		value: function valid() {
-			return this.number >= 3 && this.number <= 131070;
-		}
-	}]);
-
-	return pharmacode;
-}(_Barcode3.default);
-
-exports.pharmacode = pharmacode;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/exceptions/ErrorHandler.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/exceptions/ErrorHandler.js ***!
-  \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/*eslint no-console: 0 */
-
-var ErrorHandler = function () {
-	function ErrorHandler(api) {
-		_classCallCheck(this, ErrorHandler);
-
-		this.api = api;
-	}
-
-	_createClass(ErrorHandler, [{
-		key: "handleCatch",
-		value: function handleCatch(e) {
-			// If babel supported extending of Error in a correct way instanceof would be used here
-			if (e.name === "InvalidInputException") {
-				if (this.api._options.valid !== this.api._defaults.valid) {
-					this.api._options.valid(false);
-				} else {
-					throw e.message;
-				}
-			} else {
-				throw e;
-			}
-
-			this.api.render = function () {};
-		}
-	}, {
-		key: "wrapBarcodeCall",
-		value: function wrapBarcodeCall(func) {
-			try {
-				var result = func.apply(undefined, arguments);
-				this.api._options.valid(true);
-				return result;
-			} catch (e) {
-				this.handleCatch(e);
-
-				return this.api;
-			}
-		}
-	}]);
-
-	return ErrorHandler;
-}();
-
-exports.default = ErrorHandler;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/exceptions/exceptions.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/exceptions/exceptions.js ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var InvalidInputException = function (_Error) {
-	_inherits(InvalidInputException, _Error);
-
-	function InvalidInputException(symbology, input) {
-		_classCallCheck(this, InvalidInputException);
-
-		var _this = _possibleConstructorReturn(this, (InvalidInputException.__proto__ || Object.getPrototypeOf(InvalidInputException)).call(this));
-
-		_this.name = "InvalidInputException";
-
-		_this.symbology = symbology;
-		_this.input = input;
-
-		_this.message = '"' + _this.input + '" is not a valid input for ' + _this.symbology;
-		return _this;
-	}
-
-	return InvalidInputException;
-}(Error);
-
-var InvalidElementException = function (_Error2) {
-	_inherits(InvalidElementException, _Error2);
-
-	function InvalidElementException() {
-		_classCallCheck(this, InvalidElementException);
-
-		var _this2 = _possibleConstructorReturn(this, (InvalidElementException.__proto__ || Object.getPrototypeOf(InvalidElementException)).call(this));
-
-		_this2.name = "InvalidElementException";
-		_this2.message = "Not supported type to render on";
-		return _this2;
-	}
-
-	return InvalidElementException;
-}(Error);
-
-var NoElementException = function (_Error3) {
-	_inherits(NoElementException, _Error3);
-
-	function NoElementException() {
-		_classCallCheck(this, NoElementException);
-
-		var _this3 = _possibleConstructorReturn(this, (NoElementException.__proto__ || Object.getPrototypeOf(NoElementException)).call(this));
-
-		_this3.name = "NoElementException";
-		_this3.message = "No element to render on.";
-		return _this3;
-	}
-
-	return NoElementException;
-}(Error);
-
-exports.InvalidInputException = InvalidInputException;
-exports.InvalidElementException = InvalidElementException;
-exports.NoElementException = NoElementException;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/help/fixOptions.js":
-/*!*******************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/help/fixOptions.js ***!
-  \*******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.default = fixOptions;
-
-
-function fixOptions(options) {
-	// Fix the margins
-	options.marginTop = options.marginTop || options.margin;
-	options.marginBottom = options.marginBottom || options.margin;
-	options.marginRight = options.marginRight || options.margin;
-	options.marginLeft = options.marginLeft || options.margin;
-
-	return options;
-}
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/help/getOptionsFromElement.js":
-/*!******************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/help/getOptionsFromElement.js ***!
-  \******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _optionsFromStrings = __webpack_require__(/*! ./optionsFromStrings.js */ "./node_modules/jsbarcode/bin/help/optionsFromStrings.js");
-
-var _optionsFromStrings2 = _interopRequireDefault(_optionsFromStrings);
-
-var _defaults = __webpack_require__(/*! ../options/defaults.js */ "./node_modules/jsbarcode/bin/options/defaults.js");
-
-var _defaults2 = _interopRequireDefault(_defaults);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function getOptionsFromElement(element) {
-	var options = {};
-	for (var property in _defaults2.default) {
-		if (_defaults2.default.hasOwnProperty(property)) {
-			// jsbarcode-*
-			if (element.hasAttribute("jsbarcode-" + property.toLowerCase())) {
-				options[property] = element.getAttribute("jsbarcode-" + property.toLowerCase());
-			}
-
-			// data-*
-			if (element.hasAttribute("data-" + property.toLowerCase())) {
-				options[property] = element.getAttribute("data-" + property.toLowerCase());
-			}
-		}
-	}
-
-	options["value"] = element.getAttribute("jsbarcode-value") || element.getAttribute("data-value");
-
-	// Since all atributes are string they need to be converted to integers
-	options = (0, _optionsFromStrings2.default)(options);
-
-	return options;
-}
-
-exports.default = getOptionsFromElement;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/help/getRenderProperties.js":
-/*!****************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/help/getRenderProperties.js ***!
-  \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /* global HTMLImageElement */
-/* global HTMLCanvasElement */
-/* global SVGElement */
-
-var _getOptionsFromElement = __webpack_require__(/*! ./getOptionsFromElement.js */ "./node_modules/jsbarcode/bin/help/getOptionsFromElement.js");
-
-var _getOptionsFromElement2 = _interopRequireDefault(_getOptionsFromElement);
-
-var _renderers = __webpack_require__(/*! ../renderers */ "./node_modules/jsbarcode/bin/renderers/index.js");
-
-var _renderers2 = _interopRequireDefault(_renderers);
-
-var _exceptions = __webpack_require__(/*! ../exceptions/exceptions.js */ "./node_modules/jsbarcode/bin/exceptions/exceptions.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// Takes an element and returns an object with information about how
-// it should be rendered
-// This could also return an array with these objects
-// {
-//   element: The element that the renderer should draw on
-//   renderer: The name of the renderer
-//   afterRender (optional): If something has to done after the renderer
-//     completed, calls afterRender (function)
-//   options (optional): Options that can be defined in the element
-// }
-
-function getRenderProperties(element) {
-	// If the element is a string, query select call again
-	if (typeof element === "string") {
-		return querySelectedRenderProperties(element);
-	}
-	// If element is array. Recursivly call with every object in the array
-	else if (Array.isArray(element)) {
-			var returnArray = [];
-			for (var i = 0; i < element.length; i++) {
-				returnArray.push(getRenderProperties(element[i]));
-			}
-			return returnArray;
-		}
-		// If element, render on canvas and set the uri as src
-		else if (typeof HTMLCanvasElement !== 'undefined' && element instanceof HTMLImageElement) {
-				return newCanvasRenderProperties(element);
-			}
-			// If SVG
-			else if (element && element.nodeName && element.nodeName.toLowerCase() === 'svg' || typeof SVGElement !== 'undefined' && element instanceof SVGElement) {
-					return {
-						element: element,
-						options: (0, _getOptionsFromElement2.default)(element),
-						renderer: _renderers2.default.SVGRenderer
-					};
-				}
-				// If canvas (in browser)
-				else if (typeof HTMLCanvasElement !== 'undefined' && element instanceof HTMLCanvasElement) {
-						return {
-							element: element,
-							options: (0, _getOptionsFromElement2.default)(element),
-							renderer: _renderers2.default.CanvasRenderer
-						};
-					}
-					// If canvas (in node)
-					else if (element && element.getContext) {
-							return {
-								element: element,
-								renderer: _renderers2.default.CanvasRenderer
-							};
-						} else if (element && (typeof element === "undefined" ? "undefined" : _typeof(element)) === 'object' && !element.nodeName) {
-							return {
-								element: element,
-								renderer: _renderers2.default.ObjectRenderer
-							};
-						} else {
-							throw new _exceptions.InvalidElementException();
-						}
-}
-
-function querySelectedRenderProperties(string) {
-	var selector = document.querySelectorAll(string);
-	if (selector.length === 0) {
-		return undefined;
-	} else {
-		var returnArray = [];
-		for (var i = 0; i < selector.length; i++) {
-			returnArray.push(getRenderProperties(selector[i]));
-		}
-		return returnArray;
-	}
-}
-
-function newCanvasRenderProperties(imgElement) {
-	var canvas = document.createElement('canvas');
-	return {
-		element: canvas,
-		options: (0, _getOptionsFromElement2.default)(imgElement),
-		renderer: _renderers2.default.CanvasRenderer,
-		afterRender: function afterRender() {
-			imgElement.setAttribute("src", canvas.toDataURL());
-		}
-	};
-}
-
-exports.default = getRenderProperties;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/help/linearizeEncodings.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/help/linearizeEncodings.js ***!
-  \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.default = linearizeEncodings;
-
-// Encodings can be nestled like [[1-1, 1-2], 2, [3-1, 3-2]
-// Convert to [1-1, 1-2, 2, 3-1, 3-2]
-
-function linearizeEncodings(encodings) {
-	var linearEncodings = [];
-	function nextLevel(encoded) {
-		if (Array.isArray(encoded)) {
-			for (var i = 0; i < encoded.length; i++) {
-				nextLevel(encoded[i]);
-			}
-		} else {
-			encoded.text = encoded.text || "";
-			encoded.data = encoded.data || "";
-			linearEncodings.push(encoded);
-		}
-	}
-	nextLevel(encodings);
-
-	return linearEncodings;
-}
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/help/merge.js":
-/*!**************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/help/merge.js ***!
-  \**************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-exports.default = function (old, replaceObj) {
-  return _extends({}, old, replaceObj);
-};
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/help/optionsFromStrings.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/help/optionsFromStrings.js ***!
-  \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.default = optionsFromStrings;
-
-// Convert string to integers/booleans where it should be
-
-function optionsFromStrings(options) {
-	var intOptions = ["width", "height", "textMargin", "fontSize", "margin", "marginTop", "marginBottom", "marginLeft", "marginRight"];
-
-	for (var intOption in intOptions) {
-		if (intOptions.hasOwnProperty(intOption)) {
-			intOption = intOptions[intOption];
-			if (typeof options[intOption] === "string") {
-				options[intOption] = parseInt(options[intOption], 10);
-			}
-		}
-	}
-
-	if (typeof options["displayValue"] === "string") {
-		options["displayValue"] = options["displayValue"] != "false";
-	}
-
-	return options;
-}
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/options/defaults.js":
-/*!********************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/options/defaults.js ***!
-  \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-var defaults = {
-	width: 2,
-	height: 100,
-	format: "auto",
-	displayValue: true,
-	fontOptions: "",
-	font: "monospace",
-	text: undefined,
-	textAlign: "center",
-	textPosition: "bottom",
-	textMargin: 2,
-	fontSize: 20,
-	background: "#ffffff",
-	lineColor: "#000000",
-	margin: 10,
-	marginTop: undefined,
-	marginBottom: undefined,
-	marginLeft: undefined,
-	marginRight: undefined,
-	valid: function valid() {}
-};
-
-exports.default = defaults;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/renderers/canvas.js":
-/*!********************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/renderers/canvas.js ***!
-  \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _merge = __webpack_require__(/*! ../help/merge.js */ "./node_modules/jsbarcode/bin/help/merge.js");
-
-var _merge2 = _interopRequireDefault(_merge);
-
-var _shared = __webpack_require__(/*! ./shared.js */ "./node_modules/jsbarcode/bin/renderers/shared.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var CanvasRenderer = function () {
-	function CanvasRenderer(canvas, encodings, options) {
-		_classCallCheck(this, CanvasRenderer);
-
-		this.canvas = canvas;
-		this.encodings = encodings;
-		this.options = options;
-	}
-
-	_createClass(CanvasRenderer, [{
-		key: "render",
-		value: function render() {
-			// Abort if the browser does not support HTML5 canvas
-			if (!this.canvas.getContext) {
-				throw new Error('The browser does not support canvas.');
-			}
-
-			this.prepareCanvas();
-			for (var i = 0; i < this.encodings.length; i++) {
-				var encodingOptions = (0, _merge2.default)(this.options, this.encodings[i].options);
-
-				this.drawCanvasBarcode(encodingOptions, this.encodings[i]);
-				this.drawCanvasText(encodingOptions, this.encodings[i]);
-
-				this.moveCanvasDrawing(this.encodings[i]);
-			}
-
-			this.restoreCanvas();
-		}
-	}, {
-		key: "prepareCanvas",
-		value: function prepareCanvas() {
-			// Get the canvas context
-			var ctx = this.canvas.getContext("2d");
-
-			ctx.save();
-
-			(0, _shared.calculateEncodingAttributes)(this.encodings, this.options, ctx);
-			var totalWidth = (0, _shared.getTotalWidthOfEncodings)(this.encodings);
-			var maxHeight = (0, _shared.getMaximumHeightOfEncodings)(this.encodings);
-
-			this.canvas.width = totalWidth + this.options.marginLeft + this.options.marginRight;
-
-			this.canvas.height = maxHeight;
-
-			// Paint the canvas
-			ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-			if (this.options.background) {
-				ctx.fillStyle = this.options.background;
-				ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-			}
-
-			ctx.translate(this.options.marginLeft, 0);
-		}
-	}, {
-		key: "drawCanvasBarcode",
-		value: function drawCanvasBarcode(options, encoding) {
-			// Get the canvas context
-			var ctx = this.canvas.getContext("2d");
-
-			var binary = encoding.data;
-
-			// Creates the barcode out of the encoded binary
-			var yFrom;
-			if (options.textPosition == "top") {
-				yFrom = options.marginTop + options.fontSize + options.textMargin;
-			} else {
-				yFrom = options.marginTop;
-			}
-
-			ctx.fillStyle = options.lineColor;
-
-			for (var b = 0; b < binary.length; b++) {
-				var x = b * options.width + encoding.barcodePadding;
-
-				if (binary[b] === "1") {
-					ctx.fillRect(x, yFrom, options.width, options.height);
-				} else if (binary[b]) {
-					ctx.fillRect(x, yFrom, options.width, options.height * binary[b]);
-				}
-			}
-		}
-	}, {
-		key: "drawCanvasText",
-		value: function drawCanvasText(options, encoding) {
-			// Get the canvas context
-			var ctx = this.canvas.getContext("2d");
-
-			var font = options.fontOptions + " " + options.fontSize + "px " + options.font;
-
-			// Draw the text if displayValue is set
-			if (options.displayValue) {
-				var x, y;
-
-				if (options.textPosition == "top") {
-					y = options.marginTop + options.fontSize - options.textMargin;
-				} else {
-					y = options.height + options.textMargin + options.marginTop + options.fontSize;
-				}
-
-				ctx.font = font;
-
-				// Draw the text in the correct X depending on the textAlign option
-				if (options.textAlign == "left" || encoding.barcodePadding > 0) {
-					x = 0;
-					ctx.textAlign = 'left';
-				} else if (options.textAlign == "right") {
-					x = encoding.width - 1;
-					ctx.textAlign = 'right';
-				}
-				// In all other cases, center the text
-				else {
-						x = encoding.width / 2;
-						ctx.textAlign = 'center';
-					}
-
-				ctx.fillText(encoding.text, x, y);
-			}
-		}
-	}, {
-		key: "moveCanvasDrawing",
-		value: function moveCanvasDrawing(encoding) {
-			var ctx = this.canvas.getContext("2d");
-
-			ctx.translate(encoding.width, 0);
-		}
-	}, {
-		key: "restoreCanvas",
-		value: function restoreCanvas() {
-			// Get the canvas context
-			var ctx = this.canvas.getContext("2d");
-
-			ctx.restore();
-		}
-	}]);
-
-	return CanvasRenderer;
-}();
-
-exports.default = CanvasRenderer;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/renderers/index.js":
-/*!*******************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/renderers/index.js ***!
-  \*******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _canvas = __webpack_require__(/*! ./canvas.js */ "./node_modules/jsbarcode/bin/renderers/canvas.js");
-
-var _canvas2 = _interopRequireDefault(_canvas);
-
-var _svg = __webpack_require__(/*! ./svg.js */ "./node_modules/jsbarcode/bin/renderers/svg.js");
-
-var _svg2 = _interopRequireDefault(_svg);
-
-var _object = __webpack_require__(/*! ./object.js */ "./node_modules/jsbarcode/bin/renderers/object.js");
-
-var _object2 = _interopRequireDefault(_object);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = { CanvasRenderer: _canvas2.default, SVGRenderer: _svg2.default, ObjectRenderer: _object2.default };
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/renderers/object.js":
-/*!********************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/renderers/object.js ***!
-  \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ObjectRenderer = function () {
-	function ObjectRenderer(object, encodings, options) {
-		_classCallCheck(this, ObjectRenderer);
-
-		this.object = object;
-		this.encodings = encodings;
-		this.options = options;
-	}
-
-	_createClass(ObjectRenderer, [{
-		key: "render",
-		value: function render() {
-			this.object.encodings = this.encodings;
-		}
-	}]);
-
-	return ObjectRenderer;
-}();
-
-exports.default = ObjectRenderer;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/renderers/shared.js":
-/*!********************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/renderers/shared.js ***!
-  \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.getTotalWidthOfEncodings = exports.calculateEncodingAttributes = exports.getBarcodePadding = exports.getEncodingHeight = exports.getMaximumHeightOfEncodings = undefined;
-
-var _merge = __webpack_require__(/*! ../help/merge.js */ "./node_modules/jsbarcode/bin/help/merge.js");
-
-var _merge2 = _interopRequireDefault(_merge);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function getEncodingHeight(encoding, options) {
-	return options.height + (options.displayValue && encoding.text.length > 0 ? options.fontSize + options.textMargin : 0) + options.marginTop + options.marginBottom;
-}
-
-function getBarcodePadding(textWidth, barcodeWidth, options) {
-	if (options.displayValue && barcodeWidth < textWidth) {
-		if (options.textAlign == "center") {
-			return Math.floor((textWidth - barcodeWidth) / 2);
-		} else if (options.textAlign == "left") {
-			return 0;
-		} else if (options.textAlign == "right") {
-			return Math.floor(textWidth - barcodeWidth);
-		}
-	}
-	return 0;
-}
-
-function calculateEncodingAttributes(encodings, barcodeOptions, context) {
-	for (var i = 0; i < encodings.length; i++) {
-		var encoding = encodings[i];
-		var options = (0, _merge2.default)(barcodeOptions, encoding.options);
-
-		// Calculate the width of the encoding
-		var textWidth;
-		if (options.displayValue) {
-			textWidth = messureText(encoding.text, options, context);
-		} else {
-			textWidth = 0;
-		}
-
-		var barcodeWidth = encoding.data.length * options.width;
-		encoding.width = Math.ceil(Math.max(textWidth, barcodeWidth));
-
-		encoding.height = getEncodingHeight(encoding, options);
-
-		encoding.barcodePadding = getBarcodePadding(textWidth, barcodeWidth, options);
-	}
-}
-
-function getTotalWidthOfEncodings(encodings) {
-	var totalWidth = 0;
-	for (var i = 0; i < encodings.length; i++) {
-		totalWidth += encodings[i].width;
-	}
-	return totalWidth;
-}
-
-function getMaximumHeightOfEncodings(encodings) {
-	var maxHeight = 0;
-	for (var i = 0; i < encodings.length; i++) {
-		if (encodings[i].height > maxHeight) {
-			maxHeight = encodings[i].height;
-		}
-	}
-	return maxHeight;
-}
-
-function messureText(string, options, context) {
-	var ctx;
-
-	if (context) {
-		ctx = context;
-	} else if (typeof document !== "undefined") {
-		ctx = document.createElement("canvas").getContext("2d");
-	} else {
-		// If the text cannot be messured we will return 0.
-		// This will make some barcode with big text render incorrectly
-		return 0;
-	}
-	ctx.font = options.fontOptions + " " + options.fontSize + "px " + options.font;
-
-	// Calculate the width of the encoding
-	var size = ctx.measureText(string).width;
-
-	return size;
-}
-
-exports.getMaximumHeightOfEncodings = getMaximumHeightOfEncodings;
-exports.getEncodingHeight = getEncodingHeight;
-exports.getBarcodePadding = getBarcodePadding;
-exports.calculateEncodingAttributes = calculateEncodingAttributes;
-exports.getTotalWidthOfEncodings = getTotalWidthOfEncodings;
-
-/***/ }),
-
-/***/ "./node_modules/jsbarcode/bin/renderers/svg.js":
-/*!*****************************************************!*\
-  !*** ./node_modules/jsbarcode/bin/renderers/svg.js ***!
-  \*****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _merge = __webpack_require__(/*! ../help/merge.js */ "./node_modules/jsbarcode/bin/help/merge.js");
-
-var _merge2 = _interopRequireDefault(_merge);
-
-var _shared = __webpack_require__(/*! ./shared.js */ "./node_modules/jsbarcode/bin/renderers/shared.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var svgns = "http://www.w3.org/2000/svg";
-
-var SVGRenderer = function () {
-	function SVGRenderer(svg, encodings, options) {
-		_classCallCheck(this, SVGRenderer);
-
-		this.svg = svg;
-		this.encodings = encodings;
-		this.options = options;
-		this.document = options.xmlDocument || document;
-	}
-
-	_createClass(SVGRenderer, [{
-		key: "render",
-		value: function render() {
-			var currentX = this.options.marginLeft;
-
-			this.prepareSVG();
-			for (var i = 0; i < this.encodings.length; i++) {
-				var encoding = this.encodings[i];
-				var encodingOptions = (0, _merge2.default)(this.options, encoding.options);
-
-				var group = this.createGroup(currentX, encodingOptions.marginTop, this.svg);
-
-				this.setGroupOptions(group, encodingOptions);
-
-				this.drawSvgBarcode(group, encodingOptions, encoding);
-				this.drawSVGText(group, encodingOptions, encoding);
-
-				currentX += encoding.width;
-			}
-		}
-	}, {
-		key: "prepareSVG",
-		value: function prepareSVG() {
-			// Clear the SVG
-			while (this.svg.firstChild) {
-				this.svg.removeChild(this.svg.firstChild);
-			}
-
-			(0, _shared.calculateEncodingAttributes)(this.encodings, this.options);
-			var totalWidth = (0, _shared.getTotalWidthOfEncodings)(this.encodings);
-			var maxHeight = (0, _shared.getMaximumHeightOfEncodings)(this.encodings);
-
-			var width = totalWidth + this.options.marginLeft + this.options.marginRight;
-			this.setSvgAttributes(width, maxHeight);
-
-			if (this.options.background) {
-				this.drawRect(0, 0, width, maxHeight, this.svg).setAttribute("style", "fill:" + this.options.background + ";");
-			}
-		}
-	}, {
-		key: "drawSvgBarcode",
-		value: function drawSvgBarcode(parent, options, encoding) {
-			var binary = encoding.data;
-
-			// Creates the barcode out of the encoded binary
-			var yFrom;
-			if (options.textPosition == "top") {
-				yFrom = options.fontSize + options.textMargin;
-			} else {
-				yFrom = 0;
-			}
-
-			var barWidth = 0;
-			var x = 0;
-			for (var b = 0; b < binary.length; b++) {
-				x = b * options.width + encoding.barcodePadding;
-
-				if (binary[b] === "1") {
-					barWidth++;
-				} else if (barWidth > 0) {
-					this.drawRect(x - options.width * barWidth, yFrom, options.width * barWidth, options.height, parent);
-					barWidth = 0;
-				}
-			}
-
-			// Last draw is needed since the barcode ends with 1
-			if (barWidth > 0) {
-				this.drawRect(x - options.width * (barWidth - 1), yFrom, options.width * barWidth, options.height, parent);
-			}
-		}
-	}, {
-		key: "drawSVGText",
-		value: function drawSVGText(parent, options, encoding) {
-			var textElem = this.document.createElementNS(svgns, 'text');
-
-			// Draw the text if displayValue is set
-			if (options.displayValue) {
-				var x, y;
-
-				textElem.setAttribute("style", "font:" + options.fontOptions + " " + options.fontSize + "px " + options.font);
-
-				if (options.textPosition == "top") {
-					y = options.fontSize - options.textMargin;
-				} else {
-					y = options.height + options.textMargin + options.fontSize;
-				}
-
-				// Draw the text in the correct X depending on the textAlign option
-				if (options.textAlign == "left" || encoding.barcodePadding > 0) {
-					x = 0;
-					textElem.setAttribute("text-anchor", "start");
-				} else if (options.textAlign == "right") {
-					x = encoding.width - 1;
-					textElem.setAttribute("text-anchor", "end");
-				}
-				// In all other cases, center the text
-				else {
-						x = encoding.width / 2;
-						textElem.setAttribute("text-anchor", "middle");
-					}
-
-				textElem.setAttribute("x", x);
-				textElem.setAttribute("y", y);
-
-				textElem.appendChild(this.document.createTextNode(encoding.text));
-
-				parent.appendChild(textElem);
-			}
-		}
-	}, {
-		key: "setSvgAttributes",
-		value: function setSvgAttributes(width, height) {
-			var svg = this.svg;
-			svg.setAttribute("width", width + "px");
-			svg.setAttribute("height", height + "px");
-			svg.setAttribute("x", "0px");
-			svg.setAttribute("y", "0px");
-			svg.setAttribute("viewBox", "0 0 " + width + " " + height);
-
-			svg.setAttribute("xmlns", svgns);
-			svg.setAttribute("version", "1.1");
-
-			svg.setAttribute("style", "transform: translate(0,0)");
-		}
-	}, {
-		key: "createGroup",
-		value: function createGroup(x, y, parent) {
-			var group = this.document.createElementNS(svgns, 'g');
-			group.setAttribute("transform", "translate(" + x + ", " + y + ")");
-
-			parent.appendChild(group);
-
-			return group;
-		}
-	}, {
-		key: "setGroupOptions",
-		value: function setGroupOptions(group, options) {
-			group.setAttribute("style", "fill:" + options.lineColor + ";");
-		}
-	}, {
-		key: "drawRect",
-		value: function drawRect(x, y, width, height, parent) {
-			var rect = this.document.createElementNS(svgns, 'rect');
-
-			rect.setAttribute("x", x);
-			rect.setAttribute("y", y);
-			rect.setAttribute("width", width);
-			rect.setAttribute("height", height);
-
-			parent.appendChild(rect);
-
-			return rect;
-		}
-	}]);
-
-	return SVGRenderer;
-}();
-
-exports.default = SVGRenderer;
 
 /***/ }),
 
@@ -105837,7 +104831,7 @@ __webpack_require__(/*! tempusdominus-bootstrap-4 */ "./node_modules/tempusdomin
 
 __webpack_require__(/*! daterangepicker */ "./node_modules/daterangepicker/daterangepicker.js");
 
-__webpack_require__(/*! jsbarcode */ "./node_modules/jsbarcode/bin/JsBarcode.js");
+__webpack_require__(/*! jquery-qrcode2 */ "./node_modules/jquery-qrcode2/dist/jquery-qrcode.js");
 
 /***/ }),
 

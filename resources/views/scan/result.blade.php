@@ -67,12 +67,28 @@
                <td>:</td>
                <td>{{$amount}}</td>
             </tr>
+            <tr>
+               <td><b>Lokasi</b> </td>
+               <td>:</td>
+               <td>{{$data->location_shelf->location->name}}</td>
+            </tr>
+            <tr>
+               <td><b>Detail Lokasi</b> </td>
+               <td>:</td>
+               <td>{{$data->location_shelf->name_shelf}}</td>
+            </tr>
          </table>
-         {{$data->good->good_shelves}}
+        
          <form id="FormCheck"  method="POST">
             <table class="table table-striped">
-               <input type="hidden" id="good_id" name="id" value="{{$data->good->id}}">
-               <input type="hidden" id="good_id" name="id" value="{{$data->good->good_shelves}}">
+               <input type="hidden" id="good_id" name="good_id" value="{{$data->good->id}}">
+               
+               @foreach($data->good->good_shelves as $item)
+                <input type="hidden" id="location_shelf_id" name="location_shelf_id" value="{{$item->location_shelf_id}}">
+
+               @endforeach
+
+             
                <tr>
                   <td> <b>Log Data</b></td>
                   <td>:</td>
@@ -90,7 +106,7 @@
                <tr>
                   <td><b>Jumlah barang</b> </td>
                   <td>:</td>
-                  <td> <input type="number" class="form-control" id="amount" name="amount" placeholder="Jumlah" autocomplete="off"></td>
+                  <td> <input type="number" class="form-control" id="amount" name="amount" placeholder="Jumlah" autocomplete="off" required></td>
                </tr>
                <tr>
                   <td><b>Kepada User</b> </td>
@@ -165,19 +181,10 @@
 @section('script')
 <script >
    jQuery(document).ready(function() {
-        var url;
-      $('#log').on('change', function() {
-       var log = $("#log").val();
-         if(log == '1'){
-         url = '{{ route("borrow.check") }}';
-        
-         } else if(log == '2'){
-         url = '{{ route("allotment.check") }}';
-       
-           } else if(log == '3')
-           url = '{{ route("return.check") }}';
 
-      });
+      $("#user").select2();
+
+      var url;
 
 
        $('#FormCheck').submit(function (event) {
@@ -186,7 +193,7 @@
          var form = $('#FormCheck');
          var data = form.serialize();
          $.ajax({
-             url: url,
+             url: '/scan/check',
              type: 'POST',
              data: data,
              cache: false,

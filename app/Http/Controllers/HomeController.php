@@ -115,24 +115,22 @@ class HomeController extends Controller
     public function scan(Request $request)
     {
         if( $request->isMethod('post') ){
-
- 
         }
         return view('scan.index');
     }
 
-    public function check_result()
+    public function check_result(Request $request)
     {
          if($request->isMethod('POST')){
-            $amount = Good::find($request->good);    
+            $goods = Good::find($request->good);    
  
             $validator = $request->validate([
-            'location' => 'required',
-            'good' => 'required',
+            'user' => 'required',
+            'amount' => 'required',
            ]);
 
             $this->validate($request, [
-             'amount' => ['required', 'numeric','max:' . ($amount->getBalanceByWarehouse($request->location))],
+             'amount' => ['required', 'numeric','max:' . ($goods->getBalanceByWarehouse($request->location))],
             ]); 
 
              return response()->json([
@@ -144,7 +142,8 @@ class HomeController extends Controller
     public function result (Request $request)
     {
         $search = $request->q;
-        $data = StockEntry::with('good')->where('qrcode', $search)->first();
+        $data = StockEntry::with(['good.good_shelves.location_shelves'])->where('qrcode', $search)->first();
+
         $amount = $data->amount -  $data->allotment_item()->sum('amount');
         $users = User::where('id', '!=', auth()->id())->get();
 

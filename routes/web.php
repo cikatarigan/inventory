@@ -24,8 +24,8 @@ Route::get('/', 'HomeController@index')->name('home');
 
             //Scan Result
             Route::get('/scan', 'HomeController@scan')->name('scan');
-            Route::match(['get', 'post'], '/scan/result',     'HomeController@result')->name('result');
-            Route::match(['get', 'post'],'scan/check', '  HomeController@check_result')->name('scan.check');
+            Route::match(['get', 'post'], 'scan/result',     'HomeController@result')->name('result');
+            Route::match(['get', 'post'],'scan/check', 'HomeController@check_result')->name('scan.check');
 
             //Find Location
             Route::get('find/locations', 'HomeController@locations');
@@ -43,8 +43,6 @@ Route::get('/', 'HomeController@index')->name('home');
             Route::get('find/users', 'HomeController@users');
             Route::get('find/borrows/{user}', 'HomeController@borrows');
 
-
-           
 
             //Expired
             Route::post('expired/{id}', 'HomeController@expired')->name('expired.goods');

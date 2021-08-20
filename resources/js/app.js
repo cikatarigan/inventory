@@ -40,5 +40,5 @@ require('bootstrap-datepicker');
 require('icheck/icheck.min.js');
 require('tempusdominus-bootstrap-4');
 require('daterangepicker');
-require('jsbarcode');
+require('jquery-qrcode2');
 
