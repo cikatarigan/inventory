@@ -15,6 +15,8 @@ class AddLocationShelfIdToGiveBacksTable extends Migration
     {
         Schema::table('give_backs', function (Blueprint $table) {
             $table->unsignedBigInteger('location_shelf_id');
+            $table->unsignedBigInteger('borrow_id');
+            $table->foreign('borrow_id')->references('id')->on('borrows');
             $table->foreign('location_shelf_id')->references('id')->on('location_shelves');       
          });
     }
