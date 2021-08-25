@@ -138,14 +138,6 @@ jQuery(document).ready(function($) {
                "data": "name",
                "orderable": true,
            },
-           // {
-           //    title :"barcode",
-           //     "data": "barcode",
-           //     render : function (data, type, row){
-           //      return  '<img src="/barcode/'+data+'" alt="barcode" style="width: 250;" />';
-           //    },
-           //    "orderable": false,
-           // },
            {
               title :"Category",
                "data": "category",
@@ -169,9 +161,7 @@ jQuery(document).ready(function($) {
            $(nRow).attr('data', JSON.stringify(aData));
        }
    }); 
-    
-   $("#barcode").JsBarcode("Hi!");
-   
+
    //GoodLocation
    $('#goods-table').on('click', '.btn-location', function(event) {
         event.preventDefault();

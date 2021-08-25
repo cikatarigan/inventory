@@ -39,6 +39,9 @@ Route::get('/', 'HomeController@index')->name('home');
             //Find Borrow Goods
             Route::get('find/goods/borrow/{location}', 'HomeController@goods_borrow');
 
+            //
+            Route::get('/new-tab', 'HomeController@view')->name('view.qrcode');
+
             //Find User
             Route::get('find/users', 'HomeController@users');
             Route::get('find/borrows/{user}', 'HomeController@borrows');

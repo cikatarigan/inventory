@@ -88,7 +88,8 @@
             </div>
             <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-               <input type="button" value="Print this QR Code" onclick="javascript:window.print()">
+               <!-- <input type="button" value="Print this QR Code" onclick="javascript:window.print()"> -->
+               <a href="{{route('view.qrcode')}}" target="_blank">New Tab</a>
             </div>
          </form>
       </div>
