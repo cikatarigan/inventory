@@ -15,6 +15,9 @@ use DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use App\Models\StockEntry;
+use Illuminate\Support\Str;
+use App\Models\StockTransaction;
 
 class ReturnController extends Controller
 {
@@ -42,8 +45,6 @@ class ReturnController extends Controller
                 'nameshelf' =>'required',
 
            ]); 
-
-            $good = Good::find($request->good);
    
             $this->validate($request, [
                 'amount' => ['numeric','max: ' . ($goods->borrow()->where('user_id', $request->user)->sum('amount')) ],
@@ -59,45 +60,66 @@ class ReturnController extends Controller
     public function create(Request $request)
     {
 
- 
-
         if($request->isMethod('post')){
-             $user = User::find($request->userview);
-            if(Hash::check($request->password, $user->password)){
+             $user = User::find($request->data_user);
+             $borrow = Borrow::where('good_id', $request->data_goods)->where('user_id', $request->data_user)->where('status', 'Still Borrow')->first();
+
+             $goods = Good::find($request->data_goods);
+
+             if(!Hash::check($request->password, $user->password)){
+                 return response()->json([
+                    'success'=>false,
+                    'message'   => 'Password User Salah'
+                ]);  
+            }
 
                 try{
                     DB::statement('SET autocommit=0');
                     DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, expireds WRITE, good_shelves WRITE, stock_transactions WRITE, goods WRITE, borrows WRITE, give_backs WRITE');
 
                     $return = new GiveBack;
-                    $return->good_id = $request->goodview;
-                    $return->user_id = $request->userview;
-                    $return->amount = $request->amountview;
-                    $return->location_id = $request->locationview;
-                    $return->name_shelf = $request->nameview;
-                    $return->description = $request->descriptionview;
-                    $return->status = 'Status';
+                    $return->good_id = $request->data_goods;
+                    $return->user_id = $request->data_user;
+                    $return->amount = $request->data_amount;
+                    $return->location_shelf_id = $request->data_shelf;
+                    $return->borrow_id = $borrow->id;
+               
                     $return->save();
 
-                    $borrow = Borrow::where('user_id', $request->user_id)->where('good_id', $request->good_id)->sum('amount');
+                
 
-                    dd($borrow);
-                    $borrow->status = Borrow::Done; 
-                    $borrow->update();
+                    if($request->data_amount >= $borrow->amount){
+                        $borrow = Borrow::find($borrow->id);
+                        $borrow->status = Borrow::DONE; 
+                        $borrow->update();
+                    }
+                    
+                    $stockentry = New StockEntry;
+                    $stockentry->good_id = $request->data_goods;
+                    $stockentry->amount = $request->data_amount;
+                    $stockentry->location_shelf_id = $request->data_shelf;
+                    $stockentry->qrcode = Str::random(15);
+                    $stockentry->date_expired = $request->date_expired;
+                    if($goods->isexpired == 'on'){
+                        $stockentry->status = StockEntry::TYPE_STILL_USE;    
+                    }else{
+                        $stockentry->status = StockEntry::TYPE_NO_EXPIRED;  
+                    }
+                    $stockentry->save();
 
-                    $goodlocation = Goodlocation::firstOrCreate(['good_id' => $request->good_id, 'location_id' => $request->location_id, 'name_shelf' => $request->nameshelf]);
+                    $goodshelf = GoodShelf::firstOrCreate(['good_id' => $request->data_goods, 'location_shelf_id' =>$request->data_shelf]);
 
+                    $goods = $return->good;
 
-                    $goods = $return->good_id;
-
-                    $stocktransaction = New stocktransaction;
-                    $stocktransaction->start_balance = $goods->getBalanceByWarehouse($request->location);
-                    $stocktransaction->amount = $request->amount;
+                    $stocktransaction = New Stocktransaction;
+                    $stocktransaction->start_balance = $goods->getBalanceByWarehouse($request->data_location);                    
+                    $stocktransaction->amount = $request->data_amount;
                     $stocktransaction->end_balance = $stocktransaction->start_balance + $stocktransaction->amount;
                     $stocktransaction->type = StockTransaction::TYPE_IN;
-                    $stocktransaction->good_id = $request->good;
-                    $stocktransaction->user_id = $request->user;
-                    $stocktransaction->location_id = $request->location;
+                    $stocktransaction->good_id = $request->data_goods;
+                    $stocktransaction->user_id = $request->data_user;
+                    $stocktransaction->location_id = $request->data_location;
+                    $stocktransaction->location_shelf_id = $request->data_shelf;
 
                     $return->stock_transaction()->save($stocktransaction);
                     DB::getPdo()->exec('UNLOCK TABLES');
@@ -110,12 +132,7 @@ class ReturnController extends Controller
                     'success'=>true,
                     'message'   => 'Pengembalian Telah Berhasil'
                 ]);
-            }else {
-                return response()->json([
-                'success'=>false,
-                'message'   => 'Password User Salah'
-                ]);  
-            }
+
         }
      return view('return.add');
     }

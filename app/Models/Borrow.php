@@ -42,4 +42,9 @@ class Borrow extends Model
     }
 
 
+    public function borrow_item()
+    {
+        return $this->hasMany(BorrowItem::class,'borrow_id','id');
+    }   
+
 }

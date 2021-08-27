@@ -24,7 +24,7 @@ class GoodController extends Controller
         $location = Location::all();
 
         if( $request->isMethod('post') ){
-            $model = Good::with(['location_shelves']);
+            $model = Good::with(['location.locationshelf']);
             return DataTables::of($model)->make();
         }
         

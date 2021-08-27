@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\StockTransaction;
 use DB;
 use App\Models\GoodShelf;
+use App\Models\StockEntry;
+use Carbon\Carbon;
+use App\Models\BorrowItem;
 
 class BorrowController extends Controller
 {   
@@ -30,7 +33,7 @@ class BorrowController extends Controller
     {
 
           if($request->isMethod('POST')){
-            $amount = Good::find($request->goods);    
+            $goods = Good::find($request->goods);    
  
             $validator = $request->validate([
             'location' => 'required',
@@ -38,7 +41,7 @@ class BorrowController extends Controller
            ]);
 
             $this->validate($request, [
-             'amount' => ['required', 'numeric','max:' . ($amount->getBalanceByWarehouse($request->location)),'min:1'],
+             'amount' => ['required', 'numeric','max:' . ($goods->getBalanceByWarehouse($request->location)),'min:1'],
             ]); 
 
              return response()->json([
@@ -52,13 +55,32 @@ class BorrowController extends Controller
         $users = User::where('id', '!=', auth()->id())->get();
 
         if ($request->isMethod('post')){
+
+
             $user = User::find($request->data_user);
-            $amount = Good::find($request->data_goods);
-            if(Hash::check($request->password, $user->password)){
+            $goods = Good::find($request->data_goods);
+
+            
+             if(!Hash::check($request->password, $user->password)){
+                 return response()->json([
+                    'success'=>false,
+                    'message'   => 'Password User Salah'
+                ]);  
+            }
+
+            if($goods->getBalanceByWarehouse($request->data_location) < $request->data_amount){
+                return response()->json([
+                    'success'=>false,
+                    'message' => 'stock tidak cukup'
+                ]);
+            }
+          
+
+                $entry = StockEntry::whereDate('date_expired', '>=', Carbon::now())->where('good_id' , $request->data_goods)->where('location_shelf_id', $request->data_shelf)->orderBy('created_at', 'asc')->get();
 
                 try{
                     DB::statement('SET autocommit=0');
-                    DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, good_shelves WRITE, stock_transactions WRITE, goods WRITE, borrows write');
+                    DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, good_shelves WRITE, stock_transactions WRITE, goods WRITE, borrows WRITE, borrow_items WRITE');
         
                 $borrow = New Borrow;
                 $borrow->amount = $request->data_amount;
@@ -68,6 +90,27 @@ class BorrowController extends Controller
                 $borrow->location_shelf_id = $request->data_shelf;
                 $borrow->status = Borrow::STILL_BORROW;
                 $borrow->save();
+
+                $amount =  $request->data_amount;
+                foreach ($entry as  $item) {
+                    $stock_amount = $item->amount -  $item->borrow_item()->sum('amount') ;
+                    if($stock_amount >  0 ){
+                        $itemborrow = New BorrowItem;
+                        $itemborrow->entry_id =  $item->id;
+                        $itemborrow->borrow_id = $borrow->id;
+                         
+                        if($amount <= $stock_amount){
+                            $itemborrow->amount = $amount;
+                            $itemborrow->save();
+                            break;
+                        }else{
+                           $itemborrow->amount = $stock_amount;
+                           $itemborrow->save();
+                           $amount = $amount - $itemborrow->amount;  
+                        }
+                    }
+                
+                }
 
                 $goods = $borrow->good;
 
@@ -97,12 +140,7 @@ class BorrowController extends Controller
                     'success'=>true,
                     'message'   => 'Peminjaman Telah Berhasil'
                      ]);
-            }else {
-               return response()->json([
-                    'success'=>false,
-                    'message'   => 'Password User Salah'
-                ]);  
-            }
+
         }
         return view('borrow.add',['users' => $users]);
     }

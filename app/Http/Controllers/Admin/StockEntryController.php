@@ -69,7 +69,7 @@ class StockEntryController extends Controller
             $goods = $stockentry->good;
             
             $stocktransaction = New stocktransaction;
-            $stocktransaction->start_balance = $goods->getBalanceByWarehouse($stockentry->location_id);
+            $stocktransaction->start_balance = $goods->getBalanceByWarehouse($request->location_id);
             $stocktransaction->amount = $request->amount;
             $stocktransaction->end_balance = $stocktransaction->start_balance + $stocktransaction->amount;
             $stocktransaction->type = StockTransaction::TYPE_IN;

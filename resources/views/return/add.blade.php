@@ -49,16 +49,21 @@
                      <label for="exampleInputPassword1">Name Shelf</label>
                      <select class="js-example-basic-single form-control select-custom" id="nameshelf" name="nameshelf" width="100%">
                         <option value="" disabled selected>Pilih Rak</option>
-
-
-
                      </select>
                   </div>
                   <div class="form-group">
                      <label for="exampleInputPassword1">Keterangan</label>
                      <textarea  class="form-control" id="description" name="description" rows="3"></textarea>
                   </div>
-
+                    <div class="form-group" id="formexpired">
+                       <label for="exampleInputPassword1">Date_expired</label>
+                       <div class="input-group date" data-provide="datepicker">
+                          <input class="datepicker form-control" id="date_expired" name="date_expired" data-date-format="mm/dd/yyyy" autocomplete="off">
+                          <div class="input-group-addon">
+                             <span class="glyphicon glyphicon-th"></span>
+                          </div>
+                       </div>
+                    </div>
                </div>
                <!-- /.card-body -->
                <div class="card-footer">
@@ -83,11 +88,11 @@
                <div class="box box-info">
                   <div class="box-header">
                      <div class="box-body">
-                          <input type="hidden" id="locationCheck" name="data_location" value="">
-                          <input type="hidden" id="goodsCheck" name="data_goods" value="">
-                          <input type="hidden" id="amountCheck" name="amountCheck" value="">
-                          <input type="hidden" id="userCheck" name="userCheck" value="">
-                          <input type="hidden" id="descriptionCheck" name="descriptionCheck" value="">
+                          <input type="hidden" id="locationCheck" name="data_location">
+                          <input type="hidden" id="shelfCheck" name="data_shelf">
+                          <input type="hidden" id="goodsCheck" name="data_goods">
+                          <input type="hidden" id="amountCheck" name="data_amount">
+                          <input type="hidden" id="userCheck" name="data_user">                      
                            <div class="form-group">
                               <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan Password Penerima">
                            </div>
@@ -147,6 +152,16 @@
              dataType: 'json'
          }
      });
+
+   $('#goods').on('select2:select', function (e) {
+        var data = e.params.data;
+        console.log(data);
+        if(data.isexpired == 'on'){
+          $('#formexpired').show();
+        }else{
+          $('#formexpired').hide();
+        }
+    });
       
     $('#FormReturnCheck').submit(function (event) {
          event.preventDefault();
@@ -164,18 +179,16 @@
                     $('#exampleModal').modal('show');
                      var location = $("#location").val();
                      var shelf = $('#nameshelf').val();
-                     var good = $("#goods").val();
+                     var goods = $("#goods").val();
                      var amount = $("#amount").val();
                      var user = $("#user").val();
-                     var description = $("description").val();
-                     console.log(description);
+                     
                       $('#FormReturn #locationCheck').val(location);
-                       $('#FormReturn #shelfCheck').val(shelf);
-                      $('#FormReturn #goodsCheck').val(good);
+                      $('#FormReturn #shelfCheck').val(shelf);
+                      $('#FormReturn #goodsCheck').val(goods);
                       $('#FormReturn #amountCheck').val(amount);
                       $('#FormReturn #userCheck').val(user);
-                      $('#FormReturn #descriptionCheck').val(description);
-                   
+
                  } else {
                      toastr.error(data.message);
                  }
