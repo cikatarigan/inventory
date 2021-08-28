@@ -22,11 +22,11 @@ class GiveBack extends Model
         return $this->morphOne(StockTransaction::class, "detailable");
     }
 
-
-    public function good_location(){
-    	return $this->belongsTo('App\Models\GoodLocation', 'location_id', 'id');
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
     }
-
+    
 	public function good()
     {
         return $this->belongsTo(Good::class);
@@ -35,6 +35,10 @@ class GiveBack extends Model
 	public function User()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function location_shelf(){
+        return $this->belongsTo(LocationShelf::class, 'location_shelf_id', 'id');
     }
 
 }

@@ -94,12 +94,16 @@
 @section('script')
 <script>
    jQuery(document).ready(function($) { 
+function format ( d ) {
+    return '<b>description:</b> '+d.description+'';
+}
+
       var table = $('#borrow-table').DataTable({
-          "bFilter": true,
-          "processing": true,
-          "serverSide": true,
-          "lengthChange": true,
-          "responsive" : true,
+         "bFilter": true,
+         "processing": true,
+         "serverSide": true,
+         "lengthChange": true,
+         "responsive" : true,
           "ajax": {
               "url": "/borrow",
               "type": "POST",
@@ -108,6 +112,12 @@
               "emptyTable": "Tidak ada data yang tersedia",
           },
           "columns": [
+                   {
+              "className": 'details-control',
+              "orderable": false,
+              "data": null,
+              "defaultContent": ''
+             },
              {
               title :"Barang",
                   "data": "good.name",
@@ -124,13 +134,13 @@
                   "orderable": true,
               },
               {
-              title :"Keterangan",
-                  "data": "description",
+              title :"Status",
+                  "data": "status",
                   "orderable": false,
               },
                {
              title :"Created At",
-                  "data": "date",
+                  "data": "created_at",
                   render : function (data, type, row){
                   return moment(data).format('dddd, Do MMMM YYYY h:mm')
                 },
@@ -138,11 +148,28 @@
               }
 
           ],
-          "order": [0, 'desc'],
+          "order": [1, 'desc'],
           "fnCreatedRow": function(nRow, aData, iDataIndex) {
               $(nRow).attr('data', JSON.stringify(aData));
           }
       }); 
+
+      // Add event listener for opening and closing details
+    $('#borrow-table tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
+ 
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+            row.child( format(row.data()) ).show();
+            tr.addClass('shown');
+        }
+    } );
   
    }); 
 </script>

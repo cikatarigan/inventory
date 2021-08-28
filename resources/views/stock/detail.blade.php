@@ -63,7 +63,7 @@
                      <tr>
                         <td><b>Expired</b> </td>
                         <td>:</td>
-                        <td> {{$good->isexpired}}</td>
+                        <td>@if($good->isexpired == null)-  @else{{$good->isexpired}}@endif</td>
                      </tr>  
                 
                   </table>
@@ -92,16 +92,6 @@
                                  <option value="{{$item->id}}">{{$item->name}}</option>
                                  @endforeach
                               </select>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <div class="col-md-8">
-                     <div class="form-group">
-                        <div class="row form-group">
-                           <label class="col-sm-3 col-form-label">Tanggal</label>
-                           <div class="col-sm-8">
-                              <input type="text" name="daterange" id="daterange" class="form-control" value=""  autocomplete="off"/>
                            </div>
                         </div>
                      </div>

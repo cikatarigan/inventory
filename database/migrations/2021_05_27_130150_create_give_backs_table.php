@@ -19,6 +19,7 @@ class CreateGiveBacksTable extends Migration
              $table->unsignedBigInteger('user_id');
              $table->unsignedBigInteger('handle_by');
              $table->unsignedInteger('amount');
+             $table->text('description')->nullable();
              $table->foreign('user_id')->references('id')->on('users');
              $table->foreign('good_id')->references('id')->on('goods');
              $table->foreign('handle_by')->references('id')->on('users');

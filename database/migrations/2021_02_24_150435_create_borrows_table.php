@@ -22,7 +22,7 @@ class CreateBorrowsTable extends Migration
             $table->foreign('good_id')->references('id')->on('goods');
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('handle_by')->references('id')->on('users');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->string('status');
             $table->timestamps();
         });

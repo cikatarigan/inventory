@@ -52,7 +52,7 @@ class BorrowController extends Controller
 
     public function create(Request $request)
     {
-        $users = User::where('id', '!=', auth()->id())->get();
+        $users = User::where('id', '!=', auth()->id())->where('status', 'active')->get();
 
         if ($request->isMethod('post')){
 

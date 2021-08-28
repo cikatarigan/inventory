@@ -8,7 +8,7 @@ use App\Models\Allotment;
 use App\Models\AllotmentItem;
 use App\Models\Location;
 use App\Models\Good;
-use App\Models\GoodLocation;
+use App\Models\GoodShelf;
 use App\Models\StockTransaction;
 use App\Models\StockEntry;
 use Carbon\Carbon;
@@ -39,17 +39,18 @@ class AllotmentController extends Controller
 
         if($request->isMethod('POST')){
             
-            $amount = Good::find($request->goods);
+            $goods = Good::find($request->goods);
 
             $validator = $request->validate([
             'location_id' => 'required',
             'location_shelf' => 'required',
             'goods' => 'required',
             'user' => 'required',
+            'amount' => 'required',
            ]);
 
             $this->validate($request, [
-             'amount' => ['required', 'numeric', 'max:' . ($amount->getBalanceByWarehouse($request->location_id)),'min:1'],
+             'amount' => ['required', 'numeric', 'max:' . ($goods->getBalanceByWarehouse($request->location_id)),'min:1'],
             ]); 
 
              return response()->json([

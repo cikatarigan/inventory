@@ -130,7 +130,7 @@
               },
                {
              title :"Created At",
-                  "data": "date",
+                  "data": "created_at",
                   render : function (data, type, row){
                   return moment(data).format('dddd, Do MMMM YYYY h:mm')
                 },

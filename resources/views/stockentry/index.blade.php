@@ -139,12 +139,12 @@
                   "data": "location_shelf.name_shelf",
                   "orderable": true,
               },
-               {
+             {
              title :"Created At",
-                  "data": "date",
+                  "data": "created_at",
                   render : function (data, type, row){
-                  return moment(data).format('dddd, Do MMMM YYYY h:mm')
-                },
+                    return moment(data).format('Do MMMM YYYY h:mm')                
+                  },
                   "orderable": true,
               },
               {

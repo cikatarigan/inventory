@@ -94,6 +94,10 @@
 @section('script')
 <script>
    jQuery(document).ready(function($) { 
+    function format ( d ) {
+    return '<b>description:</b> '+d.description+'';
+}
+
       var table = $('#allotment-table').DataTable({
           "bFilter": true,
           "processing": true,
@@ -108,6 +112,12 @@
               "emptyTable": "Tidak ada data yang tersedia",
           },
           "columns": [
+             {
+              "className": 'details-control',
+              "orderable": false,
+              "data": null,
+              "defaultContent": ''
+             },
              {
               title :"Barang",
                   "data": "good.name",
@@ -136,7 +146,7 @@
               },
                {
              title :"Created At",
-                  "data": "date",
+                  "data": "created_at",
                   render : function (data, type, row){
                   return moment(data).format('dddd, Do MMMM YYYY h:mm')
                 },
@@ -153,7 +163,22 @@
               $(nRow).attr('data', JSON.stringify(aData));
           }
       }); 
-  
+        // Add event listener for opening and closing details
+    $('#allotment-table tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
+ 
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+            row.child( format(row.data()) ).show();
+            tr.addClass('shown');
+        }
+    } );
    }); 
 </script>
 @endsection

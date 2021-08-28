@@ -18,13 +18,14 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\StockEntry;
 use Illuminate\Support\Str;
 use App\Models\StockTransaction;
+use App\Models\GoodShelf;
 
 class ReturnController extends Controller
 {
     public function index (Request $request)
     {
         if( $request->isMethod('post') ){
-            $model = GiveBack::with(['good', 'user','good_location'])->get();
+            $model = GiveBack::with(['good', 'user' , 'location_shelf.location'])->get();
             return DataTables::of($model)->make();
         }
 
