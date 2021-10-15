@@ -37,11 +37,11 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-         // $expired = StockEntry::with(['good', 'location_shelf.location'])->whereHas('good',  function($query){
-         //    $query->whereNotNull('isexpired');
-         // })->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->where('status', '!=' ,'expired')->get();
-          $expired = Good::with(['stockentry','location.locationshelf'])->whereHas('stockentry', function($query){
-            $query->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->where('status', '!=' ,'expired');       })->whereNotNull('isexpired')->get();
+         $expired = StockEntry::with(['good.stock_transaction', 'location_shelf.location'])->whereHas('good',  function($query){
+            $query->whereNotNull('isexpired');
+         })->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->where('status', '!=' ,'expired')->get();
+          // $expired = Good::with('stockentry.location_shelf.location')->whereHas('stockentry', function($query){
+          //   $query->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->where('status', '!=' ,'expired');       })->whereNotNull('isexpired')->get();
           
           
          $borrow = Borrow::with('good.good_images')->where('status', 'Still Borrow')->get();

@@ -102,13 +102,7 @@
             <tbody>
           @if ($expired->isNotEmpty())
            @foreach($expired as $item)
-            <tr>
-              <td>{{$item->good->name}}</td>
-              <td>{{$item->location_shelf->location->name}}</td>
-              <td>{{$item->location_shelf->name_shelf}}</td>
-              <td>{{date('d-m-Y', strtotime($item->date_expired))}}</td>
-              <td> <a href="#"  data-id="{{$item->id}}" data-name="{{$item->good->name}}" class="btnDelete text-right btn btn-danger"><i class="fas fa-trash"></i> Buang</a></td>
-            </tr>
+            {{$item}}
              @endforeach
              @else
              <tr>

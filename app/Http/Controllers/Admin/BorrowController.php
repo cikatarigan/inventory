@@ -37,7 +37,9 @@ class BorrowController extends Controller
  
             $validator = $request->validate([
             'location' => 'required',
+            'location_shelf'=> 'required',
             'goods' => 'required',
+            'user' => 'required',
            ]);
 
             $this->validate($request, [

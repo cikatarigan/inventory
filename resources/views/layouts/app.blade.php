@@ -90,6 +90,7 @@
                         </a>
                      </li>
                      @endif
+                     @role('admin')
                      <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                           <i class="nav-icon fas fa-database"></i>
@@ -116,6 +117,7 @@
                      </li>
                    </ul>
                  </li>
+                 @endrole
                      @endif
                      @if(Auth::user()->hasPermissionTo('stockentry.index','web'))
                      <li class="nav-item">
@@ -133,6 +135,7 @@
                         </a>
                      </li>
                      @endif
+                       @role('admin')
                        <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                           <i class="nav-icon fas fa-clipboard-list"></i>
@@ -168,6 +171,7 @@
                      @endif
                    </ul>
                    </li>
+                   @endrole
 
                      @if(Auth::user()->hasPermissionTo('expired.index','web'))
                      <li class="nav-item">
