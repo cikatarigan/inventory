@@ -22,9 +22,9 @@
 <section class="content">
    <div class="card">
       <div class="card-header">
-         @if(Auth::user()->hasPermissionTo('return.add','web'))
+         {{-- @if(Auth::user()->hasPermissionTo('return.add','web'))
          <a href="{{route('return.add')}}" id="btnAdd" class="text-right btn btn-primary"><i class="fa fa-plus"></i> Tambah</a>
-         @endif
+         @endif --}}
       </div>
       <div class="card-body">
           <div class="table-responsive">
@@ -93,7 +93,7 @@
 @endsection
 @section('script')
 <script>
-   jQuery(document).ready(function($) { 
+   jQuery(document).ready(function($) {
       var table = $('#return-table').DataTable({
           "bFilter": true,
           "processing": true,
@@ -142,8 +142,8 @@
           "fnCreatedRow": function(nRow, aData, iDataIndex) {
               $(nRow).attr('data', JSON.stringify(aData));
           }
-      }); 
-  
-   }); 
+      });
+
+   });
 </script>
 @endsection

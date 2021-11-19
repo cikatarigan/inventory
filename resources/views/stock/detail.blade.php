@@ -38,12 +38,12 @@
                   <img src="{{Storage::url($item->image->path)}}" style="height: 120px;" />
                   </a>
                </li>
-               @endforeach 
+               @endforeach
             </ul>
          </div>
          <div class="details col-md-6">
-            <h3 class="product-description">{{$good->description}}</h3>
-            <p class="product-description">{{$good->description}}</p>
+         Nama Barang <h3 class="product-description">{{$good->name}}</h3>
+            <p class="product-description"><b>Keterangan :</b> [ {{$good->description}}]</p>
                 <table class="table table-striped">
                      <tr>
                         <td> <b>Brand</b></td>
@@ -64,12 +64,22 @@
                         <td><b>Expired</b> </td>
                         <td>:</td>
                         <td>@if($good->isexpired == null)-  @else{{$good->isexpired}}@endif</td>
-                     </tr>  
-                
-                  </table>
-
-                
+                     </tr>
+               </table>
          </div>
+      </div>
+   </div>
+
+   <div class="content">
+      <div class ="card">
+            <div class ="card-header">
+                  <p>Letak Barang</p>
+            </div>
+            <div class="card-body">
+               <div class="row">
+
+               </div>
+            </div>
       </div>
    </div>
 
@@ -78,6 +88,9 @@
    <div class="col-md-12">
       <section class="content">
          <div class="card">
+            <div class ="card-header">
+               <p> History Barang</p>
+            </div>
             <div class="card-body">
                <div class="row">
                   <div class="col-md-4">
@@ -119,14 +132,14 @@
 <script>
 
 
-   jQuery(document).ready(function($) { 
-  
+   jQuery(document).ready(function($) {
+
     var date_start = "";
     var date_end = "";
-   
+
 
     console.log(date_start);
-   
+
     var table = $('#stock-table').DataTable({
       dom: '<"html5buttons">Bfrtip',
       lengthMenu: [[25, 100, -1], [25, 100, "All"]],
@@ -198,7 +211,7 @@
                  }else if(data == 'App\\Models\\Allotment'){
                    return 'Pemberian';
                   }else if(data == 'App\\Models\\Expired'){
-                    return 'Expired'; 
+                    return 'Expired';
                  }else {
                    return 'Peminjaman';
                  }
@@ -216,15 +229,6 @@
                "orderable": false,
              },
              {
-               title :"Expired Date",
-               "data": "stock_entry.date_expired",
-               render : function (data, type, row){
-                return moment(data).format('Do MMMM YYYY')
-              },
-              "orderable": false,
-             },
-    
-             {
                title :"Tanggal",
                "data": "created_at",
                render : function (data, type, row){
@@ -236,13 +240,13 @@
             "fnCreatedRow": function(nRow, aData, iDataIndex) {
               $(nRow).attr('data', JSON.stringify(aData));
             }
-          }); 
+          });
 
     $('#location_id').change(function (event) {
-      table.draw();              
+      table.draw();
     });
-   
-  
-   }); 
+
+
+   });
 </script>
 @endsection

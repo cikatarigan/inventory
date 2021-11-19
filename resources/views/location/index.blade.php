@@ -21,13 +21,19 @@
          @if(Auth::user()->hasPermissionTo('location.store','web'))
          <button id="btnAdd" class="text-right btn btn-primary"><i class="fa fa-plus"></i> Tambah</button>
          @endif
-         @if(Auth::user()->hasPermissionTo('location.trash','web'))
+
          <div class="card-tools">
-              <a href="{{route('location.trash')}}" class="btn btn-danger btn-sm float-right ml-1" title="Daftar Warehouse Terhapus">
+         @if(Auth::user()->hasPermissionTo('location.trash','web'))
+              <a href="{{route('location.trash')}}" class="btn btn-warning btn-sm float-right ml-1" title="Daftar Location Terhapus">
                    <i class="fas fa-trash-restore-alt fa-lg"></i>
-              </a>            
-          </div>
+              </a>
           @endif
+          @if(Auth::user()->hasPermissionTo('sublocation.trash','web'))
+              <a href="{{route('sublocation.trash')}}" class="btn btn-danger btn-sm float-right ml-1" title="Daftar Sub Location Terhapus">
+                   <i class="fas fa-trash-alt fa-lg"></i>
+              </a>                
+          @endif
+          </div>
       </div>
       <div class="card-body">
         <div class="table-responsive">
@@ -190,9 +196,9 @@ jQuery(document).ready(function($) {
            {
            title :"Action",
                render: function(data, type, row) {
-                   return  '@if(Auth::user()->hasPermissionTo('location.update','web'))<a href="#" data-toggle="tooltip" title="Edit" class="edit-btn  badge badge-info" data-name="'+row.name+'" data-id="'+row.id+'"><i class="far fa-edit fa-lg"></i></a> &nbsp;@endif' + 
-                    '@if(Auth::user()->hasPermissionTo('location.destroy','web'))<a href="#" class="btn-delete badge badge-danger" data-name="'+row.name+'" data-id="'+row.id+'"  data-toggle="tooltip" data-placement="bottom" title="Hapus"><i class="fa fa-trash fa-lg"></i></a> &nbsp;@endif' +
-                    '@if(Auth::user()->hasPermissionTo('sublocation.store','web'))<a href="#" data-toggle="tooltip" title="Add Sub" class="add-btn  badge badge-success" data-name="'+row.name+'" data-id="'+row.id+'"><i class="fas fa-external-link-alt  fa-lg"></i></a> &nbsp;@endif'  ;
+                   return  '@if(Auth::user()->hasPermissionTo("location.update","web"))<a href="#" data-toggle="tooltip" title="Edit" class="edit-btn  badge badge-info" data-name="'+row.name+'" data-id="'+row.id+'"><i class="far fa-edit fa-lg"></i></a> &nbsp;@endif' + 
+                    '@if(Auth::user()->hasPermissionTo("location.destroy","web"))<a href="#" class="btn-delete badge badge-danger" data-name="'+row.name+'" data-id="'+row.id+'"  data-toggle="tooltip" data-placement="bottom" title="Hapus"><i class="fa fa-trash fa-lg"></i></a> &nbsp;@endif' +
+                    '@if(Auth::user()->hasPermissionTo("sublocation.store","web"))<a href="#" data-toggle="tooltip" title="Add Sub" class="add-btn  badge badge-success" data-name="'+row.name+'" data-id="'+row.id+'"><i class="fas fa-external-link-alt  fa-lg"></i></a> &nbsp;@endif'  ;
                },
               "orderable": false,
            }
@@ -330,6 +336,8 @@ jQuery(document).ready(function($) {
                   toastr.success(data.message);
                   $('#deleteLocationModal').modal('hide');
                   table.draw();
+               } else{
+                 toastr.error(data.message);
                }
             },
         })
@@ -360,6 +368,8 @@ jQuery(document).ready(function($) {
                   toastr.success(data.message);
                   $('#deleteSubLocationModal').modal('hide');
                   table.draw();
+               } else{
+                toastr.error(data.message);
                }
             },
         })

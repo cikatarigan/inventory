@@ -22,9 +22,9 @@
 <section class="content">
    <div class="card">
       <div class="card-header">
-         @if(Auth::user()->hasPermissionTo('allotment.add','web'))
+         {{-- @if(Auth::user()->hasPermissionTo('allotment.add','web'))
          <a href="{{route('allotment.add')}}" id="btnAdd" class="text-right btn btn-primary"><i class="fa fa-plus"></i> Tambah</a>
-         @endif
+         @endif --}}
       </div>
       <div class="card-body">
           <div class="table-responsive">
@@ -93,7 +93,7 @@
 @endsection
 @section('script')
 <script>
-   jQuery(document).ready(function($) { 
+   jQuery(document).ready(function($) {
     function format ( d ) {
     return '<b>description:</b> '+d.description+'';
 }
@@ -158,16 +158,16 @@
                   "orderable": true,
               }
           ],
-          "order": [0, 'desc'],
+          "order": [6, 'desc'],
           "fnCreatedRow": function(nRow, aData, iDataIndex) {
               $(nRow).attr('data', JSON.stringify(aData));
           }
-      }); 
+      });
         // Add event listener for opening and closing details
     $('#allotment-table tbody').on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
         var row = table.row( tr );
- 
+
         if ( row.child.isShown() ) {
             // This row is already open - close it
             row.child.hide();
@@ -179,6 +179,6 @@
             tr.addClass('shown');
         }
     } );
-   }); 
+   });
 </script>
 @endsection

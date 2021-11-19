@@ -17,6 +17,7 @@ class CreateStockEntriesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('good_id');
             $table->unsignedInteger('amount');
+            $table->unsignedInteger('stock_use');
             $table->unsignedBigInteger('user_id');
             $table->string('qrcode');
             $table->foreign('good_id')->references('id')->on('goods');

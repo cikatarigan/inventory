@@ -22,9 +22,9 @@
 <section class="content">
    <div class="card">
       <div class="card-header">
-         @if(Auth::user()->hasPermissionTo('borrow.add','web'))
+         {{-- @if(Auth::user()->hasPermissionTo('borrow.add','web'))
          <a href="{{route('borrow.add')}}" id="btnAdd" class="text-right btn btn-primary"><i class="fa fa-plus"></i> Tambah</a>
-         @endif
+         @endif --}}
       </div>
       <div class="card-body">
           <div class="table-responsive">
@@ -93,7 +93,7 @@
 @endsection
 @section('script')
 <script>
-   jQuery(document).ready(function($) { 
+   jQuery(document).ready(function($) {
 function format ( d ) {
     return '<b>description:</b> '+d.description+'';
 }
@@ -118,6 +118,11 @@ function format ( d ) {
               "data": null,
               "defaultContent": ''
              },
+             {
+              title :"ID pinjam",
+                  "data": "id",
+                  "orderable": true,
+              },
              {
               title :"Barang",
                   "data": "good.name",
@@ -152,13 +157,13 @@ function format ( d ) {
           "fnCreatedRow": function(nRow, aData, iDataIndex) {
               $(nRow).attr('data', JSON.stringify(aData));
           }
-      }); 
+      });
 
       // Add event listener for opening and closing details
     $('#borrow-table tbody').on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
         var row = table.row( tr );
- 
+
         if ( row.child.isShown() ) {
             // This row is already open - close it
             row.child.hide();
@@ -170,7 +175,7 @@ function format ( d ) {
             tr.addClass('shown');
         }
     } );
-  
-   }); 
+
+   });
 </script>
 @endsection

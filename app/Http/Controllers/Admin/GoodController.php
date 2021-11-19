@@ -9,9 +9,9 @@ use App\Models\Image;
 use App\Models\GoodImage;
 use App\Models\Location;
 use App\Models\GoodLocation;
-use DataTables;
+use \Yajra\Datatables\Datatables;
 use validator;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -19,7 +19,7 @@ class GoodController extends Controller
 {
     public function index(Request $request)
     {
-    
+
         $name_shelf = DB::table('location_shelves')->select('name_shelf')->groupBy('name_shelf')->get();
         $location = Location::all();
 
@@ -27,7 +27,7 @@ class GoodController extends Controller
             $model = Good::with(['location.locationshelf']);
             return DataTables::of($model)->make();
         }
-        
+
         return view('good.index',['location' => $location,'name_shelf' => $name_shelf]);
     }
 
@@ -66,7 +66,7 @@ class GoodController extends Controller
                     $path      = $image->store('good');
                     $extension = $image->getClientOriginalExtension();
                     $size      = $image->getSize();
-                    
+
                     $image            = new Image();
                     $image->filename  = time() . '_' . $filename;
                     $image->title     = time() . '_' . $filename;
@@ -81,7 +81,7 @@ class GoodController extends Controller
                     $goodimage->save();
                 }
             }
-            
+
 
             return response()->json([
                 'success' => true,
@@ -96,9 +96,10 @@ class GoodController extends Controller
         $good = Good::find($id);
         $brand = DB::table('goods')->select('brand')->groupBy('brand')->get();
         $category = DB::table('goods')->select('category')->groupBy('category')->get();
-        if ($request->isMethod('POST')) 
+        $unit = DB::table('goods')->select('unit')->groupBy('unit')->get();
+        if ($request->isMethod('POST'))
         {
-            
+
             $validator = $request->validate([
                 'name'=>'required|string|max:60',
                 'brand'=>'required',
@@ -120,7 +121,7 @@ class GoodController extends Controller
                     $goodimage->delete();
                 }
             }
-            
+
             if($request->images != null)
             {
                 foreach ($request->images as $image) {
@@ -138,10 +139,10 @@ class GoodController extends Controller
                     $image->size      = $size;
                     $image->save();
 
-                    $goodimage = new GoodImage();            
+                    $goodimage = new GoodImage();
                     $goodimage->good()->associate($good);
                     $goodimage->image()->associate($image);
-                    $goodimage->save();    
+                    $goodimage->save();
                 }
             }
 
@@ -152,31 +153,8 @@ class GoodController extends Controller
                 'message'   => 'Good Successfully Updated'
             ]);
         }
-        
-        return view('good.update', ['good' => $good, 'brand' => $brand , 'category' => $category]);
-    }
 
-    public function location(Request $request)
-    {
-        if ($request->isMethod('POST')){
-
-            $validator = $request->validate([
-                'good_id'=>'required',
-                'location_id'=>'required',
-                'name_shelf'=>'required',
-            ]);
-            $good = new GoodLocation();
-            $good->good_id = $request->good_id;
-            $good->location_id = $request->location_id;
-            $good->name_shelf = $request->name_shelf;
-            $good->save();
-
-            return response()->json([
-                'success' => true,
-                'message'   => 'Good Successfully Location Added'
-            ]);
-
-        }
+        return view('good.update', ['good' => $good, 'brand' => $brand , 'category' => $category, 'unit'=> $unit]);
     }
 
     /**
@@ -200,7 +178,7 @@ class GoodController extends Controller
          if( $request->isMethod('post') ){
 
             $model = Good::onlyTrashed()->get();
-        
+
             return DataTables::of($model)->make();
         }
 

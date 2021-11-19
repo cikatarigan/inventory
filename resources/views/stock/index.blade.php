@@ -32,12 +32,14 @@ jQuery(document).ready(function($) {
    function format ( d ) {
     var test = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
         '<tr>'+
-            '<td><b>Warehouse</b></td>'+
+            '<td><b>Lokasi</b></td>'+
+            '<td><b>Lokasi</b></td>'+
             '<td><b>Stock</b></td>'+
             '</tr>';+
             
    $.each(d.stock , function(index, val) { 
      test +=  '<tr>'+
+            '<td>'+val.sublocation+'</td>'+       
             '<td>'+val.location+'</td>'+
             '<td>'+val.stock+'</td>'+
         '</tr>';

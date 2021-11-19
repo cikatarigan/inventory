@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\User;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class Borrow extends Model
 {
     const STILL_BORROW	= "Still Borrow";
+    const EXPIRED	= "Expired";
     const DONE = "Done";
 
     public static function boot(){
@@ -36,7 +37,7 @@ class Borrow extends Model
         return $this->belongsTo(Good::class);
     }
 
-	public function User()
+	public function user()
     {
         return $this->belongsTo(User::class);
     }
@@ -45,6 +46,6 @@ class Borrow extends Model
     public function borrow_item()
     {
         return $this->hasMany(BorrowItem::class,'borrow_id','id');
-    }   
+    }
 
 }

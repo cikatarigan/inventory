@@ -19,6 +19,7 @@ class CreateBorrowsTable extends Migration
             $table->unsignedInteger('amount');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('handle_by');
+            $table->unsignedInteger('stock_back');
             $table->foreign('good_id')->references('id')->on('goods');
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('handle_by')->references('id')->on('users');

@@ -6,26 +6,34 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Good;
 use App\Models\Location;
+use App\Models\LocationShelf;
+
 use App\Models\StockTransaction;
-use DataTables;
+use Yajra\DataTables\DataTables;
 
 
 class StockController extends Controller
 {
 	public function index(Request $request){
+
+
 		if( $request->isMethod('post') ){
             $model = Good::all();
-            $location = Location::all(); 
-            return DataTables::of($model)->addColumn('stock', function ($good) use ($location){
+            $location = Location::all();
+            $sublocation = LocationShelf::with(['location'])->get();
+
+
+            return DataTables::of($model)->addColumn('stock', function ($good) use ($sublocation){
             	$stocks = [];
-                foreach ($location as $location) {
+                foreach ($sublocation as $sublocation) {
                     $stocks[] =[
-                        'location'=> $location->name,
-                        'stock' => $good->getBalanceByWarehouse($location->id)
+                        'location'=> $sublocation->name_shelf,
+                        'sublocation' => $sublocation->location->name,
+                        'stock' => $good->getBalanceByShelf($sublocation->id)
                     ];
                 }
             return $stocks;
-            })->make();       
+            })->make();
 		}
 		return view('stock.index');
 	}
@@ -34,13 +42,14 @@ class StockController extends Controller
 
         $id =  $request->id;
         $location = Location::all();
+        $shelf = LocationShelf::all();
         $good = Good::find($id);
-        
+
         if ($request->isMethod('post')){
 
-        $model  = StockTransaction::with(['location_shelf.location','good'])->where('good_id', $id)->orderBy('created_at', 'DESC'); 
+        $model  = StockTransaction::with(['location_shelf.location','good'])->where('good_id', $id)->orderBy('created_at', 'DESC');
 
-            if ($request->location_id) {                   
+            if ($request->location_id) {
                   $model->where('location_id', '=', $request->location_id);
             };
 
@@ -57,4 +66,8 @@ class StockController extends Controller
 
         return view('stock.detail',['id' =>$id, 'location' => $location, 'good' => $good]);
     }
+
+
+
+
 }

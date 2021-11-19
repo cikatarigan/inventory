@@ -81,30 +81,52 @@
             </div>
             <div class="modal-body">
               <div class="text-center">
-               
                  <div id="qrcode"></div>
-                 
+                Nama Barang : <p id="NameGoods"></p>
+                Expired : <p id="ExpiredOn"></p>
               </div>
             </div>
             <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-               <!-- <input type="button" value="Print this QR Code" onclick="javascript:window.print()"> -->
-               <a href="{{route('view.qrcode')}}" target="_blank">New Tab</a>
             </div>
          </form>
       </div>
    </div>
 </div>
 
+
+{{-- Modal Print Barcode--}}
+<div class="modal" tabindex="-1" role="dialog" id="PrintQrCodeModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+            <form id="formQrCodeModal" method="POST" action="about:blank" target="newStuff" />
+          <input type="hidden" id="id_print" name="id" value="">
+        <div class="modal-header">
+          <h4 class="modal-title">Konfirmasi</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <input type="number" class="form-control" id="loop" name="loop" placeholder="Masukkan jumlah di Print" required  min="1">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button   id="ButtonPrint" class="btn btn-primary">Print</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 @endsection
 @section('script')
 
 <script>
 
- jQuery(document).ready(function($) { 
-
-
-
+ jQuery(document).ready(function($) {
       var table = $('#stockentry-table').DataTable({
           "bFilter": true,
           "processing": true,
@@ -143,7 +165,7 @@
              title :"Created At",
                   "data": "created_at",
                   render : function (data, type, row){
-                    return moment(data).format('Do MMMM YYYY h:mm')                
+                    return moment(data).format('Do MMMM YYYY h:mm')
                   },
                   "orderable": true,
               },
@@ -152,38 +174,77 @@
                   "data": "user.name",
                   "orderable": true,
               },
+              {
+             title :"Status",
+                  "data": "status",
+                  render : function (data, type, row){
+                     if(data == "expired"){
+                        return '<span class="badge badge-secondary">kadaluarsa</span>';
+                     }else if(data == "No Expired"){
+                        return  '<span class="badge badge-info">Tidak ada Kadaluarsa</span>';
+                     }else if (data == "Still Use"){
+                        return  '<span class="badge badge-success">Ready</span>';
+                     }else if(data == "Expired") {
+                        return  '<span class="badge badge-warning">Expired</span>';
+                     }else {
+                        return  '<span class="badge badge-danger">Barang Habis</span>';
+                     }
+                }
+              },
             {
            title :"Action",
                render: function(data, type, row) {
-                   return  '<a href="#" data-toggle="tooltip" title="QR CODE" class="edit-btn  badge badge-info" data-qrcode="'+row.qrcode+'"  data-id="'+row.id+'"><i class="fas fa-qrcode fa-lg"></i></a> &nbsp;' 
+                   return  '<a href="#" data-toggle="tooltip" title="QR CODE" class="edit-btn  badge badge-info" data-qrcode="'+row.qrcode+'"  data-id="'+row.id+'"><i class="fas fa-qrcode fa-lg"></i></a> &nbsp;<a href="#" data-toggle="tooltip" title="QR CODE" class="print-btn  badge badge-warning" data-qrcode="'+row.qrcode+'"  data-id="'+row.id+'"><i class="fas fa-print fa-lg"></i></a> &nbsp;'
                      ;
                },
               "orderable": false,
            }
           ],
-          "order": [0, 'desc'],
+          "order": [4, 'desc'],
           "fnCreatedRow": function(nRow, aData, iDataIndex) {
               $(nRow).attr('data', JSON.stringify(aData));
           }
-      }); 
+      });
 
 
 
      // showQrCode
      $('#stockentry-table').on('click', '.edit-btn', function(e){
          var aData = JSON.parse($(this).parent().parent().attr('data'));
+        console.log(aData);
          $('#id').val(aData.id);
+
          $('#ShowQrcodeModal').modal('show');
+         $('#NameGoods').text(aData.good.name);
+         if(aData.date_expired != null){
+            $('#ExpiredOn').text(moment(aData.date_expired).format(('MM/DD/YYYY')));
+         }else{
+            $('#ExpiredOn').text('Tidak barang Kadaluarsa');
+         }
+
           $('#qrcode').empty();
             $('#qrcode').qrcode({
              text: aData.qrcode,
           });
-       
+
      });
-     
-    $( "#btn-print" ).click(function() {
-       printData();
-    });
+
+     $('#stockentry-table').on('click', '.print-btn', function(e){
+        var aData = JSON.parse($(this).parent().parent().attr('data'));
+        var id = $('#id_print').val(aData.id);
+        $('#PrintQrCodeModal').modal('show');
+
+     });
+
+
+
+   $('#ButtonPrint').click(function () {
+        var id = $('#id_print').val();
+         var loop = $('#loop').val();
+        window.open('qr-code/print/'+ id + '/'+ loop);
+
+   });
+
 });
 </script>
 @endsection

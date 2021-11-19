@@ -64,13 +64,10 @@
                <div class="form-group">
                   <label>Unit</label>
                   <select name="unit" class="form-control select2" style="width: 100%;" required="">
-                     <option value="pcs">PCS</option>
-                     <option value="kg">KG</option>
+                  @foreach($unit as $item)
+                     <option value="{{$item->unit}}" {{$item->unit == $item->unit  ? 'selected' : ''}}>{{$item->unit}}</option>
+                     @endforeach
                   </select>
-               </div>
-               <div class="form-group">
-                  <label>Barcode</label>
-                  <input type="number" class="form-control" name="barcode" id="barcode" placeholder="Masukkan No Barcode / Scan" value="{{$good->barcode}}" required>
                </div>
                <div class="form-group">
                   <label>Desciption</label>

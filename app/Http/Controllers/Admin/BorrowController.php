@@ -7,17 +7,17 @@ use App\Models\Good;
 use App\Models\Borrow;
 use Illuminate\Http\Request;
 use App\User;
-use DataTables;
+use \Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\Hash;
 use App\Models\StockTransaction;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Models\GoodShelf;
 use App\Models\StockEntry;
 use Carbon\Carbon;
 use App\Models\BorrowItem;
 
 class BorrowController extends Controller
-{   
+{
 
     public function index(Request $request)
     {
@@ -25,7 +25,7 @@ class BorrowController extends Controller
             $model = Borrow::with(['good', 'user'])->get();
             return DataTables::of($model)->make();
         }
-    
+
         return view('borrow.index');
     }
 
@@ -33,8 +33,8 @@ class BorrowController extends Controller
     {
 
           if($request->isMethod('POST')){
-            $goods = Good::find($request->goods);    
- 
+            $goods = Good::find($request->goods);
+
             $validator = $request->validate([
             'location' => 'required',
             'location_shelf'=> 'required',
@@ -44,11 +44,11 @@ class BorrowController extends Controller
 
             $this->validate($request, [
              'amount' => ['required', 'numeric','max:' . ($goods->getBalanceByWarehouse($request->location)),'min:1'],
-            ]); 
+            ]);
 
              return response()->json([
                 'success'=>true,
-            ]);   
+            ]);
           }
     }
 
@@ -62,12 +62,12 @@ class BorrowController extends Controller
             $user = User::find($request->data_user);
             $goods = Good::find($request->data_goods);
 
-            
+
              if(!Hash::check($request->password, $user->password)){
                  return response()->json([
                     'success'=>false,
                     'message'   => 'Password User Salah'
-                ]);  
+                ]);
             }
 
             if($goods->getBalanceByWarehouse($request->data_location) < $request->data_amount){
@@ -76,20 +76,21 @@ class BorrowController extends Controller
                     'message' => 'stock tidak cukup'
                 ]);
             }
-          
 
-                $entry = StockEntry::whereDate('date_expired', '>=', Carbon::now())->where('good_id' , $request->data_goods)->where('location_shelf_id', $request->data_shelf)->orderBy('created_at', 'asc')->get();
 
+            $entry = StockEntry::where('status', '!=', 'Out Of Stock')->where('good_id' , $request->data_goods)->where('location_shelf_id', $request->data_shelf)->orderBy('created_at', 'asc')->get();
+            // dd($entry);
                 try{
                     DB::statement('SET autocommit=0');
                     DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, good_shelves WRITE, stock_transactions WRITE, goods WRITE, borrows WRITE, borrow_items WRITE');
-        
+
                 $borrow = New Borrow;
                 $borrow->amount = $request->data_amount;
                 $borrow->good_id = $request->data_goods;
                 $borrow->user_id = $request->data_user;
                 $borrow->description = $request->data_description;
                 $borrow->location_shelf_id = $request->data_shelf;
+                $borrow->stock_back = 0;
                 $borrow->status = Borrow::STILL_BORROW;
                 $borrow->save();
 
@@ -100,18 +101,27 @@ class BorrowController extends Controller
                         $itemborrow = New BorrowItem;
                         $itemborrow->entry_id =  $item->id;
                         $itemborrow->borrow_id = $borrow->id;
-                         
+                        $stockentry = Stockentry::find($item->id);
+
                         if($amount <= $stock_amount){
                             $itemborrow->amount = $amount;
+                            $stockentry->stock_use = $item->stock_use  + $amount;
+                            if($item->stock_use >= $amount){
+                                $stockentry->status = Stockentry::TYPE_OUT_STOCK;
+                            }
+                            $stockentry->save();
                             $itemborrow->save();
                             break;
                         }else{
                            $itemborrow->amount = $stock_amount;
+                           $stockentry->stock_use = $stock_amount;
+                           $stockentry->status = Stockentry::TYPE_OUT_STOCK;
+                           $stockentry->save();
                            $itemborrow->save();
-                           $amount = $amount - $itemborrow->amount;  
+                           $amount = $amount - $itemborrow->amount;
                         }
                     }
-                
+
                 }
 
                 $goods = $borrow->good;

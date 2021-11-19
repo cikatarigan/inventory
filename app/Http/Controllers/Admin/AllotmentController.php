@@ -11,18 +11,16 @@ use App\Models\Good;
 use App\Models\GoodShelf;
 use App\Models\StockTransaction;
 use App\Models\StockEntry;
-use Carbon\Carbon;
-use DataTables;
 use App\User;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use validator;
 use Illuminate\Support\Facades\Hash;
-
+use \Yajra\Datatables\Datatables;
 
 class AllotmentController extends Controller
 {
-    
+
     public function index(Request $request)
     {
 
@@ -38,7 +36,7 @@ class AllotmentController extends Controller
     {
 
         if($request->isMethod('POST')){
-            
+
             $goods = Good::find($request->goods);
 
             $validator = $request->validate([
@@ -51,11 +49,11 @@ class AllotmentController extends Controller
 
             $this->validate($request, [
              'amount' => ['required', 'numeric', 'max:' . ($goods->getBalanceByWarehouse($request->location_id)),'min:1'],
-            ]); 
+            ]);
 
              return response()->json([
                 'success'=>true,
-            ]);   
+            ]);
         }
 
     }
@@ -63,7 +61,7 @@ class AllotmentController extends Controller
     public function create(Request $request)
     {
         $users = User::where('id', '!=', auth()->id())->get();
-        
+
 
         if ($request->isMethod('POST')){
 
@@ -74,7 +72,7 @@ class AllotmentController extends Controller
                  return response()->json([
                     'success'=>false,
                     'message'   => 'Password User Salah'
-                ]);  
+                ]);
             }
 
             if($goods->getBalanceByWarehouse($request->data_location) < $request->data_amount){
@@ -84,12 +82,12 @@ class AllotmentController extends Controller
                 ]);
             }
 
-            $entry = StockEntry::whereDate('date_expired', '>=', Carbon::now())->where('good_id' , $request->data_goods)->where('location_shelf_id', $request->data_shelf)->orderBy('created_at', 'asc')->get();
+            $entry = StockEntry::where('status', '!=', 'Out Of Stock')->where('good_id' , $request->data_goods)->where('location_shelf_id', $request->data_shelf)->orderBy('created_at', 'asc')->get();
 
 
             try{
             DB::statement('SET autocommit=0');
-            DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, stock_transactions WRITE, goods WRITE, allotments WRITE, allotment_items WRITE' );
+            DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, stock_transactions WRITE, goods WRITE, allotments WRITE, allotment_items WRITE, good_shelves WRITE' );
 
             $allotment = New Allotment;
             $allotment->location_shelf_id = $request->data_shelf;
@@ -107,21 +105,30 @@ class AllotmentController extends Controller
                     $itemallotment = New AllotmentItem;
                     $itemallotment->entry_id =  $item->id;
                     $itemallotment->allotment_id = $allotment->id;
-                     
+
+                    $stockentry = Stockentry::find($item->id);
+
                     if($amount <= $stock_amount){
                         $itemallotment->amount = $amount;
+
+                        $stockentry->stock_use = $item->stock_use  + $amount;
+                        if($item->stock_use >= $amount){
+                            $stockentry->status = Stockentry::TYPE_OUT_STOCK;
+                        }
+                        $stockentry->save();
                         $itemallotment->save();
                         break;
                     }else{
                        $itemallotment->amount = $stock_amount;
+                       $stockentry->stock_use = $stock_amount;
+                       $stockentry->status = Stockentry::TYPE_OUT_STOCK;
+                       $stockentry->save();
                        $itemallotment->save();
-                       $amount = $amount - $itemallotment->amount;  
+                       $amount = $amount - $itemallotment->amount;
                     }
                 }
-            
+
             }
-
-
 
             $goods = $allotment->good;
 
@@ -136,11 +143,11 @@ class AllotmentController extends Controller
             $stocktransaction->location_shelf_id = $request->data_shelf;
             $allotment->stock_transaction()->save($stocktransaction);
 
-            $good_shelf = GoodShelf::where('good_id', $request->goods_id)->where('location_shelf_id', $request->data_shelf)->first();
+            $good_shelf = GoodShelf::where('good_id', $request->data_goods)->where('location_shelf_id',$request->data_shelf)->first();
             if($stocktransaction->end_balance == 0){
                 $good_shelf->delete();
             }
-             
+
 
             DB::getPdo()->exec('UNLOCK TABLES');
             }catch(\Exception $e){
@@ -153,7 +160,7 @@ class AllotmentController extends Controller
                     'success'=>true,
                     'message'   => 'Pemberian Telah Berhasil'
             ]);
-            
+
 
 
         }

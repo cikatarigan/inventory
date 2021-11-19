@@ -4,7 +4,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Location TrashTable</h1>
+            <h1>Sub Location TrashTable</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -22,7 +22,7 @@
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <table id="location-table" class="table table-striped table-bordered dataTable no-footer" style="width: 100%;"></table>
+          <table id="sublocation-table" class="table table-striped table-bordered dataTable no-footer" style="width: 100%;"></table>
          </div>
       </div>
    </div>
@@ -56,7 +56,7 @@
 <script>
 jQuery(document).ready(function($) { 
    
-   var table = $('#location-table').DataTable({
+   var table = $('#sublocation-table').DataTable({
       "pageLength": 25,
        "bFilter": true,
        "processing": true,
@@ -64,7 +64,7 @@ jQuery(document).ready(function($) {
        "lengthChange": true,
        "responsive" : true,
        "ajax": {
-           "url": "/location/trash",
+           "url": "/sub/location/trash",
            "type": "POST",
        },
        "language": {
@@ -72,7 +72,7 @@ jQuery(document).ready(function($) {
        },
        "columns": [{
                title : "Name Location",
-               "data": "name",
+               "data": "name_shelf",
                "orderable": true,
            },
            {
@@ -90,7 +90,7 @@ jQuery(document).ready(function($) {
 
 
     // Restore
-       $('#location-table').on('click', '.btn-restore', function(event) {
+       $('#sublocation-table').on('click', '.btn-restore', function(event) {
         event.preventDefault();
         var id = $(this).data('id');
         var name = $(this).data('name');
@@ -105,7 +105,7 @@ jQuery(document).ready(function($) {
         var form =$('#FormRestoreLocation');
         var data = form.serialize();
         $.ajax({
-            url: '/location/restore',
+            url: '/sub/location/restore',
             type: 'POST',
             data : data,
             cache : false,
@@ -114,6 +114,8 @@ jQuery(document).ready(function($) {
                   toastr.success(data.message);
                   $('#restoreLocationModal').modal('hide');
                   table.draw();
+               }else{
+                toastr.error(data.message);
                }
             },
         })

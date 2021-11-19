@@ -20,9 +20,9 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    { 
+    {
         $roles = Role::pluck('name','name')->all();
-        
+
 
         if( $request->isMethod('post') ){
             $model =User::with('roles');
@@ -44,11 +44,11 @@ class UserController extends Controller
             $validator = $request->validate([
                 'name'=>'required|string|max:60',
                 'username'=>'required|max:60',
-                'email'=>'required|email|unique:users', 
-                'password'=>'required|min:6', 
+                'email'=>'required|email|unique:users',
+                'password'=>'required|min:6',
             ]);
 
-            
+
             $user = New User;
             $user->name = $request->name;
             $user->username = $request->username;
@@ -74,7 +74,7 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    
+
 
     public function update(Request $request, $id)
     {
@@ -127,14 +127,14 @@ class UserController extends Controller
 
     public function change(Request $request)
     {
-        $user = User::find($request->id);
+        $user = User::find($request->id_change);
 
         $validator = $request->validate([
             'password'         => 'required|min:6',
             'new_password_confirm' => 'required_with:password|same:password|min:6',
         ]);
 
-        $user->password = Hash::make($request->new_password);
+        $user->password = Hash::make($request->password);
         $user->save();
             return response()->json([
                 'success'=>true,

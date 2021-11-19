@@ -9,12 +9,12 @@
                     <h5 class="text-center">
                       <span class="font-weight-bold text-primary">
                         Scan
-                      </span> 
+                      </span>
                     </h5>
                 </div>
                 <div class="card-body">
                     <video id="preview" width="100%" height="500"></video>
-                     <form class="" action="{{Route('result')}}">
+                     <form action="{{Route('result')}}">
                       <div class="d-flex justify-content-center">
                          <div class="p-2 bd-highlight">
                     <div class="form-group">
@@ -28,15 +28,15 @@
                     </div>
                       </div>
 
-                  </form>  
-                 </div> 
+                  </form>
+                 </div>
             </div>
         </div>
      </div>
    </section>
 @endsection
 @section('script')
-  <script   type="text/javascript" src="{{asset('js/instascan.min.js')}}"></script> 
+  <script   type="text/javascript" src="{{asset('js/instascan.min.js')}}"></script>
    <script>
 
       let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
@@ -53,7 +53,7 @@
       }).catch(function (e) {
         console.error(e);
       });
-  
+
    </script>
 
 @endsection

@@ -69,8 +69,8 @@
                   "orderable": true,
               },
                {
-             title :"Expired Date",
-                  "data": "date",
+             title :"Tanggal Dibuang",
+                  "data": "created_at",
                   render : function (data, type, row){
                   return moment(data).format('dddd, Do MMMM YYYY')
                 },

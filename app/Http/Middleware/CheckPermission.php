@@ -17,17 +17,18 @@ class CheckPermission
     public function handle($request, Closure $next)
     {
         $user = $request->user();
+
         $route = Route::currentRouteName();
 
         try{
             if (!$user->hasPermissionTo($route, 'web')){
                 return $this->generate_response($request, new PermissionDoesNotExist(__('validation.permission.authorize')));
             }
-        }catch (PermissionDoesNotExist $pdne){      
+        }catch (PermissionDoesNotExist $pdne){
         }
 
         return $next($request);
-        
+
     }
 
     public function generate_response($request ){

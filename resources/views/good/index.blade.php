@@ -15,7 +15,7 @@
         </div>
       </div>
     </section>
-    
+
 <section class="content">
    <div class="card">
       <div class="card-header">
@@ -26,7 +26,7 @@
          <div class="card-tools">
               <a href="{{route('good.trash')}}" class="btn btn-danger btn-sm float-right ml-1" title="Daftar Barang Terhapus">
                    <i class="fas fa-trash-restore-alt fa-lg"></i>
-              </a>            
+              </a>
           </div>
           @endif
       </div>
@@ -111,8 +111,8 @@
 @endsection
 @section('script')
 <script>
-jQuery(document).ready(function($) { 
-   
+jQuery(document).ready(function($) {
+
    $("#name_shelf").select2({
          tags: true,
          placeholder: "Pilih atau Buat Rak",
@@ -149,10 +149,21 @@ jQuery(document).ready(function($) {
                "orderable": true,
            },
            {
+              title :"Ada Expired",
+               "data": "isexpired",
+               render: function(data, type, row) {
+                   if(data == "on"){
+                       return  'Ada Expired';
+                   }else{
+                        return  'Tidak ada Expired';
+                   }
+               }
+           },
+           {
            title :"Action",
                render: function(data, type, row) {
-                   return  '@if(Auth::user()->hasPermissionTo('good.update','web'))<a href="/good/update/'+row.id+'" data-toggle="tooltip" title="Edit" class="edit-btn  badge badge-info" data-name="'+row.name+'" data-id="'+row.id+'"><i class="far fa-edit fa-lg"></i></a> &nbsp;@endif' + 
-                    '@if(Auth::user()->hasPermissionTo('good.destroy','web'))<a href="#" class="btn-delete badge badge-danger" data-name="'+row.name+'" data-id="'+row.id+'"  data-toggle="tooltip" data-placement="bottom" title="Hapus"><i class="fa fa-trash fa-lg"></i></a> &nbsp;@endif';
+                   return  '@if(Auth::user()->hasPermissionTo("good.update","web"))<a href="/good/update/'+row.id+'" data-toggle="tooltip" title="Edit" class="edit-btn  badge badge-info" data-name="'+row.name+'" data-id="'+row.id+'"><i class="far fa-edit fa-lg"></i></a> &nbsp;@endif' +
+                    '@if(Auth::user()->hasPermissionTo("good.destroy","web"))<a href="#" class="btn-delete badge badge-danger" data-name="'+row.name+'" data-id="'+row.id+'"  data-toggle="tooltip" data-placement="bottom" title="Hapus"><i class="fa fa-trash fa-lg"></i></a> &nbsp;@endif';
                },
            }
        ],
@@ -160,7 +171,7 @@ jQuery(document).ready(function($) {
        "fnCreatedRow": function(nRow, aData, iDataIndex) {
            $(nRow).attr('data', JSON.stringify(aData));
        }
-   }); 
+   });
 
    //GoodLocation
    $('#goods-table').on('click', '.btn-location', function(event) {
@@ -196,7 +207,7 @@ jQuery(document).ready(function($) {
                      item = (item.length > 0) ? item : form.find('select[name='+ key +']');
                      item = (item.length > 0) ? item : form.find('textarea[name='+ key +']');
                      item = (item.length > 0) ? item : form.find("input[name='"+ key +"[]']");
-      
+
                     var parent = (item.parent().hasClass('form-group')) ? item.parent() : item.parent().parent();
                      parent.addClass('has-error');
                      parent.append('<span class="help-block" style="color:red;">'+ error +'</span>');
@@ -206,6 +217,6 @@ jQuery(document).ready(function($) {
         })
     });
 
-}); 
+});
 </script>
 @endsection

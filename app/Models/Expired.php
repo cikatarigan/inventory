@@ -21,7 +21,7 @@ class Expired extends Model
         return $this->belongsTo(LocationShelf::class, 'location_shelf_id', 'id');
     }
 
-   public function stock_transaction()
+    public function stock_transaction()
     {
     	return $this->morphOne(StockTransaction::class, "detailable");
     }

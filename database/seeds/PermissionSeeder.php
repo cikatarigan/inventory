@@ -28,7 +28,13 @@ class PermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' =>'location.destroy','guard_name'=>'web'],['display_name' => 'Daftar location - Menghapus location']),
         Permission::firstOrCreate(['name' =>'location.trash','guard_name'=>'web'],['display_name' => 'Daftar location Terhapus']),
         Permission::firstOrCreate(['name' =>'location.restore','guard_name'=>'web'],['display_name' => 'Daftar location Terhapus - Restore location Terhapus']),
+
+        // Sub Location
         Permission::firstOrCreate(['name' =>'sublocation.store','guard_name'=>'web'],['display_name' => 'Daftar Name Shelf']),
+        Permission::firstOrCreate(['name' =>'sublocation.destroy','guard_name'=>'web'],['display_name' => 'Daftar Name Shelf - Hapus Sub Location']),
+        Permission::firstOrCreate(['name' =>'sublocation.trash','guard_name'=>'web'],['display_name' => 'Daftar Name Shelf - Daftar Sub Location Terhapus']),
+        Permission::firstOrCreate(['name' =>'sublocation.restore','guard_name'=>'web'],['display_name' => 'Daftar Name Shelf - Restore Sub Location Terhapus']),
+
         //Good
         Permission::firstOrCreate(['name' =>'good.index','guard_name'=>'web'],['display_name' => 'Daftar Barang']),
         Permission::firstOrCreate(['name' =>'good.store','guard_name'=>'web'],['display_name' => 'Daftar Barang - Menambahkan Barang Baru']),
@@ -78,8 +84,14 @@ class PermissionSeeder extends Seeder
 
         // Expired
         Permission::firstOrCreate(['name' =>'expired.index','guard_name'=>'web'],['display_name' => 'Daftar Expired']),
+
+        // Scan
+        Permission::firstOrCreate(['name' =>'scan','guard_name'=>'web'],['display_name' => 'Scan']),
+        Permission::firstOrCreate(['name' =>'scan/result','guard_name'=>'web'],['display_name' => 'Hasil Scan']),
+        Permission::firstOrCreate(['name' =>'scan/check','guard_name'=>'web'],['display_name' => 'Hasil Scan Check Password']),
+        Permission::firstOrCreate(['name' =>'scan/action','guard_name'=>'web'],['display_name' => 'Hasil Scan Action']),
         ]);
-        
+
 
         $role_admin->syncPermissions($permission->map(function ($item, $key) { return $item->name;}));
     }

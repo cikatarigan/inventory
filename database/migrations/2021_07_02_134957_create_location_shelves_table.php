@@ -20,6 +20,7 @@ class CreateLocationShelvesTable extends Migration
             $table->string('name_shelf');
             $table->foreign('location_id')->references('id')->on('locations');
             $table->foreign('user_id')->references('id')->on('users');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

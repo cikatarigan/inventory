@@ -11,12 +11,16 @@ use App\Models\LocationShelf;
 use App\User;
 use App\Models\Sample;
 use App\Models\Allotment;
+use App\Models\AllotmentItem;
 use App\Models\Expired;
-use Auth;
-use DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\StockTransaction;
 use App\Models\GoodShelf;
 use App\Models\Borrow;
+use App\Models\BorrowItem;
+use App\Models\GiveBack;
+use Illuminate\Support\Facades\Hash;
 
 class HomeController extends Controller
 {
@@ -37,14 +41,14 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-         $expired = StockEntry::with(['good.stock_transaction', 'location_shelf.location'])->whereHas('good',  function($query){
+         $expired = StockEntry::where('status', '!=','Out Of Stock')->with(['good.stock_transaction', 'location_shelf.location'])->whereHas('good',  function($query){
             $query->whereNotNull('isexpired');
          })->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->where('status', '!=' ,'expired')->get();
           // $expired = Good::with('stockentry.location_shelf.location')->whereHas('stockentry', function($query){
           //   $query->whereBetween('date_expired', [ Carbon::now()->format('Y-m-d'), Carbon::now()->addDays(30)->format('Y-m-d') ])->where('status', '!=' ,'expired');       })->whereNotNull('isexpired')->get();
-          
-          
-         $borrow = Borrow::with('good.good_images')->where('status', 'Still Borrow')->get();
+
+
+         $borrow = Borrow::with('good.good_images','user')->where('status', 'Still Borrow')->get();
          $allotment = Allotment::where('user_id', Auth::id())->get();
          $borrow_user = Borrow::with('good.good_images')->where('status', 'Still Borrow')->where('user_id', Auth::id())->get();
          $goods = Good::count();
@@ -77,15 +81,10 @@ class HomeController extends Controller
 
     public function goods(Request $request, LocationShelf $shelf)
     {
-       
-
         $goods = Good::with(['good_shelves.location_shelves',])->whereHas('good_shelves.location_shelves', function($query) use ($shelf){
             $query->where('id', $shelf->id);
         })->select([ '*','goods.name as text'])->get();
-  
-        //  $goods = DB::table('goods')->join('good_shelves', 'goods.id', '=', 'good_shelves.good_id')
-        // ->whereHas('location_shelves.location_id', $location->id)->whereNull('goods.isexpired')
-        // ->select([ '*','goods.name as text'])->get();
+
         return response()->json([
             'results'  => $goods
         ]);
@@ -95,14 +94,13 @@ class HomeController extends Controller
     public function users(Request $request)
     {
       $user = User::whereHas('borrow', function($q){
-           $q->groupBy('user_id');
+           $q->where('status', 'Still Borrow')->groupBy('user_id');
       })->select(['id', 'name as text'])->get();
-    
+
         return response()->json([
             'results'  => $user
         ]);
     }
-
 
     public function borrows(Request $request, User $user)
     {
@@ -115,98 +113,234 @@ class HomeController extends Controller
         ]);
     }
 
+    public function borrows_id(Request $request, User $user, Good $good)
+    {
+
+        $borrow_id = Borrow::where('good_id', $good->id)
+                    ->where('user_id', $user->id)
+                    ->where('status', 'Still Borrow')->select(['id', 'id as text'])->get();
+
+        return response()->json([
+            'results'  => $borrow_id
+        ]);
+    }
+
     public function scan(Request $request)
     {
-        if( $request->isMethod('post') ){
-        }
-        return view('scan.index');
+            return view('scan.index');
     }
 
     public function check_result(Request $request)
     {
          if($request->isMethod('POST')){
-            $goods = Good::find($request->good);    
- 
+            $goods = Good::find($request->good_id);
+            $entry_id = Stockentry::find($request->entry_id);
+            $borrow_id = Borrow::where('good_id',$request->goods_id)
+                                ->where('user_id', $request->user_return)
+                                ->where('location_shelf_id', $request->location_shelf_id)
+                                ->where('status', 'Still Borrow')->first();
+
+
             $validator = $request->validate([
-            'user' => 'required',
-            'amount' => 'required',
+                'amount' => 'required',
            ]);
 
-            $this->validate($request, [
-             'amount' => ['required', 'numeric','max:' . ($goods->getBalanceByWarehouse($request->location))],
-            ]); 
+           if($request->log == 3){
+                $this->validate($request, [
+                    'amount' => ['required', 'numeric','max:' . ($borrow_id->amount - $borrow_id->stock_back),'min:1'],
+                ]);
+            }else{
+                $this->validate($request, [
+                    'amount' => ['required', 'numeric','max:' . ($entry_id->amount - $entry_id->stock_use),'min:1'],
+                ]);
+            }
 
              return response()->json([
                 'success'=>true,
-            ]);   
+            ]);
         }
     }
 
     public function result (Request $request)
     {
+
         $search = $request->q;
-        $data = StockEntry::with(['good.good_shelves.location_shelves'])->where('qrcode', $search)->first();
+        $data = StockEntry::with(['good.good_shelves.location_shelves', 'borrow_item.borrow.user'])->where('qrcode', $search)->first();
 
-        $amount = $data->amount -  $data->allotment_item()->sum('amount');
-        $users = User::where('id', '!=', auth()->id())->get();
+        if($data != null){
+            $amount = $data->amount -  $data->stock_use;
+            $users = User::where('id', '!=', auth()->id())->get();
 
-        if ($request->isMethod('post')){
-           
-            $validator = $request->validate([
-            'user_id' => 'required',
-       
-           ]);
-            $this->validate($request, [
-             'amount' => ['required', 'numeric','max:' . ($amount)],
-            ]); 
-            if($request->log == 1){
-                $data = New Borrow;
-                $data->description = $request->description;
-                $data->status = Borrow::STILL_BORROW;
-                $data->good_id = $request->good_id;
-                $data->user_id = $request->user;
-                $data->handle_by = Auth::id();
-                $data->amount = $request->amount;
-                $data->save();
-            }else if($request->log == 2){
-                $data = New GiveBack;
-                $data->good_id = $request->good_id;
-                $data->user_id = $request->user;
-                $data->handle_by = Auth::id();
-                $data->amount = $request->amount;
-                $data->save();
-            }else {
-                $data = New Allotment;
-                $data->description = $request->description;
-                $data->good_id = $request->good_id;
-                $data->user_id = $request->user;
-                $data->handle_by = Auth::id();
-                $data->amount = $request->amount;
-                $data->save();
+            $borrow = Borrow::where('good_id', $data->good_id)->where('location_shelf_id', $data->location_shelf_id)->where('status','Still Borrow')->get();
 
-                $amount =  $request->amount;
-                foreach ($entry as  $item) {
-                $stock_amount = $item->amount -  $item->allotment_item()->sum('amount') ;
-                if($stock_amount >  0 ){
-                    $itemallotment = New AllotmentItem;
-                    $itemallotment->entry_id =  $item->id;
-                    $itemallotment->allotment_id = $allotment->id;
-                     
-                    if($amount <= $stock_amount){
-                        $itemallotment->amount = $amount;
-                        $itemallotment->save();
-                        break;
-                    }else{
-                       $itemallotment->amount = $stock_amount;
-                       $itemallotment->save();
-                       $amount = $amount - $itemallotment->amount;  
-                    }
-                }
-            
-            }
+            $user_borrow = User::with('borrow')->whereHas('borrow', function($q)use ($data){
+                $q->where('good_id', $data->good_id)->orWhere('location_shelf_id', $data->location_shelf_id)->where('status','Still Borrow');
+            })->distinct()->get();
+
+        } else{
+            return response()->view('errors.404');
         }
 
-                
+        return view('scan.result', ['data' => $data, 'amount' => $amount ,'users' => $users, 'borrow' => $borrow,  'user_borrow' => $user_borrow]);
+    }
+
+
+    public function action(Request $request)
+    {
+        if ($request->isMethod('post')){
+            $user = User::find($request->data_user);
+            $user_return = User::find($request->data_user_return);
+
+            if($request->data_log == 3){
+                    if(!Hash::check($request->password, $user_return->password)){
+                        return response()->json([
+                        'success'=>false,
+                        'message'   => 'Password User Salah'
+                    ]);
+                }
+           }else{
+                    if(!Hash::check($request->password, $user->password)){
+                        return response()->json([
+                        'success'=>false,
+                        'message'   => 'Password User Salah'
+                    ]);
+                }
+           }
+
+           try{
+            DB::statement('SET autocommit=0');
+            DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, expireds WRITE, good_shelves WRITE, stock_transactions WRITE, goods WRITE, borrows WRITE, give_backs WRITE, allotments WRITE, allotment_items WRITE, borrow_items WRITE');
+
+                if($request->data_log == 1){
+                    $data = New Borrow;
+                    $data->description = $request->data_description;
+                    $data->status = Borrow::STILL_BORROW;
+                    $data->good_id = $request->data_goods;
+                    $data->user_id = $request->data_user;
+                    $data->handle_by = Auth::id();
+                    $data->amount = $request->data_amount;
+                    $data->stock_back = 0;
+                    $data->location_shelf_id = $request->data_location_shelf_id;
+                    $data->save();
+
+                    $itemborrow = New BorrowItem;
+                    $itemborrow->entry_id =  $request->data_entryid;
+                    $itemborrow->borrow_id = $data->id;
+                    $itemborrow->amount= $data->amount;
+                    $itemborrow->save();
+
+                    $stockentry = Stockentry::find($request->data_entryid);
+                    $amount = $stockentry->amount - $stockentry->stock_use;
+                    $stockentry->stock_use = $stockentry->stock_use  + $data->amount;
+                    if($amount <= $request->data_amount ){
+                        $stockentry->status = Stockentry::TYPE_OUT_STOCK;
+
+                    }
+                    $stockentry->save();
+
+                    $goods = $data->good;
+
+                    $stocktransaction = New stocktransaction;
+                    $stocktransaction->start_balance = $goods->getBalanceByShelf($request->data_location_shelf_id);
+                    $stocktransaction->amount = $request->data_amount;
+                    $stocktransaction->end_balance = $stocktransaction->start_balance - $stocktransaction->amount;
+                    $stocktransaction->type = StockTransaction::TYPE_OUT;
+                    $stocktransaction->good_id = $request->data_goods;
+                    $stocktransaction->user_id = Auth::id();
+                    $stocktransaction->location_id = $request->data_location;
+                    $stocktransaction->location_shelf_id = $request->data_location_shelf_id;
+                    $data->stock_transaction()->save($stocktransaction);
+
+
+                }else if($request->data_log == 3){
+                    $data = New GiveBack;
+                    $data->description = $request->data_description;
+                    $data->good_id = $request->data_goods;
+                    $data->user_id = $request->data_user_return;
+                    $data->handle_by = Auth::id();
+                    $data->amount = $request->data_amount;
+                    $data->location_shelf_id = $request->data_location_shelf_id;
+                    $data->borrow_id = $request->data_borrow_id;
+                    $data->save();
+
+                    $stockentry = Stockentry::find($request->data_entryid);
+                    $amount = $stockentry->amount - $stockentry->stock_use;
+                    $stockentry->stock_use = $stockentry->stock_use  - $data->amount;
+                    if($stockentry->status == 'Out Of Stock'){
+                        $stockentry->status = Stockentry::TYPE_STILL_USE;
+                    }
+                    $stockentry->save();
+
+
+                    $borrow =Borrow::find($data->borrow_id);
+                    $amount_borrow = $borrow->amount - $borrow->stock_back;
+                    $borrow->stock_back = $borrow->stock_back  + $data->amount;
+                    if($amount_borrow <= $request->data_amount ){
+                        $borrow->status = Borrow::DONE;
+
+                    }
+                    $borrow->save();
+
+                    $goods = $data->good;
+
+                    $stocktransaction = New Stocktransaction;
+                    $stocktransaction->start_balance = $goods->getBalanceByShelf($request->data_location_shelf_id);
+                    $stocktransaction->amount = $request->data_amount;
+                    $stocktransaction->end_balance = $stocktransaction->start_balance + $stocktransaction->amount;
+                    $stocktransaction->type = StockTransaction::TYPE_IN;
+                    $stocktransaction->good_id = $request->data_goods;
+                    $stocktransaction->user_id = Auth::id();
+                    $stocktransaction->location_id = $request->data_location;
+                    $stocktransaction->location_shelf_id = $request->data_location_shelf_id;
+                    $data->stock_transaction()->save($stocktransaction);
+
+                }else if($request->data_log == 2) {
+                    $data = New Allotment;
+                    $data->description = $request->data_description;
+                    $data->good_id = $request->data_goods;
+                    $data->user_id = $request->data_user;
+                    $data->handle_by = Auth::id();
+                    $data->amount = $request->data_amount;
+                    $data->location_shelf_id = $request->data_location_shelf_id;
+                    $data->save();
+
+
+                    $itemallotment = New AllotmentItem;
+                    $itemallotment->entry_id =  $request->data_entryid;
+                    $itemallotment->allotment_id = $data->id;
+                    $itemallotment->amount= $data->amount;
+                    $itemallotment->save();
+
+                    $stockentry = Stockentry::find($request->data_entryid);
+                    $amount = $stockentry->amount - $stockentry->stock_use;
+                    $stockentry->stock_use = $stockentry->stock_use  + $data->amount;
+                    if($amount <= $request->data_amount ){
+                        $stockentry->status = Stockentry::TYPE_OUT_STOCK;
+
+                    }
+                    $stockentry->save();
+
+                    $goods = $data->good;
+
+                    $stocktransaction = New stocktransaction;
+                    $stocktransaction->start_balance = $goods->getBalanceByShelf($request->data_location_shelf_id);
+                    $stocktransaction->amount = $request->data_amount;
+                    $stocktransaction->end_balance = $stocktransaction->start_balance - $stocktransaction->amount;
+                    $stocktransaction->type = StockTransaction::TYPE_OUT;
+                    $stocktransaction->good_id = $request->data_goods;
+                    $stocktransaction->user_id = Auth::id();
+                    $stocktransaction->location_id = $request->data_location;
+                    $stocktransaction->location_shelf_id = $request->data_location_shelf_id;
+                    $data->stock_transaction()->save($stocktransaction);
+
+
+                }
+            DB::getPdo()->exec('UNLOCK TABLES');
+            }catch(\Exception $e){
+                DB::statement('ROLLBACK');
+
+                throw $e;
+            }
 
              return response()->json([
                 'success' => true,
@@ -214,16 +348,13 @@ class HomeController extends Controller
             ]);
 
         }
-
-        return view('scan.result', ['data' => $data, 'amount' => $amount ,'users' => $users]);
     }
-
 
     public function expired(Request $request, $id)
     {
-                $data = StockEntry::with('location_shelf.location')->find($id);
-               
-                $goods = Good::find($data->good_id);
+        $data = StockEntry::with('location_shelf.location')->find($id);
+
+        $goods = Good::find($data->good_id);
 
         if ($request->isMethod('post')){
 
@@ -231,12 +362,11 @@ class HomeController extends Controller
             DB::statement('SET autocommit=0');
             DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, stock_transactions WRITE, goods WRITE, allotments WRITE, allotment_items WRITE, expireds WRITE, good_shelves WRITE' );
 
-                              
                 $expired = New Expired;
-                $expired->good_id = $data->good_id; 
+                $expired->good_id = $data->good_id;
                 $expired->entry_id = $data->id;
                 $expired->location_shelf_id = $data->location_shelf_id;
-                $expired->amount =  $data->amount -  $data->allotment_item()->sum('amount');
+                $expired->amount =  $data->amount - $data->stock_use;
                 $expired->location_id = $data->location_shelf->location->id;
                 $expired->save();
 
@@ -244,13 +374,15 @@ class HomeController extends Controller
                 $stockentry->status = StockEntry::TYPE_EXPIRED;
                 $stockentry->save();
 
+                $goods = $expired->good;
+
                 $stocktransaction = New stocktransaction;
-                $stocktransaction->start_balance = $goods->getBalanceByWarehouse($data->location_shelf->location->id);
+                $stocktransaction->start_balance = $goods->getBalanceByShelf($data->location_shelf_id);
                 $stocktransaction->amount = $expired->amount;
                 $stocktransaction->end_balance = $stocktransaction->start_balance - $stocktransaction->amount;
                 $stocktransaction->type = StockTransaction::TYPE_OUT;
-                $stocktransaction->good_id = $data->good_id;
-                $stocktransaction->user_id = 1;
+                $stocktransaction->good_id = $expired->good_id ;
+                $stocktransaction->user_id = Auth::id();
                 $stocktransaction->location_id = $data->location_shelf->location->id;
                 $stocktransaction->location_shelf_id = $data->location_shelf_id;
                 $expired->stock_transaction()->save($stocktransaction);
@@ -275,8 +407,10 @@ class HomeController extends Controller
         }
     }
 
-    public function view()
+    public function view(Request $request, $id, $loop)
     {
-        return view('stockentry.view');
+            $data = StockEntry::find($id);
+            $loop = $loop;
+        return view('stockentry.view',['data' => $data, 'loop' => $loop]);
     }
 }

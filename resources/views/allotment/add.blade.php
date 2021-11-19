@@ -177,7 +177,7 @@
                      var good = $("#goods").val();
                      var amount = $("#amount").val();
                      var user = $("#user").val();
-                     var description = $("description").val();
+                     var description = $("#description").val();
                       $('#FormAllotment #locationCheck').val(location);
                       $('#FormAllotment #shelfCheck').val(shelf);
                       $('#FormAllotment #goodCheck').val(good);

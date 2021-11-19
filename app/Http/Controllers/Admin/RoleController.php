@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use App\Models\Role;
-use DataTables;
+use Yajra\DataTables\DataTables;
 use validator;
 
 class RoleController extends Controller
@@ -14,10 +14,7 @@ class RoleController extends Controller
     public function index(Request $request)
     {
         if( $request->isMethod('post') ){
-          
-
             $model = Role::all();
-        
             return DataTables::of($model)->make();
         }
 
@@ -50,25 +47,25 @@ class RoleController extends Controller
     {
 
         if ($request->isMethod('POST')){
-        
+
             $role = Role::find($request->id);
             $role->permissions()->detach();
-            
-            foreach ($request->permissions as $permission) {                
+
+            foreach ($request->permissions as $permission) {
                     $role->givePermissionTo($permission);
-                
+
             }
 
                 return response()->json([
                     'success' => true,
                      'message'   => 'Permission Successfully Edited'
                 ]);
-            }        
+            }
 
             $role = Role::find($id);
 
             if ($role) {
-                 
+
                 $permission = Permission::with(['roles' => function ($query) use ($role) {
                     $query->where('id', '=', $role->id);
                 }])
@@ -82,5 +79,5 @@ class RoleController extends Controller
 
         return view('role.edit',['role' => $role, 'permission' => $permission]);
     }
-    
+
 }

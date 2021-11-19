@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\GiveBack;
-use DataTables;
+use \Yajra\Datatables\Datatables;
 use App\Models\Good;
 use App\User;
 use App\Models\GoodLocation;
 use App\Models\Location;
 use App\Models\Borrow;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
@@ -38,15 +38,15 @@ class ReturnController extends Controller
 
       if($request->isMethod('POST')){
             $goods = Good::find($request->goods);
-            
+
             $this->validate($request, [
                 'location' => 'required',
                 'goods' => 'required',
                 'amount' => ['required', 'numeric'],
                 'nameshelf' =>'required',
 
-           ]); 
-   
+           ]);
+
             $this->validate($request, [
                 'amount' => ['numeric','max: ' . ($goods->borrow()->where('user_id', $request->user)->sum('amount')) ],
             ]);
@@ -54,7 +54,7 @@ class ReturnController extends Controller
 
                  return response()->json([
                     'success'=>true,
-                ]);   
+                ]);
         }
     }
 
@@ -71,7 +71,7 @@ class ReturnController extends Controller
                  return response()->json([
                     'success'=>false,
                     'message'   => 'Password User Salah'
-                ]);  
+                ]);
             }
 
                 try{
@@ -84,27 +84,22 @@ class ReturnController extends Controller
                     $return->amount = $request->data_amount;
                     $return->location_shelf_id = $request->data_shelf;
                     $return->borrow_id = $borrow->id;
-               
+
                     $return->save();
 
-                
+
 
                     if($request->data_amount >= $borrow->amount){
                         $borrow = Borrow::find($borrow->id);
-                        $borrow->status = Borrow::DONE; 
+                        $borrow->status = Borrow::DONE;
                         $borrow->update();
                     }
-                    
-                    $stockentry = New StockEntry;
-                    $stockentry->good_id = $request->data_goods;
-                    $stockentry->amount = $request->data_amount;
-                    $stockentry->location_shelf_id = $request->data_shelf;
-                    $stockentry->qrcode = Str::random(15);
-                    $stockentry->date_expired = $request->date_expired;
-                    if($goods->isexpired == 'on'){
-                        $stockentry->status = StockEntry::TYPE_STILL_USE;    
-                    }else{
-                        $stockentry->status = StockEntry::TYPE_NO_EXPIRED;  
+
+                    $stockentry = Stockentry::find($request->data_entryid);
+                    $amount = $stockentry->amount - $stockentry->stock_use;
+                    $stockentry->stock_use = $stockentry->stock_use  - $data->amount;
+                    if($stockentry->status == 'Out Of Stock'){
+                        $stockentry->status = Stockentry::TYPE_STILL_USE;
                     }
                     $stockentry->save();
 
@@ -113,7 +108,7 @@ class ReturnController extends Controller
                     $goods = $return->good;
 
                     $stocktransaction = New Stocktransaction;
-                    $stocktransaction->start_balance = $goods->getBalanceByWarehouse($request->data_location);                    
+                    $stocktransaction->start_balance = $goods->getBalanceByWarehouse($request->data_location);
                     $stocktransaction->amount = $request->data_amount;
                     $stocktransaction->end_balance = $stocktransaction->start_balance + $stocktransaction->amount;
                     $stocktransaction->type = StockTransaction::TYPE_IN;

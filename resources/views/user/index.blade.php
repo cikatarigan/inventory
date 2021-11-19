@@ -142,7 +142,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
         <form action="#" method="post" id="FormChangePassword">
-        <input type="hidden" id="id_change" name="id" value="">
+        <input type="hidden" id="id_change" name="id_change" value="">
       <div class="modal-header">
         <h4 class="modal-title"></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -153,7 +153,7 @@
           <div class="form-group">
              <div class="form-group">
             <label for="Inputname">password</label>
-              <input type="password" class="form-control" id="new_password" name="new_password" placeholder="Masukkan Password" required maxlength="30">
+              <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan Password" required maxlength="30">
            </div>
           </div>
             <div class="form-group">

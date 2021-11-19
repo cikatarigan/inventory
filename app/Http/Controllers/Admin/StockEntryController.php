@@ -11,11 +11,10 @@ use App\Models\Location;
 use App\Models\GoodShelf;
 use DataTables;
 use DateTime;
-use DB;
+use Illuminate\Support\Facades\DB;
 use validator;
 use Carbon\Carbon;
 use Auth;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Str;
 
 class StockEntryController extends Controller
@@ -32,69 +31,74 @@ class StockEntryController extends Controller
 
     public function create(Request $request, Location $location)
     {
-        $good = Good::select(['*','name as text'])->get();
-        $location  = Location::all();
-        
-        if ($request->isMethod('POST')){
+            $good = Good::select(['*','name as text'])->get();
+            $location  = Location::all();
 
-         $validator = $request->validate([
-            'good_id' => 'required',
-            'amount' => 'required|numeric|min:1',
-            'location_shelf' => 'required',
-            'qrcode' => 'unique:stock_entries,qrcode'
-        ]);
+            if ($request->isMethod('POST')){
 
-         try{
-            DB::statement('SET autocommit=0');
-            DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, location_shelves WRITE, good_shelves WRITE, stock_transactions WRITE, goods WRITE');
+            $validator = $request->validate([
+                'good_id' => 'required',
+                'amount' => 'required|numeric|min:1',
+                'location_shelf' => 'required',
+                'qrcode' => 'unique:stock_entries,qrcode'
+            ]);
 
-            $checkgood  = Good::find($request->good_id);
+            try{
+                DB::statement('SET autocommit=0');
+                DB::getPdo()->exec('LOCK TABLES stock_entries WRITE, location_shelves WRITE, good_shelves WRITE, stock_transactions WRITE, goods WRITE');
 
-            $stockentry = New StockEntry;
-            $stockentry->good_id = $request->good_id;
-            $stockentry->amount = $request->amount;
-            $stockentry->location_shelf_id = $request->location_shelf;
-            $stockentry->qrcode = Str::random(15);
-            $stockentry->date_expired = Carbon::parse($request->date_expired);
-            if($checkgood->isexpired == 'on'){
-                $stockentry->status = StockEntry::TYPE_STILL_USE;    
-            }else{
-                $stockentry->status = StockEntry::TYPE_NO_EXPIRED;  
+                $checkgood  = Good::find($request->good_id);
+
+                $stockentry = New StockEntry;
+
+                $stockentry->good_id = $request->good_id;
+                $stockentry->amount = $request->amount;
+                $stockentry->stock_use = 0;
+                $stockentry->location_shelf_id = $request->location_shelf;
+                $stockentry->qrcode = Str::random(15);
+                if($request->date_expired){
+                    $stockentry->date_expired = Carbon::parse($request->date_expired);
+                }
+                if($checkgood->isexpired == 'on'){
+                    $stockentry->status = StockEntry::TYPE_STILL_USE;
+                }else{
+                    $stockentry->status = StockEntry::TYPE_NO_EXPIRED;
+                }
+                $stockentry->save();
+
+
+                $goodshelf = GoodShelf::firstOrCreate(['good_id' => $request->good_id, 'location_shelf_id' =>$request->location_shelf]);
+
+                $goods = $stockentry->good;
+
+                $stocktransaction = New stocktransaction;
+                $stocktransaction->start_balance = $goods->getBalanceByShelf($request->location_id);
+                $stocktransaction->amount = $request->amount;
+                $stocktransaction->end_balance = $stocktransaction->start_balance + $stocktransaction->amount;
+                $stocktransaction->type = StockTransaction::TYPE_IN;
+                $stocktransaction->good_id = $request->good_id;
+                $stocktransaction->user_id = Auth::id();
+                $stocktransaction->location_id = $request->location_id;
+                $stocktransaction->location_shelf_id = $request->location_shelf;
+
+                $stockentry->stock_transaction()->save($stocktransaction);
+
+                DB::getPdo()->exec('UNLOCK TABLES');
+            }catch(\Exception $e){
+                DB::statement('ROLLBACK');
+
+                throw $e;
             }
-            $stockentry->save();
 
-  
-            $goodshelf = GoodShelf::firstOrCreate(['good_id' => $request->good_id, 'location_shelf_id' =>$request->location_shelf]);
+            return response()->json([
+                'success' => true,
+                'message'   => 'Stock Entry Successfully Add'
+            ]);
 
-            $goods = $stockentry->good;
-            
-            $stocktransaction = New stocktransaction;
-            $stocktransaction->start_balance = $goods->getBalanceByWarehouse($request->location_id);
-            $stocktransaction->amount = $request->amount;
-            $stocktransaction->end_balance = $stocktransaction->start_balance + $stocktransaction->amount;
-            $stocktransaction->type = StockTransaction::TYPE_IN;
-            $stocktransaction->good_id = $request->good_id;
-            $stocktransaction->user_id = Auth::id();
-            $stocktransaction->location_id = $request->location_id;
-            $stocktransaction->location_shelf_id = $request->location_shelf;
-
-            $stockentry->stock_transaction()->save($stocktransaction);
-
-            DB::getPdo()->exec('UNLOCK TABLES');
-        }catch(\Exception $e){
-            DB::statement('ROLLBACK');
-
-            throw $e;
         }
-
-        return response()->json([
-            'success' => true,
-            'message'   => 'Stock Entry Successfully Add'
-        ]);
-
+        return view('stockentry.add', ['good' => $good ,'location' => $location, ]);
     }
-    return view('stockentry.add', ['good' => $good ,'location' => $location, ]);
-    }
+
 
 
 }

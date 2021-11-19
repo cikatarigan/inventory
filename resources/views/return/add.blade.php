@@ -92,8 +92,8 @@
                           <input type="hidden" id="shelfCheck" name="data_shelf">
                           <input type="hidden" id="goodsCheck" name="data_goods">
                           <input type="hidden" id="amountCheck" name="data_amount">
-                          <input type="hidden" id="userCheck" name="data_user"> 
-                           <input type="hidden" id="descriptionCheck" name="data_description">                      
+                          <input type="hidden" id="userCheck" name="data_user">
+                           <input type="hidden" id="descriptionCheck" name="data_description">
                            <div class="form-group">
                               <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan Password Penerima">
                            </div>
@@ -126,7 +126,7 @@
          placeholder: "Pilih Barang",
          ajax: {
              url: function (params) {
-            
+
                  return '/find/borrows/' + $('#user').val();
              },
              dataType: 'json'
@@ -163,7 +163,7 @@
           $('#formexpired').hide();
         }
     });
-      
+
     $('#FormReturnCheck').submit(function (event) {
          event.preventDefault();
          var $this = $(this);
@@ -176,7 +176,7 @@
              cache: false,
              success: function (data) {
                  console.log(data)
-                 if (data.success) {  
+                 if (data.success) {
                     $('#exampleModal').modal('show');
                      var location = $("#location").val();
                      var shelf = $('#nameshelf').val();
@@ -184,7 +184,7 @@
                      var amount = $("#amount").val();
                      var user = $("#user").val();
                      var description = $("#description").val();
-                     
+
                       $('#FormReturn #locationCheck').val(location);
                       $('#FormReturn #shelfCheck').val(shelf);
                       $('#FormReturn #goodsCheck').val(goods);
@@ -204,7 +204,7 @@
                   item = (item.length > 0) ? item : form.find('select[name='+ key +']');
                   item = (item.length > 0) ? item : form.find('textarea[name='+ key +']');
                   item = (item.length > 0) ? item : form.find("input[name='"+ key +"[]']");
-   
+
                  var parent = (item.parent().hasClass('form-group')) ? item.parent() : item.parent().parent();
                   parent.addClass('has-error');
                   parent.append('<span class="help-block" style="color:red;">'+ error +'</span>');
@@ -243,7 +243,7 @@
                   item = (item.length > 0) ? item : form.find('select[name='+ key +']');
                   item = (item.length > 0) ? item : form.find('textarea[name='+ key +']');
                   item = (item.length > 0) ? item : form.find("input[name='"+ key +"[]']");
-   
+
                  var parent = (item.parent().hasClass('form-group')) ? item.parent() : item.parent().parent();
                   parent.addClass('has-error');
                   parent.append('<span class="help-block" style="color:red;">'+ error +'</span>');

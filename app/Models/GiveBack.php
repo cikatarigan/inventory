@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\User;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class GiveBack extends Model
 {
@@ -26,7 +26,7 @@ class GiveBack extends Model
     {
         return $this->belongsTo(Location::class);
     }
-    
+
 	public function good()
     {
         return $this->belongsTo(Good::class);

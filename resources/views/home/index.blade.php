@@ -96,15 +96,23 @@
               <th>Lokasi</th>
               <th>Spesifik Lokasi</th>
               <th>Date Expired</th>
+              <th>Jumlah Barang</th>
               <th>Buang Barang</th>
             </tr>
             </thead>
             <tbody>
-          @if ($expired->isNotEmpty())
-           @foreach($expired as $item)
-            {{$item}}
+            @if ($expired->isNotEmpty())
+            @foreach($expired as $item)
+            <tr>
+            <td>{{$item->good->name}}</td>
+            <td>{{$item->location_shelf->name_shelf}}</td>
+            <td>{{$item->location_shelf->location->name}}</td>
+            <td>{{$item->date_expired}}</td>
+            <td>{{$item->amount - $item->stock_use}}</td>
+            <td> <a href="#"  data-id="{{$item->id}}" data-name="{{$item->good->name}}" class="btnDelete text-right btn btn-danger"><i class="fas fa-trash"></i> Buang</a></td></td>
              @endforeach
              @else
+            </tr>
              <tr>
               <td colspan="5">Tidak Ada Data</td>
              </tr>
@@ -144,6 +152,7 @@
             </div>
             <div class="product-info">
               <a href="javascript:void(0)" class="product-title">{{$item->good->name}}
+                <span class="badge bg-danger">{{$item->user->name}}</span>
                 <span class="badge badge-warning float-right">{{$item->amount}}</span></a>
               <span class="product-description">
                 {{$item->description}}
@@ -186,7 +195,6 @@
             <thead>
             <tr>
               <th>Nama Barang</th>
-              <th>Lokasi</th>
                <th>gambar</th>
               <th>Jumlah</th>
               <th>Kapan Di berikan</th>
@@ -196,7 +204,6 @@
             <tr>
              @foreach($allotment as $item)
               <td>{{$item->good->name}}</td>
-              <td>{{$item->location->name}}</td>
               @foreach($item->good->good_images as $key => $get)
               @if ($loop->first)
             <td>   <img src="{{Storage::url($get->image->path)}}" alt="Product Image" class="img-size-50"></td>
@@ -212,12 +219,7 @@
         </div>
         <!-- /.table-responsive -->
       </div>
-      <!-- /.card-body -->
-    <!--   <div class="card-footer clearfix">
-        <a href="javascript:void(0)" class="btn btn-sm btn-info float-left">Place New Order</a>
-        <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Orders</a>
-      </div> -->
-      <!-- /.card-footer -->
+
     </div>
  </div>
  <div class="col-md-4">
@@ -275,7 +277,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
         <form action="#" method="post" id="FormExpired">
-        <input type="hidden" id="id_delete" name="id" value="">
+        <input type="hidden" id="id_expired" name="id" value="">
       <div class="modal-header">
         <h4 class="modal-title"></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -297,32 +299,30 @@
 
 @section('script')
 <script>
-jQuery(document).ready(function($) { 
+jQuery(document).ready(function($) {
 
     $('.btnDelete').click(function () {
             var id = $(this).data('id');
             var name = $(this).data('name');
-            var locationshelf = $(this).data('location-shelf');
-            var location  = $(this).data('location');
            $('#FormExpired .modal-title').text("Konfirmasi");
            $('#FormExpired .help-block').empty();
+           $('#FormExpired #id_expired').val(id);
            $('#FormExpired')[0].reset();
            $('#FormExpired #del-success').html("Apakah Anda yakin ingin menghapus <b>"+name+"</b> ini ?");
              url= 'expired/' + id;
              console.log(url);
         $('#ExpiredModal').modal('show');
     });
-
-
-
     $('#FormExpired').submit(function (event) {
          event.preventDefault();
          var $this = $(this);
          var form = $('#FormExpired');
+
          $('#FormExpired div.form-group').removeClass('has-error');
          $('#FormExpired .help-block').empty();
-         
+
          var data = form.serialize();
+         console.log(data);
          $.ajax({
              url: url,
              type: 'POST',

@@ -71,7 +71,7 @@
 @section('script')
 <script>
 
- 
+
  jQuery(document).ready(function() {
 
     $("#good_id").select2({
@@ -100,7 +100,7 @@
              dataType: 'json'
          }
      });
-    
+
     $('#good_id').on('select2:select', function (e) {
         var data = e.params.data;
         console.log(data);
@@ -110,8 +110,8 @@
           $('#formexpired').hide();
         }
     });
-    
-  
+
+
     $('#FormStockEntry').submit(function (event) {
          event.preventDefault();
          var $this = $(this);
@@ -141,7 +141,7 @@
                   item = (item.length > 0) ? item : form.find('select[name='+ key +']');
                   item = (item.length > 0) ? item : form.find('textarea[name='+ key +']');
                   item = (item.length > 0) ? item : form.find("input[name='"+ key +"[]']");
-   
+
                  var parent = (item.parent().hasClass('form-group')) ? item.parent() : item.parent().parent();
                   parent.addClass('has-error');
                   parent.append('<span class="help-block" style="color:red;">'+ error +'</span>');
