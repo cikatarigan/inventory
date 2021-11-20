@@ -33,7 +33,7 @@
 @endsection
 @section('script')
 <script>
-   jQuery(document).ready(function($) { 
+   jQuery(document).ready(function($) {
       var table = $('#expired-table').DataTable({
           "bFilter": true,
           "processing": true,
@@ -48,6 +48,11 @@
               "emptyTable": "Tidak ada data yang tersedia",
           },
           "columns": [
+            {
+              title :"Entry id",
+                  "data": "entry_id",
+                  "orderable": false,
+              },
              {
               title :"Barang",
                   "data": "good.name",
@@ -82,8 +87,8 @@
           "fnCreatedRow": function(nRow, aData, iDataIndex) {
               $(nRow).attr('data', JSON.stringify(aData));
           }
-      }); 
-  
-   }); 
+      });
+
+   });
 </script>
 @endsection

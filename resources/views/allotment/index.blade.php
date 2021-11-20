@@ -25,6 +25,11 @@
          {{-- @if(Auth::user()->hasPermissionTo('allotment.add','web'))
          <a href="{{route('allotment.add')}}" id="btnAdd" class="text-right btn btn-primary"><i class="fa fa-plus"></i> Tambah</a>
          @endif --}}
+         <label for="exampleInputPassword1">Filter Tanggal </label>
+         <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+            <i class="fa fa-calendar"></i>&nbsp;
+            <span></span> <i class="fa fa-caret-down"></i>
+         </div>
       </div>
       <div class="card-body">
           <div class="table-responsive">
@@ -94,9 +99,51 @@
 @section('script')
 <script>
    jQuery(document).ready(function($) {
+
+    function dateCustom(date){
+                date = date.split('-');
+                var day   = date[2];
+                var mount = parseInt(date[1]);
+                var year  = date[0];
+
+                var mountChar = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+                return day + ' ' + mountChar[mount] + ' ' + year;
+
+            }
+
+    var start = moment().subtract(29, 'days');
+    var end = moment();
+
+    function cb(start, end) {
+        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    }
+
+
+    $('#reportrange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        ranges: {
+           'Today': [moment(), moment()],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+           'This Month': [moment().startOf('month'), moment().endOf('month')],
+           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    }, cb);
+
+        //   console.log( $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY')));
+         $('#reportrange').on('apply.daterangepicker', (e, picker) => {
+            table.draw();
+         });
+
+
+    cb(start, end);
+
     function format ( d ) {
     return '<b>description:</b> '+d.description+'';
-}
+    }
 
       var table = $('#allotment-table').DataTable({
           "bFilter": true,
@@ -107,6 +154,12 @@
           "ajax": {
               "url": "/allotment",
               "type": "POST",
+              "data": function (d) {
+               return $.extend({}, d, {
+                  'startdate' : $('#reportrange').data('daterangepicker').startDate._d.getFullYear()+'-'+($('#reportrange').data('daterangepicker').startDate._d.getMonth()+1)+'-'+$('#reportrange').data('daterangepicker').startDate._d.getDate(),
+                   'enddate' : $('#reportrange').data('daterangepicker').endDate._d.getFullYear()+'-'+($('#reportrange').data('daterangepicker').endDate._d.getMonth()+1)+'-'+$('#reportrange').data('daterangepicker').endDate._d.getDate(),
+                });
+             }
           },
           "language": {
               "emptyTable": "Tidak ada data yang tersedia",

@@ -25,7 +25,7 @@ class AllotmentController extends Controller
     {
 
     	if( $request->isMethod('post') ){
-    		$model = Allotment::with(['location_shelf.location', 'good', 'user'])->get();
+    		$model = Allotment::with(['location_shelf.location', 'good', 'user'])->whereBetween('created_at', array($request->startdate, $request->enddate))->get();
             return DataTables::of($model)->make();
         }
         return view('allotment.index');

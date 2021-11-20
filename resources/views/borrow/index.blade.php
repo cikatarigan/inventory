@@ -141,6 +141,13 @@ function format ( d ) {
               {
               title :"Status",
                   "data": "status",
+                  render : function (data, type, row){
+                      if(data == 'Still Borrow'){
+                          return '<span class="badge badge-warning">Masih di pinjam </span>';
+                      }else{
+                         return ' <span class="badge badge-info">Sudah kembali</span>';
+                      }
+                  },
                   "orderable": false,
               },
                {

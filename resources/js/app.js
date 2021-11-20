@@ -34,7 +34,7 @@ const app = new Vue({
 require('admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4');
 require('admin-lte/dist/js/adminlte');
 window.moment = require('moment');
-moment.locale('id');   
+moment.locale('id');
 require('admin-lte/plugins/select2/js/select2');
 require('bootstrap-datepicker');
 require('icheck/icheck.min.js');

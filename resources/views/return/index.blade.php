@@ -124,6 +124,11 @@
                   "orderable": true,
               },
               {
+             title :"ID peminjaman",
+                  "data": "borrow_id",
+                  "orderable": true,
+              },
+              {
               title :"Keterangan",
                   "data": "description",
                   "orderable": false,
