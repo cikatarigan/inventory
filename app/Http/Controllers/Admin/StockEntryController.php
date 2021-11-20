@@ -23,7 +23,7 @@ class StockEntryController extends Controller
     {
 
     	if( $request->isMethod('post') ){
-    		$model = StockEntry::with(['location_shelf.location', 'good', 'user'])->get();
+    		$model = StockEntry::with(['location_shelf.location', 'good', 'user']);
             return DataTables::of($model)->make();
         }
         return view('stockentry.index');

@@ -25,6 +25,12 @@
          {{-- @if(Auth::user()->hasPermissionTo('borrow.add','web'))
          <a href="{{route('borrow.add')}}" id="btnAdd" class="text-right btn btn-primary"><i class="fa fa-plus"></i> Tambah</a>
          @endif --}}
+         <label for="exampleInputPassword1">Filter Status </label>
+         <select name="status" id="status" class="form-control">
+            <option value="" disabled selected>Pilih Status</option>
+            <option value="Still Borrow" >Masih di pinjam</option>
+            <option value="Done" >Sudah di kembalikan</option>
+         </select>
       </div>
       <div class="card-body">
           <div class="table-responsive">
@@ -107,6 +113,11 @@ function format ( d ) {
           "ajax": {
               "url": "/borrow",
               "type": "POST",
+              "data": function (d) {
+               return $.extend({}, d, {
+                     status : $('#status').val(),
+                });
+             }
           },
           "language": {
               "emptyTable": "Tidak ada data yang tersedia",
@@ -182,6 +193,11 @@ function format ( d ) {
             tr.addClass('shown');
         }
     } );
+
+    $('#status').change(function (event) {
+      table.draw();
+    });
+
 
    });
 </script>

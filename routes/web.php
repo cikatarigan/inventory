@@ -106,6 +106,7 @@ use App\Http\Middleware\CheckPermission;
             //CheckGoods
             Route::match(['get', 'post'], 'stock/goods',    'Admin\StockController@index')->name('stock.index');
             Route::match(['get', 'post'], 'stock/goods/details/{id}',   'Admin\StockController@detail')->name('stock.detail');
+            Route::match(['get', 'post'], 'stock/goods/place/{id}',   'Admin\StockController@place')->name('stock.place');
 
             //Allotment
             Route::match(['get', 'post'], 'allotment',    'Admin\AllotmentController@index')->name('allotment.index');

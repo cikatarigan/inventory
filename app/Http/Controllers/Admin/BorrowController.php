@@ -22,7 +22,11 @@ class BorrowController extends Controller
     public function index(Request $request)
     {
         if( $request->isMethod('post') ){
-            $model = Borrow::with(['good', 'user'])->get();
+            $model = Borrow::with(['good', 'user']);
+
+            if($request->status){
+                $model->where('status', '=', $request->status);
+            }
             return DataTables::of($model)->make();
         }
 

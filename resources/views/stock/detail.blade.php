@@ -77,7 +77,9 @@
             </div>
             <div class="card-body">
                <div class="row">
-
+                <div class="table-responsive">
+                    <table id="place-table" class="table table-striped table-bordered dataTable no-footer" style="width: 100%;"></table>
+                 </div>
                </div>
             </div>
       </div>
@@ -246,7 +248,37 @@
       table.draw();
     });
 
+    var table = $('#place-table').DataTable({
+     "bFilter": true,
+     "processing": true,
+     "serverSide": true,
+     "lengthChange": true,
+     "responsive" : true,
+     "ajax": {
+         "url": "{{route('stock.place' ,['id' => $id] )}}",
+         "type": "POST",
+     },
+     "language": {
+         "emptyTable": "Tidak ada data yang tersedia",
+     },
+     "columns": [
 
+          {
+             title : "Nama Barang",
+             "data": "name_shelf",
+             "orderable": false,
+         },
+         {
+             title : "jumlah",
+             "data": "stock",
+             "orderable": false,
+         }
+     ],
+     "order": [1, 'desc'],
+     "fnCreatedRow": function(nRow, aData, iDataIndex) {
+         $(nRow).attr('data', JSON.stringify(aData));
+     }
+ });
    });
 </script>
 @endsection

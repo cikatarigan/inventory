@@ -5,6 +5,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 
+
 class StockEntry extends Model
 {
 
@@ -29,7 +30,7 @@ class StockEntry extends Model
 
     public function good()
     {
-        return $this->belongsTo(Good::class);
+        return $this->belongsTo(Good::class)->withTrashed();
     }
 
     public function location_shelf(){

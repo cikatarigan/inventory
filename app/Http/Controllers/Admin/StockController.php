@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Good;
 use App\Models\Location;
 use App\Models\LocationShelf;
-
+use App\Models\GoodShelf;
 use App\Models\StockTransaction;
 use Yajra\DataTables\DataTables;
 
@@ -23,13 +23,12 @@ class StockController extends Controller
             $sublocation = LocationShelf::with(['location'])->get();
 
 
-            return DataTables::of($model)->addColumn('stock', function ($good) use ($sublocation){
+            return DataTables::of($model)->addColumn('stock', function ($good) use ($location){
             	$stocks = [];
-                foreach ($sublocation as $sublocation) {
+                foreach ($location as $location) {
                     $stocks[] =[
-                        'location'=> $sublocation->name_shelf,
-                        'sublocation' => $sublocation->location->name,
-                        'stock' => $good->getBalanceByShelf($sublocation->id)
+                        'location'=> $location->name,
+                        'stock' => $good->getBalanceByWarehouse($location->id)
                     ];
                 }
             return $stocks;
@@ -65,6 +64,20 @@ class StockController extends Controller
 
 
         return view('stock.detail',['id' =>$id, 'location' => $location, 'good' => $good]);
+    }
+
+    public function place(Request $request, $id){
+        $goods = Good::where('id', $request->id)->get();
+
+        if ($request->isMethod('post')){
+            $model = LocationShelf::with(['good_shelf'])->whereHas('good_shelf', function($q)use ($request){
+                $q->where('good_id', $request->id);
+
+            });
+            return DataTables::of($model)->addColumn('stock',function($query)use ($goods){
+                $goods->getBalanceByWarehouse($query->id);
+            })->make();
+        }
     }
 
 

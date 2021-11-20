@@ -28,24 +28,22 @@
 @hasrole('admin')
 @section('script')
 <script>
-jQuery(document).ready(function($) { 
+jQuery(document).ready(function($) {
    function format ( d ) {
     var test = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
         '<tr>'+
             '<td><b>Lokasi</b></td>'+
-            '<td><b>Lokasi</b></td>'+
             '<td><b>Stock</b></td>'+
             '</tr>';+
-            
-   $.each(d.stock , function(index, val) { 
+
+   $.each(d.stock , function(index, val) {
      test +=  '<tr>'+
-            '<td>'+val.sublocation+'</td>'+       
             '<td>'+val.location+'</td>'+
             '<td>'+val.stock+'</td>'+
         '</tr>';
-        
+
     });
-  
+
    return test +='</table>';
 }
 
@@ -91,8 +89,8 @@ jQuery(document).ready(function($) {
             for(var i = 0; i < data.length ; i++){
                temp += data[i].stock;
             }
-              return temp;  
-            
+              return temp;
+
           },
              "orderable": true,
          },
@@ -107,7 +105,7 @@ jQuery(document).ready(function($) {
 
             return '<a href="/stock/goods/details/'+row.id+'" data-toggle="tooltip" role="button" data-placement="bottom" title="Informasi Detail" class="edit-btn btn btn-info btn-flat" data-name="'+row.name+'" data-id="'+row.id+'"><i class="fa fa-list "></i></a> &nbsp;'
            }
-         
+
          }
 
      ],
@@ -115,13 +113,13 @@ jQuery(document).ready(function($) {
      "fnCreatedRow": function(nRow, aData, iDataIndex) {
          $(nRow).attr('data', JSON.stringify(aData));
      }
- }); 
+ });
 
 // Add event listener for opening and closing details
     $('#stock-table tbody').on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
         var row = table.row( tr );
- 
+
         if ( row.child.isShown() ) {
             // This row is already open - close it
             row.child.hide();
@@ -134,7 +132,7 @@ jQuery(document).ready(function($) {
         }
     } );
 
-}); 
+});
 </script>
 
 @endsection
@@ -177,7 +175,7 @@ jQuery(document).ready(function($) {
          $(nRow).attr('data', JSON.stringify(aData));
      }
  });
-});  
+});
 </script>
 @endsection
 
