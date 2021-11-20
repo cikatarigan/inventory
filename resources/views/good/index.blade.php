@@ -217,6 +217,38 @@ jQuery(document).ready(function($) {
         })
     });
 
+    // Delete Good
+    $('#goods-table').on('click', '.btn-delete', function(event) {
+        event.preventDefault();
+        var id = $(this).data('id');
+        var name = $(this).data('name');
+        $('#FormDeleteGood #id_delete').val(id);
+        $('#deleteGoodModal').modal('show');
+        $('#FormDeleteGood .modal-title').text("Konfirmasi Hapus");
+        $('#FormDeleteGood #del-success').html("Apakah Anda yakin ingin menghapus Lokasi <b>"+name+"</b> ini ?");
+    });
+
+   $('#FormDeleteGood').submit(function(event) {
+        event.preventDefault();
+        var form =$('#FormDeleteGood');
+        var data = form.serialize();
+        $.ajax({
+            url: '/good/delete',
+            type: 'POST',
+            data : data,
+            cache : false,
+            success: function(data){
+               if (data.success){
+                  toastr.success(data.message);
+                  $('#deleteGoodModal').modal('hide');
+                  table.draw();
+               } else{
+                 toastr.error(data.message);
+               }
+            },
+        })
+    });
+
 });
 </script>
 @endsection

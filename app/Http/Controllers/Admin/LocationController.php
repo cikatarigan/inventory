@@ -18,7 +18,7 @@ class LocationController extends Controller
         if( $request->isMethod('post') ){
             $model = Location::with(['locationshelf'])->get();
                return DataTables::of($model)->make();
-        }   
+        }
         return view('location.index');
     }
 
@@ -55,7 +55,7 @@ class LocationController extends Controller
         $location          = Location::find($id);
         $location->name   = $request->name;
         $location->save();
-     
+
             return response()->json([
                 'success' => true,
                 'message'   => 'Location Successfully Edited'
@@ -86,7 +86,7 @@ class LocationController extends Controller
     {
          if( $request->isMethod('post') ){
             $model = Location::onlyTrashed()->get();
-            
+
             return DataTables::of($model)->make();
         }
 
@@ -105,7 +105,7 @@ class LocationController extends Controller
 
     public function sub_location(Request $request)
     {
-            
+
         $validator = $request->validate([
             'name_shelf'       => 'required|string|max:191|unique:location_shelves,name_shelf',
         ]);
@@ -129,13 +129,13 @@ class LocationController extends Controller
             $query->where('status', 'No Expired')
                     ->orWhere('status', 'Still Use');
         })->first();
-        
+
         if($check){
             return response()->json([
                 'success'=>false,
                 'message'   => 'Sub Location Masih Di gunakan'
             ]);
-        } 
+        }
         $location = LocationShelf::find($request->id);
         $location->delete();
             return response()->json([
@@ -148,7 +148,7 @@ class LocationController extends Controller
     {
          if( $request->isMethod('post') ){
             $model = LocationShelf::onlyTrashed()->get();
-            
+
             return DataTables::of($model)->make();
         }
 
@@ -158,7 +158,7 @@ class LocationController extends Controller
     public function sub_restore(Request $request)
     {
         $sublocation = LocationShelf::onlyTrashed()->find($request->id);
-   
+
 
         $location = Location::find($sublocation->id);
         // dd($location);

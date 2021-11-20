@@ -18,7 +18,7 @@
     </section>
 <section class="content">
    <div class="card">
-      <div class="card-header">         
+      <div class="card-header">
       </div>
       <div class="card-body">
         <div class="table-responsive">
@@ -54,8 +54,8 @@
 @endsection
 @section('script')
 <script>
-jQuery(document).ready(function($) { 
-   
+jQuery(document).ready(function($) {
+
    var table = $('#goods-table').DataTable({
        "bFilter": true,
        "processing": true,
@@ -63,7 +63,7 @@ jQuery(document).ready(function($) {
        "lengthChange": true,
        "responsive" : true,
        "ajax": {
-           "url": "/admin/good/trash",
+           "url": "/good/trash",
            "type": "POST",
        },
        "language": {
@@ -75,9 +75,25 @@ jQuery(document).ready(function($) {
                "orderable": true,
            },
            {
-              title :"Type",
-               "data": "type",
+              title :"Category",
+               "data": "category",
                "orderable": true,
+           },
+           {
+              title :"Brand",
+               "data": "brand",
+               "orderable": true,
+           },
+           {
+              title :"Ada Expired",
+               "data": "isexpired",
+               render: function(data, type, row) {
+                   if(data == "on"){
+                       return  'Ada Expired';
+                   }else{
+                        return  'Tidak ada Expired';
+                   }
+               }
            },
            {
            title :"Action",
@@ -90,7 +106,7 @@ jQuery(document).ready(function($) {
        "fnCreatedRow": function(nRow, aData, iDataIndex) {
            $(nRow).attr('data', JSON.stringify(aData));
        }
-   }); 
+   });
 
     // Restore
        $('#goods-table').on('click', '.btn-restore', function(event) {
@@ -102,13 +118,13 @@ jQuery(document).ready(function($) {
         $('#FormRestoreGood .modal-title').text("Konfirmasi Restore");
         $('#FormRestoreGood #del-success').html("Apakah Anda yakin ingin Restore barang <b>"+name+"</b> ini ?");
     });
-   
+
        $('#FormRestoreGood').submit(function(event) {
         event.preventDefault();
         var form =$('#FormRestoreGood');
         var data = form.serialize();
         $.ajax({
-            url: '/admin/good/restore',
+            url: '/good/restore',
             type: 'POST',
             data : data,
             cache : false,
@@ -121,8 +137,8 @@ jQuery(document).ready(function($) {
             },
         })
     });
-    
 
-}); 
+
+});
 </script>
 @endsection

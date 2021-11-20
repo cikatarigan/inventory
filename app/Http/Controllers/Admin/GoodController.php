@@ -8,6 +8,7 @@ use App\Models\Good;
 use App\Models\Image;
 use App\Models\GoodImage;
 use App\Models\Location;
+use App\Models\StockEntry;
 use App\Models\GoodLocation;
 use \Yajra\Datatables\Datatables;
 use validator;
@@ -165,6 +166,18 @@ class GoodController extends Controller
      */
     public function destroy(Request $request)
     {
+
+        $check =  StockEntry::where('good_id', $request->id)->where(function($query){
+            $query->where('status', 'No Expired')
+                    ->orWhere('status', 'Still Use');
+        })->first();
+
+        if($check){
+            return response()->json([
+                'success'=>false,
+                'message'   => 'Barang Masih Di gunakan'
+            ]);
+        }
         $good = Good::find($request->id);
         $good->delete();
             return response()->json([
