@@ -66,19 +66,18 @@ class StockController extends Controller
         return view('stock.detail',['id' =>$id, 'location' => $location, 'good' => $good]);
     }
 
-    public function place(Request $request, $id){
-        $goods = Good::where('id', $request->id)->get();
+    // public function place(Request $request, $id){
+    //     $goods = Good::where('id', $request->id)->first();
 
-        if ($request->isMethod('post')){
-            $model = LocationShelf::with(['good_shelf'])->whereHas('good_shelf', function($q)use ($request){
-                $q->where('good_id', $request->id);
-
-            });
-            return DataTables::of($model)->addColumn('stock',function($query)use ($goods){
-                $goods->getBalanceByWarehouse($query->id);
-            })->make();
-        }
-    }
+    //     if ($request->isMethod('post')){
+    //         $model = LocationShelf::whereHas('good_shelf', function($q)use ($goods){
+    //             $q->where('good_id', $goods->id);
+    //         });
+    //         return DataTables::of($model)->addColumn('stock',function($query)use ($goods){
+    //             $goods->getBalanceByShelf($query->id);
+    //         })->make();
+    //     }
+    // }
 
 
 

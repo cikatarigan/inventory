@@ -40,14 +40,14 @@ class Good extends Model
      	return ($last_transaction) ? $last_transaction->end_balance : 0 ;
      }
 
-     public function getBalanceByShelf($location_shelf_id)
-     {
-     	$last_transaction = $this->stock_transaction()
-        ->where('location_shelf_id', $location_shelf_id)
-     	->orderBy('created_at', 'desc')->first();
+    //  public function getBalanceByShelf($location_shelf_id)
+    //  {
+    //  	$last_transaction = $this->stock_transaction()
+    //     ->where('location_shelf_id', $location_shelf_id)
+    //  	->orderBy('created_at', 'desc')->first();
 
-     	return ($last_transaction) ? $last_transaction->end_balance : 0 ;
-     }
+    //  	return ($last_transaction) ? $last_transaction->end_balance : 0 ;
+    //  }
 
      public function borrow(){
         return $this->hasMany(Borrow::class);

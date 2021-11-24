@@ -69,7 +69,7 @@
          </div>
       </div>
    </div>
-
+{{--
    <div class="content">
       <div class ="card">
             <div class ="card-header">
@@ -83,7 +83,7 @@
                </div>
             </div>
       </div>
-   </div>
+   </div> --}}
 
 
 <div class="row">
@@ -248,37 +248,37 @@
       table.draw();
     });
 
-    var table = $('#place-table').DataTable({
-     "bFilter": true,
-     "processing": true,
-     "serverSide": true,
-     "lengthChange": true,
-     "responsive" : true,
-     "ajax": {
-         "url": "{{route('stock.place' ,['id' => $id] )}}",
-         "type": "POST",
-     },
-     "language": {
-         "emptyTable": "Tidak ada data yang tersedia",
-     },
-     "columns": [
+//     var table = $('#place-table').DataTable({
+//      "bFilter": true,
+//      "processing": true,
+//      "serverSide": true,
+//      "lengthChange": true,
+//      "responsive" : true,
+//      "ajax": {
+//          "url": "{{route('stock.place' ,['id' => $id] )}}",
+//          "type": "POST",
+//      },
+//      "language": {
+//          "emptyTable": "Tidak ada data yang tersedia",
+//      },
+//      "columns": [
 
-          {
-             title : "Nama Barang",
-             "data": "name_shelf",
-             "orderable": false,
-         },
-         {
-             title : "jumlah",
-             "data": "stock",
-             "orderable": false,
-         }
-     ],
-     "order": [1, 'desc'],
-     "fnCreatedRow": function(nRow, aData, iDataIndex) {
-         $(nRow).attr('data', JSON.stringify(aData));
-     }
- });
+//           {
+//              title : "Nama Barang",
+//              "data": "name_shelf",
+//              "orderable": false,
+//          },
+//          {
+//              title : "jumlah",
+//              "data": "stock",
+//              "orderable": false,
+//          }
+//      ],
+//      "order": [1, 'desc'],
+//      "fnCreatedRow": function(nRow, aData, iDataIndex) {
+//          $(nRow).attr('data', JSON.stringify(aData));
+//      }
+//  });
    });
 </script>
 @endsection

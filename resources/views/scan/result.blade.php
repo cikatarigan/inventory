@@ -225,6 +225,7 @@
                           <input type="hidden" id="userreturnview" name="data_user_return" value="">
                           <input type="hidden" id="borrowidview" name="data_borrow_id" value="">
                            <div class="form-group">
+                            <label>Password tidak boleh diberitahukan kepada operator</label>
                               <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan Password Penerima">
                            </div>
                      </div>

@@ -17,6 +17,7 @@ class CreateGoodShelvesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('good_id');
             $table->unsignedBigInteger('location_shelf_id');
+            $table->unsignedInteger('amount');
             $table->foreign('good_id')->references('id')->on('goods');
             $table->foreign('location_shelf_id')->references('id')->on('location_shelves');
 

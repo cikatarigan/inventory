@@ -143,11 +143,6 @@ class AllotmentController extends Controller
             $stocktransaction->location_shelf_id = $request->data_shelf;
             $allotment->stock_transaction()->save($stocktransaction);
 
-            $good_shelf = GoodShelf::where('good_id', $request->data_goods)->where('location_shelf_id',$request->data_shelf)->first();
-            if($stocktransaction->end_balance == 0){
-                $good_shelf->delete();
-            }
-
 
             DB::getPdo()->exec('UNLOCK TABLES');
             }catch(\Exception $e){

@@ -67,12 +67,16 @@ class StockEntryController extends Controller
                 $stockentry->save();
 
 
-                $goodshelf = GoodShelf::firstOrCreate(['good_id' => $request->good_id, 'location_shelf_id' =>$request->location_shelf]);
+                $goodshelf = new GoodShelf;
+                $goodshelf->good_id = $request->good_id;
+                $goodshelf->location_shelf_id = $request->location_shelf;
+                $goodshelf->amount  = $request->amount;
+                $goodshelf->save();
 
                 $goods = $stockentry->good;
 
                 $stocktransaction = New stocktransaction;
-                $stocktransaction->start_balance = $goods->getBalanceByShelf($request->location_id);
+                $stocktransaction->start_balance = $goods->getBalanceByWarehouse($request->location_id);
                 $stocktransaction->amount = $request->amount;
                 $stocktransaction->end_balance = $stocktransaction->start_balance + $stocktransaction->amount;
                 $stocktransaction->type = StockTransaction::TYPE_IN;

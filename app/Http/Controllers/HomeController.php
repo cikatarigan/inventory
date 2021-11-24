@@ -241,7 +241,7 @@ class HomeController extends Controller
                     $goods = $data->good;
 
                     $stocktransaction = New stocktransaction;
-                    $stocktransaction->start_balance = $goods->getBalanceByShelf($request->data_location_shelf_id);
+                    $stocktransaction->start_balance = $goods->getBalanceByWarehouse($request->data_location);
                     $stocktransaction->amount = $request->data_amount;
                     $stocktransaction->end_balance = $stocktransaction->start_balance - $stocktransaction->amount;
                     $stocktransaction->type = StockTransaction::TYPE_OUT;
@@ -284,7 +284,7 @@ class HomeController extends Controller
                     $goods = $data->good;
 
                     $stocktransaction = New Stocktransaction;
-                    $stocktransaction->start_balance = $goods->getBalanceByShelf($request->data_location_shelf_id);
+                    $stocktransaction->start_balance = $goods->getBalanceByWarehouse($request->data_location);
                     $stocktransaction->amount = $request->data_amount;
                     $stocktransaction->end_balance = $stocktransaction->start_balance + $stocktransaction->amount;
                     $stocktransaction->type = StockTransaction::TYPE_IN;
@@ -323,7 +323,7 @@ class HomeController extends Controller
                     $goods = $data->good;
 
                     $stocktransaction = New stocktransaction;
-                    $stocktransaction->start_balance = $goods->getBalanceByShelf($request->data_location_shelf_id);
+                    $stocktransaction->start_balance = $goods->getBalanceByWarehouse($request->data_location);
                     $stocktransaction->amount = $request->data_amount;
                     $stocktransaction->end_balance = $stocktransaction->start_balance - $stocktransaction->amount;
                     $stocktransaction->type = StockTransaction::TYPE_OUT;
@@ -377,7 +377,7 @@ class HomeController extends Controller
                 $goods = $expired->good;
 
                 $stocktransaction = New stocktransaction;
-                $stocktransaction->start_balance = $goods->getBalanceByShelf($data->location_shelf_id);
+                $stocktransaction->start_balance = $goods->getBalanceByWarehouse($data->location_shelf->location->id);
                 $stocktransaction->amount = $expired->amount;
                 $stocktransaction->end_balance = $stocktransaction->start_balance - $stocktransaction->amount;
                 $stocktransaction->type = StockTransaction::TYPE_OUT;
@@ -387,10 +387,6 @@ class HomeController extends Controller
                 $stocktransaction->location_shelf_id = $data->location_shelf_id;
                 $expired->stock_transaction()->save($stocktransaction);
 
-                $good_shelf = GoodShelf::where('good_id', $data->good_id)->where('location_shelf_id', $data->location_shelf_id)->first();
-                if($stocktransaction->end_balance == 0){
-                    $good_shelf->delete();
-                }
 
                 DB::getPdo()->exec('UNLOCK TABLES');
                 }catch(\Exception $e){

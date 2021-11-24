@@ -103,7 +103,7 @@ class ReturnController extends Controller
                     }
                     $stockentry->save();
 
-                    $goodshelf = GoodShelf::firstOrCreate(['good_id' => $request->data_goods, 'location_shelf_id' =>$request->data_shelf]);
+                    // $goodshelf = GoodShelf::firstOrCreate(['good_id' => $request->data_goods, 'location_shelf_id' =>$request->data_shelf]);
 
                     $goods = $return->good;
 
