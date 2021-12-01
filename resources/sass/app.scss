@@ -45,6 +45,7 @@ span.select2-selection.select2-selection--single{
     border-radius: 0.25rem;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
+
 }
 .select2-container--default .select2-selection--single .select2-selection__rendered:focus{
     border-color: #f7c1c5;
@@ -93,4 +94,8 @@ span.select2-selection.select2-selection--single{
 .preview-thumbnail.nav-tabs li img {
     max-width: 100%;
     display: block;
+}
+
+.consolata-regular{
+    font-family: 'Inconsolata-Regular';
 }

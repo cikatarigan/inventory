@@ -35,6 +35,10 @@ class PermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' =>'sublocation.trash','guard_name'=>'web'],['display_name' => 'Daftar Name Shelf - Daftar Sub Location Terhapus']),
         Permission::firstOrCreate(['name' =>'sublocation.restore','guard_name'=>'web'],['display_name' => 'Daftar Name Shelf - Restore Sub Location Terhapus']),
 
+        //Unit
+        Permission::firstOrCreate(['name' =>'unit.index','guard_name'=>'web'],['display_name' => 'Daftar Unit']),
+        Permission::firstOrCreate(['name' =>'unit.store','guard_name'=>'web'],['display_name' => 'Daftar Unit - Menambahkan Unit Baru']),
+
         //Good
         Permission::firstOrCreate(['name' =>'good.index','guard_name'=>'web'],['display_name' => 'Daftar Barang']),
         Permission::firstOrCreate(['name' =>'good.store','guard_name'=>'web'],['display_name' => 'Daftar Barang - Menambahkan Barang Baru']),

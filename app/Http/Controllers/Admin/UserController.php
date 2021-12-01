@@ -26,7 +26,16 @@ class UserController extends Controller
 
         if( $request->isMethod('post') ){
             $model =User::with('roles');
-            return DataTables::of($model)->make();
+            return DataTables::of($model)->addColumn('image', function ($model) {
+                $null = asset('images/user2-160x160.jpg');
+                $url= asset('storage/'.$model->image);
+                if($model->image != null){
+                    return '<img src="'.$url.'" border="0" width="120" class="img-rounded" align="center"/>';
+                }else{
+                    return '<img src="'.$null.'" border="0" width="120" class="img-rounded" align="center"/>';
+                }
+
+            })->rawColumns(['image'])->make();
         }
 
         return view('user.index',compact('roles'));

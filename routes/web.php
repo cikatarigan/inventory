@@ -73,6 +73,7 @@ use App\Http\Middleware\CheckPermission;
             Route::match(['get', 'post'], 'role',	'Admin\RoleController@index')->name('role.index');
             Route::post('role/add',				'Admin\RoleController@create')->name('role.store');
             Route::match(['POST', 'GET'], '/role/edit/{id?}', 'Admin\RoleController@edit')->name('role.edit');
+            Route::post('role/delete', 		'Admin\RoleController@destroy')->name('role.destroy');
 
             //Permission
             Route::match(['get', 'post'], 'permission',	'Admin\PermissionController@index')->name('permission.index');
@@ -90,6 +91,10 @@ use App\Http\Middleware\CheckPermission;
             Route::post('location/delete/', 		'Admin\LocationController@destroy')->name('location.destroy');
             Route::match(['POST', 'GET'], 'location/trash', 'Admin\LocationController@trash')->name('location.trash');
             Route::post('location/restore', 		'Admin\LocationController@restore')->name('location.restore');
+
+            //Unit
+            Route::match(['get', 'post'], 'unit',	'Admin\UnitController@index')->name('unit.index');
+            Route::post('unit/add',				'Admin\UnitController@create')->name('unit.store');
 
             //Good
             Route::match(['get', 'post'], 'good',	'Admin\GoodController@index')->name('good.index');

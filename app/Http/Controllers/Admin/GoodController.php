@@ -10,6 +10,7 @@ use App\Models\GoodImage;
 use App\Models\Location;
 use App\Models\StockEntry;
 use App\Models\GoodLocation;
+use App\Models\Unit;
 use \Yajra\Datatables\Datatables;
 use validator;
 use Illuminate\Support\Facades\DB;
@@ -41,6 +42,7 @@ class GoodController extends Controller
     {
         $brand = DB::table('goods')->select('brand')->groupBy('brand')->get();
         $category = DB::table('goods')->select('category')->groupBy('category')->get();
+        $unit = Unit::all();
 
          if ($request->isMethod('POST')){
 
@@ -89,7 +91,7 @@ class GoodController extends Controller
                  'message'   => 'Good Successfully Add'
             ]);
         }
-        return view('good.add',['brand' => $brand, 'category' => $category]);
+        return view('good.add',['brand' => $brand, 'category' => $category, 'unit' => $unit]);
     }
 
     public function update(Request $request, $id)
@@ -98,6 +100,7 @@ class GoodController extends Controller
         $brand = DB::table('goods')->select('brand')->groupBy('brand')->get();
         $category = DB::table('goods')->select('category')->groupBy('category')->get();
         $unit = DB::table('goods')->select('unit')->groupBy('unit')->get();
+
         if ($request->isMethod('POST'))
         {
 
@@ -114,6 +117,7 @@ class GoodController extends Controller
             $good->category = $request->category;
             $good->description = $request->description;
             $good->unit = $request->unit;
+            $good->expired = $request->isexpired;
 
             if($request->deleted_image != null){
                 foreach ($request->deleted_image as $deleted_images) {

@@ -56,8 +56,9 @@
                   <label>Unit</label>
                   <select name="unit" class="form-control select2" style="width: 100%;" required="">
                      <option disabled="disabled" selected="selected">Please choose a Status ...</option>
-                     <option value="pcs">PCS</option>
-                     <option value="kg">KG</option>
+                     @foreach($unit as $item)
+                     <option value="{{$item->name}}">{{$item->name}}</option>
+                     @endforeach
                   </select>
                </div>
                <div class="form-group">
@@ -80,20 +81,20 @@
 @section('script')
 <script>
    jQuery(document).ready(function() {
-   
+
       $("#brand").select2({
          placeholder: "Pilih atau buat Brand",
          tags: true
       });
-      
+
       $("#category").select2({
          placeholder: "Pilih atau buat Category",
          tags: true
       });
-   
+
           var image_id = 0;
           var data = [];
-   
+
            $(document).on('click', '#btnAddImage', function (event) {
                event.preventDefault();
                var input = $('<input type="file" name="images[]" class="images-item" data-id="image-'+ image_id+'" style="display:none;" accept="image/x-png,image/gif,image/jpeg"/>');
@@ -101,20 +102,20 @@
                input.click();
                image_id++;
            });
-   
+
            $(document).on('change', '#FormGood input.images-item', function(event) {
              event.preventDefault();
              var preview = $('<img class="image-preview" data-id="'+ $(this).data('id') +'"/>');
              readURL(this, preview)
              $('#imageUpload').append($('<div class="col-md-4 m-2" style="border: 2px solid #75979c;"></div>').append(preview).append('<div class="text-center p-2"><button class="btn deleteBtn btn-warning">hapus</button></div>').append(this));
            });
-           
+
            $(document).on('click', '.deleteBtn', function(event){
              event.preventDefault();
              $(this).parent().parent().remove();
-           
+
            });
-   
+
            $('#FormGood').submit(function (event) {
                event.preventDefault();
                $('#error').hide();
@@ -126,14 +127,14 @@
                    type: 'POST',
                    data: data,
                    cache: false,
-                   processData: false, 
+                   processData: false,
                    contentType: false,
                    success: function (response) {
                      console.log(data);
                        if (response.success) {
                            $('#FormGood')[0].reset();
                            toastr.success(response.message);
-                           setTimeout(function () { 
+                           setTimeout(function () {
                               location.replace('/good');
                            }, 1000);
                        }
@@ -149,7 +150,7 @@
                      item = (item.length > 0) ? item : form.find('select[name='+ key +']');
                      item = (item.length > 0) ? item : form.find('textarea[name='+ key +']');
                      item = (item.length > 0) ? item : form.find("input[name='"+ key +"[]']");
-      
+
                     var parent = (item.parent().hasClass('form-group')) ? item.parent() : item.parent().parent();
                      parent.addClass('has-error');
                      parent.append('<span class="help-block" style="color:red;">'+ error +'</span>');
@@ -158,13 +159,13 @@
                     }
                });
            });
-           
+
            $( '.btnDiscard' ).on('click', function () {
                $('#inputImage').val('');
                $('#image-preview').attr('src', '')
                $('#addImageModal').modal('hide');
            });
-   
+
            function readURL(input, image) {
        	    if (input.files && input.files[0]) {
        	        var reader = new FileReader();
@@ -175,6 +176,6 @@
        	    }
        	}
        });
-   
+
 </script>
 @endsection

@@ -49924,6 +49924,11 @@ a.text-muted:hover {
   color: #fff;
 }
 
+@font-face {
+  font-family: "Inconsolata-Regular";
+  src: asset("/fonts/Inconsolata-Regular.tff");
+}
+
 table.dataTable {
   clear: both;
   margin-top: 6px !important;
@@ -50464,5 +50469,9 @@ span.select2-selection.select2-selection--single {
 .preview-thumbnail.nav-tabs li img {
   max-width: 100%;
   display: block;
+}
+
+.consolata-regular {
+  font-family: "Inconsolata-Regular";
 }
 

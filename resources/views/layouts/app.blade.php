@@ -29,6 +29,11 @@
       <!-- Navbar -->
       <nav class="main-header navbar navbar-expand navbar-dark">
          <!-- Left navbar links -->
+         <ul class="navbar-nav">
+         <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+         </li>
+         </ul>
          <ul class="navbar-nav ml-auto">
             @role('admin')
             <li class="nav-item">
@@ -55,7 +60,7 @@
          </ul>
       </nav>
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
-      <a href="/admin" class="brand-link text-center">
+      <a href="/" class="brand-link text-center">
       <span class="brand-text font-weight-light" style="font-size: 1rem;">INVENTORY PKT</span>
       </a>
       <div class="sidebar">
@@ -88,8 +93,8 @@
                 </a>
                 </li>
                 @endif
-                @role('admin')
-                <li class="nav-item has-treeview">
+
+            <li class="nav-item has-treeview">
                 <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-database"></i>
                     <p>
@@ -113,10 +118,18 @@
                     <p>Goods</p>
                 </a>
                 </li>
-            </ul>
-            </li>
-            @endrole
                 @endif
+                @if(Auth::user()->hasPermissionTo('unit.index','web'))
+                <li class="nav-item">
+                <a href="{{route('unit.index')}}" class="nav-link">
+                <i class="nav-icon fas fa-weight-hanging "></i>
+                    <p>Units</p>
+                </a>
+                </li>
+                @endif
+                </ul>
+            </li>
+
                 @if(Auth::user()->hasPermissionTo('stockentry.index','web'))
                 <li class="nav-item">
                 <a href="{{route('stockentry.index')}}" class="nav-link">

@@ -6,6 +6,12 @@ $font-family-sans-serif: 'Nunito', sans-serif;
 $font-size-base: 0.9rem;
 $line-height-base: 1.6;
 
+//Roboto Mono
+@font-face {
+    font-family: 'Inconsolata-Regular';
+    src: asset('/fonts/Inconsolata-Regular.tff');
+}
+
 // Colors
 $blue: #3490dc;
 $indigo: #6574cd;

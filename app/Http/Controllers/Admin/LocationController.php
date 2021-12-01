@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Location;
-use DataTables;
+use \Yajra\Datatables\Datatables;
 use validator;
 use App\Models\LocationShelf;
 use App\Models\StockEntry;
 use Illuminate\Http\Request;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class LocationController extends Controller
 {

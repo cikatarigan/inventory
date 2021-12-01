@@ -80,4 +80,22 @@ class RoleController extends Controller
         return view('role.edit',['role' => $role, 'permission' => $permission]);
     }
 
+
+    public function destroy(Request $request)
+    {
+        $role = Role::find($request->id);
+        if($role){
+
+            $role->delete();
+            return response()->json([
+                'success'=>true,
+                'message'   => 'Role Successfully Delete'
+            ]);
+        }
+
+
+
+
+    }
+
 }

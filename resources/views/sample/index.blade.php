@@ -15,7 +15,7 @@
         </div>
       </div>
     </section>
-    <section class="content">
+    <section class="content consolata-regular">
    <div class="card">
       <div class="card-header">
          @if(Auth::user()->hasPermissionTo('sample.store','web'))
@@ -60,7 +60,7 @@
 @section('script')
 
 <script>
-jQuery(document).ready(function($) { 
+jQuery(document).ready(function($) {
 
    var table = $('#sample-table').DataTable({
 
@@ -99,7 +99,7 @@ jQuery(document).ready(function($) {
                "orderable": true,
            },
            {
-              title :"Location",
+              title :"Sumber",
                "data": "location",
                "orderable": true,
            },
@@ -107,8 +107,8 @@ jQuery(document).ready(function($) {
             title :"Action",
                render: function(data, type, row) {
                    return  '@if(Auth::user()->hasPermissionTo('sample.update','web'))<a href="/sample/update/'+row.id+'" data-toggle="tooltip" title="Edit" class="edit-btn  badge badge-info" data-name="'+row.name+'" data-id="'+row.id+'"><i class="far fa-edit fa-lg"></i></a> &nbsp;@endif' +
-                   '@if(Auth::user()->hasPermissionTo('sample.view','web'))<a href="sample/view/'+row.id+'" data-toggle="tooltip" title="View" class="view-btn  badge badge-warning" data-name="'+row.name+'" data-id="'+row.id+'"><i class="fas fa-eye fa-lg"></i></a> &nbsp;@endif' +  '@if(Auth::user()->hasPermissionTo('sample.destroy','web'))<a href="#" class="btn-delete badge badge-danger" data-name="'+row.name+'" data-id="'+row.id+'"><i class="fa fa-trash fa-lg"></i></a> &nbsp; @endif' ; 
-                    
+                   '@if(Auth::user()->hasPermissionTo('sample.view','web'))<a href="sample/view/'+row.id+'" data-toggle="tooltip" title="View" class="view-btn  badge badge-warning" data-name="'+row.name+'" data-id="'+row.id+'"><i class="fas fa-eye fa-lg"></i></a> &nbsp;@endif' +  '@if(Auth::user()->hasPermissionTo('sample.destroy','web'))<a href="#" class="btn-delete badge badge-danger" data-name="'+row.name+'" data-id="'+row.id+'"><i class="fa fa-trash fa-lg"></i></a> &nbsp; @endif' ;
+
                },
            }
        ],
@@ -116,7 +116,7 @@ jQuery(document).ready(function($) {
        "fnCreatedRow": function(nRow, aData, iDataIndex) {
            $(nRow).attr('data', JSON.stringify(aData));
        }
-   }); 
+   });
 
 
     $('#sample-table').on('click', '.btn-delete', function(event) {
@@ -151,7 +151,7 @@ jQuery(document).ready(function($) {
         })
     });
 
-         
-}); 
+
+});
 </script>
 @endsection

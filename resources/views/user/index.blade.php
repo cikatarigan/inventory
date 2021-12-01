@@ -196,6 +196,11 @@ jQuery(document).ready(function ($) {
         "orderable": true,
       },
       {
+        title: "Gambar",
+        "data": "image",
+        "orderable": false,
+      },
+      {
         title: "Email",
         "data": "email",
         "orderable": true,

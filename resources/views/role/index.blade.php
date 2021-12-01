@@ -44,7 +44,7 @@
                <div class="box box-info">
                   <div class="box-header">
                      <div class="box-body">
-                        
+
                            <div class="form-group">
                               <input type="text" class="form-control" id="name" name="name" placeholder="Masukkan nama Role" required style="text-transform: capitalize;" maxlength="30">
                            </div>
@@ -65,10 +65,10 @@
 </div>
 
 {{-- Modal Delete --}}
-<div class="modal" tabindex="-1" role="dialog" id="deleteAdminModal">
+<div class="modal" tabindex="-1" role="dialog" id="deleteRoleModal">
   <div class="modal-dialog">
     <div class="modal-content">
-        <form action="#" method="post" id="FormDeleteAdmin">
+        <form action="#" method="post" id="FormDeleteRole">
         <input type="hidden" id="id_delete" name="id" value="">
       <div class="modal-header">
         <h4 class="modal-title"></h4>
@@ -90,8 +90,8 @@
 @endsection
 @section('script')
 <script>
-jQuery(document).ready(function($) { 
-   
+jQuery(document).ready(function($) {
+
    var table = $('#role-table').DataTable({
        "bFilter": true,
        "processing": true,
@@ -134,7 +134,7 @@ jQuery(document).ready(function($) {
        "fnCreatedRow": function(nRow, aData, iDataIndex) {
            $(nRow).attr('data', JSON.stringify(aData));
        }
-   }); 
+   });
 
     var url;
 
@@ -157,7 +157,7 @@ jQuery(document).ready(function($) {
         $('#ModalRole').modal('show');
     });
 
-   
+
        $('#FormRole').submit(function (event) {
          event.preventDefault();
          var $this = $(this);
@@ -186,7 +186,7 @@ jQuery(document).ready(function($) {
                   item = (item.length > 0) ? item : form.find('select[name='+ key +']');
                   item = (item.length > 0) ? item : form.find('textarea[name='+ key +']');
                   item = (item.length > 0) ? item : form.find("input[name='"+ key +"[]']");
-   
+
                  var parent = (item.parent().hasClass('form-group')) ? item.parent() : item.parent().parent();
                   parent.addClass('has-error');
                   parent.append('<span class="help-block" style="color:red;">'+ error +'</span>');
@@ -197,6 +197,38 @@ jQuery(document).ready(function($) {
      });
 
 
-}); 
+     $('#role-table').on('click', '.btn-delete', function(event) {
+        event.preventDefault();
+        var id = $(this).data('id');
+        var name = $(this).data('name');
+        $('#FormDeleteRole #id_delete').val(id);
+        $('#deleteRoleModal').modal('show');
+        $('#FormDeleteRole .modal-title').text("Konfirmasi Hapus");
+        $('#FormDeleteRole #del-success').html("Apakah Anda yakin ingin menghapus Lokasi <b>"+name+"</b> ini ?");
+    });
+
+   $('#FormDeleteRole').submit(function(event) {
+        event.preventDefault();
+        var form =$('#FormDeleteRole');
+        var data = form.serialize();
+        $.ajax({
+            url: '/role/delete',
+            type: 'POST',
+            data : data,
+            cache : false,
+            success: function(data){
+               if (data.success){
+                  toastr.success(data.message);
+                  $('#deleteRoleModal').modal('hide');
+                  table.draw();
+               } else{
+                 toastr.error(data.message);
+               }
+            },
+        })
+    });
+
+
+});
 </script>
 @endsection

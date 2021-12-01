@@ -11,11 +11,11 @@ use Illuminate\Support\Facades\Storage;
 class SampleController extends Controller
 {
     public function index(Request $request)
-    {       
+    {
         if( $request->isMethod('post') ){
-        
-        $model = Sample::all();
-    
+
+        $model = Sample::orderBy('code');
+
         return DataTables::of($model)->make();
     }
         return view('sample.index');
@@ -81,7 +81,7 @@ class SampleController extends Controller
             $sample->location = $request->location;
             if($request->file != null){
                 Storage::delete($sample->photo);
-                     $sample->photo = $request->file('photo')->store('sample');   
+                     $sample->photo = $request->file('photo')->store('sample');
             }
             $sample->save();
         }
@@ -99,11 +99,11 @@ class SampleController extends Controller
         $sample = sample::find($request->id_delete);
             Storage::delete($sample->photo);
             $sample->delete();
-    
+
         return response()->json([
             'success'=>true,
             'message'=>'Sample Berhasil dihapus',
         ]);
-        
+
     }
 }
